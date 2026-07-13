@@ -26,7 +26,7 @@ class GuardianPolicyTests(unittest.TestCase):
             "threat": "ransomware",
             "confidence": 1.0,
             "signals": ["rapid_file_rewrite", "recovery_deletion_attempt"],
-            "proposed_action": "delete_backups"
+            "proposed_action": "delete_backups",
         }
         result = evaluate(incident, POLICIES)
         self.assertEqual(result["guardian_decision"], "deny")
@@ -38,10 +38,23 @@ class GuardianPolicyTests(unittest.TestCase):
             "threat": "ransomware",
             "confidence": 0.4,
             "signals": ["rapid_file_rewrite", "recovery_deletion_attempt"],
-            "proposed_action": "isolate_endpoint"
+            "proposed_action": "isolate_endpoint",
         }
         result = evaluate(incident, POLICIES)
         self.assertEqual(result["guardian_decision"], "escalate")
+
+    def test_scope_cannot_expand_beyond_policy(self):
+        incident = {
+            "incident_id": "TEST-SCOPE",
+            "threat": "ransomware",
+            "confidence": 0.99,
+            "signals": ["rapid_file_rewrite", "recovery_deletion_attempt"],
+            "proposed_action": "isolate_endpoint",
+            "requested_scope": "enterprise",
+        }
+        result = evaluate(incident, POLICIES)
+        self.assertEqual(result["guardian_decision"], "deny")
+        self.assertIn("scope", result["reason"])
 
 
 if __name__ == "__main__":
