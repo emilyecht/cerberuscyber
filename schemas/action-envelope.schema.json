@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/emilyecht/cerberuscyber/schemas/action-envelope.schema.json",
+  "title": "CERBERUS Action Envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "envelope_id",
+    "incident_id",
+    "threat",
+    "confidence",
+    "proposed_action",
+    "target",
+    "requested_scope",
+    "reversible",
+    "mission_impact",
+    "created_at",
+    "expires_at",
+    "nonce",
+    "evidence",
+    "human_approvals"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "envelope_id": {"type": "string", "minLength": 1},
+    "incident_id": {"type": "string", "minLength": 1},
+    "threat": {"type": "string", "minLength": 1},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "proposed_action": {"type": "string", "minLength": 1},
+    "target": {"type": "string", "minLength": 1},
+    "requested_scope": {"type": "string", "minLength": 1},
+    "reversible": {"type": "boolean"},
+    "mission_impact": {"type": "string", "minLength": 1},
+    "created_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "nonce": {"type": "string", "minLength": 16},
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["signal", "source_id", "observed_at"],
+        "properties": {
+          "signal": {"type": "string", "minLength": 1},
+          "source_id": {"type": "string", "minLength": 1},
+          "observed_at": {"type": "string", "format": "date-time"},
+          "digest": {"type": ["string", "null"], "minLength": 16}
+        }
+      }
+    },
+    "human_approvals": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    }
+  }
+}
