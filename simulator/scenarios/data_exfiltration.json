@@ -1,0 +1,11 @@
+{
+  "incident_id": "CRB-2026-0004",
+  "threat": "data_exfiltration",
+  "confidence": 0.96,
+  "signals": [
+    "large_outbound_transfer",
+    "new_destination",
+    "sensitive_data_access"
+  ],
+  "proposed_action": "temporary_egress_hold"
+}
