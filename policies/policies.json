@@ -1,5 +1,5 @@
 {
-  "version": "0.3.0",
+  "version": "0.4.0",
   "decision_ttl_seconds": 120,
   "min_independent_sources": 2,
   "scope_order": [
@@ -78,17 +78,18 @@
     },
     {
       "id": "CYBER-EA-001",
-      "name": "Suspected covert embedded AI agent",
+      "name": "Suspected adversarial AI persistence",
       "match": {
         "threat": "embedded_ai_agent",
         "min_confidence": 0.9,
         "required_signals": [
-          "unsigned_model_artifact",
-          "identity_masquerade",
-          "telemetry_suppression",
-          "covert_egress"
+          "anomalous_process_behavior",
+          "hidden_persistence",
+          "credential_misuse",
+          "model_driven_deception",
+          "log_tampering"
         ],
-        "min_independent_sources": 4
+        "min_independent_sources": 5
       },
       "decision": "escalate",
       "decision_on_approval": "approve",
