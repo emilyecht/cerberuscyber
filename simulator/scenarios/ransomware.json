@@ -1,0 +1,11 @@
+{
+  "incident_id": "CRB-2026-0001",
+  "threat": "ransomware",
+  "confidence": 0.97,
+  "signals": [
+    "rapid_file_rewrite",
+    "recovery_deletion_attempt",
+    "new_destination"
+  ],
+  "proposed_action": "isolate_endpoint"
+}
