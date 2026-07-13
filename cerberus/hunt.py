@@ -1,4 +1,4 @@
-"""Read-only Sentinel hunt logic for a simulated embedded AI-agent threat.
+"""Read-only Sentinel hunt logic for a simulated adversarial AI persistence threat.
 
 This module correlates synthetic telemetry only. It performs no scanning, attribution,
 containment, or external mutation. The output is an untrusted recommendation that must
@@ -77,28 +77,38 @@ class HuntFinding:
 
 
 class EmbeddedAgentHunter:
-    """Deterministically correlates behaviors associated with covert agent embedding.
+    """Deterministically correlates behaviors associated with covert AI persistence.
 
     The hunter intentionally does not infer nationality or sponsor. A claimed foreign
     origin is not evidence of compromise, and national attribution is outside the
     authority of this prototype. The finding is based on observable behavior and
     provenance failures only.
+
+    New explicit event names mirror the defensive scenario vocabulary. Legacy aliases
+    remain accepted so older synthetic fixtures continue to work without weakening the
+    policy signal model.
     """
 
     INDICATORS: dict[str, tuple[str, float]] = {
-        "model_artifact_unsigned": ("unsigned_model_artifact", 0.16),
-        "service_identity_mismatch": ("identity_masquerade", 0.17),
-        "telemetry_tamper": ("telemetry_suppression", 0.18),
-        "covert_egress": ("covert_egress", 0.18),
+        "anomalous_process_behavior": ("anomalous_process_behavior", 0.12),
+        "hidden_persistence": ("hidden_persistence", 0.13),
         "runtime_persistence": ("hidden_persistence", 0.13),
-        "policy_bypass_attempt": ("policy_bypass_attempt", 0.13),
+        "credential_misuse": ("credential_misuse", 0.15),
+        "service_identity_mismatch": ("credential_misuse", 0.15),
+        "model_driven_deception": ("model_driven_deception", 0.15),
+        "model_artifact_unsigned": ("model_provenance_failure", 0.10),
+        "log_tampering": ("log_tampering", 0.16),
+        "telemetry_tamper": ("log_tampering", 0.16),
+        "covert_egress": ("covert_egress", 0.12),
+        "policy_bypass_attempt": ("policy_bypass_attempt", 0.10),
     }
 
     REQUIRED_CORE_SIGNALS = {
-        "unsigned_model_artifact",
-        "identity_masquerade",
-        "telemetry_suppression",
-        "covert_egress",
+        "anomalous_process_behavior",
+        "hidden_persistence",
+        "credential_misuse",
+        "model_driven_deception",
+        "log_tampering",
     }
 
     def hunt(
@@ -137,9 +147,10 @@ class EmbeddedAgentHunter:
 
         confidence = round(min(score, 0.99), 2)
         summary = (
-            "Correlated provenance, identity, telemetry-integrity, persistence, and "
-            "egress anomalies indicate a possible embedded autonomous component. "
-            "The result is behavior-based; sponsor and national attribution remain unverified."
+            "Correlated process, persistence, credential, model-behavior, log-integrity, "
+            "provenance, and egress anomalies indicate a possible embedded autonomous "
+            "component. The result is behavior-based; sponsor and national attribution "
+            "remain unverified."
         )
         return HuntFinding(
             threat="embedded_ai_agent",
