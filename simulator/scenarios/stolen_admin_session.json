@@ -1,0 +1,11 @@
+{
+  "incident_id": "CRB-2026-0002",
+  "threat": "stolen_admin_session",
+  "confidence": 0.95,
+  "signals": [
+    "new_device",
+    "mfa_disabled",
+    "recovery_changed"
+  ],
+  "proposed_action": "revoke_sessions"
+}
