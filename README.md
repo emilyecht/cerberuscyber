@@ -2,168 +2,192 @@
 
 **Assume compromise. Constrain authority. Contain damage. Recover safely.**
 
-CERBERUS Cyber is a defensive cybersecurity research prototype for high-threat environments in which advanced persistent threats, compromised credentials, malicious insiders, supply-chain compromise, and AI-enabled attack paths must be treated as expected conditions rather than exceptional events.
+CERBERUS Cyber is a defensive cybersecurity research prototype investigating whether a separate deterministic authorization layer can reduce the authority gained from compromising or deceiving an intelligent defensive component.
 
-The project applies a three-layer runtime assurance model to defensive cyber operations:
+The project applies a three-layer runtime assurance pattern:
 
-1. **Sentinel Intelligence** observes telemetry, correlates suspicious behavior, maps activity to threat patterns, and recommends a response.
-2. **Guardian Policy Engine** deterministically authorizes or rejects proposed actions using explicit rules, evidence thresholds, scope limits, reversibility requirements, and human approval gates.
-3. **Enforcement & Recovery Kernel** executes only approved, least-privilege, reversible containment and recovery actions.
+1. **Sentinel Intelligence** observes telemetry, correlates suspicious behavior, and recommends a response.
+2. **Guardian Policy Engine** deterministically authorizes, constrains, escalates, or rejects proposed actions using explicit rules, evidence thresholds, scope limits, reversibility requirements, and human gates.
+3. **Enforcement & Recovery Kernel** executes only approved, least-privilege, reversibility-preferred actions.
 
 > Intelligence may recommend. Policy authorizes. The enforcement layer acts.
 
-## Executive Summary
+## Current Maturity
 
-Mission-critical networks increasingly depend on cloud workloads, automated response systems, identity platforms, software supply chains, and AI agents with access to sensitive data and operational tools. These systems can increase speed and resilience, but they also expand the attack surface and create new failure modes when automation is manipulated, misconfigured, or granted excessive authority.
+CERBERUS Cyber is a **TRL 2–3 research prototype**, not a production defensive platform.
 
-CERBERUS Cyber is designed as a next-generation Zero Trust enforcement and autonomous containment architecture for high-threat, nation-state environments. It assumes that an adversary may obtain valid credentials, compromise an endpoint, poison telemetry, manipulate an AI agent, or gain access through a trusted dependency. The system's purpose is not to promise perfect prevention. Its purpose is to preserve positive control, limit blast radius, and prevent a compromised component from gaining unrestricted authority.
-
-CERBERUS Cyber separates analytical intelligence from operational authority. AI-assisted analysis may identify threats and propose action, but only a deterministic Guardian layer may authorize execution. High-impact actions remain human-on-the-loop or human-approved according to policy. This architecture is intended to reduce the risk of rogue automation, false-positive containment, adversary-induced response, and prompt-injection attacks against defensive AI systems.
-
-The current repository is a **research prototype**, not a production defensive platform. It includes a working deterministic Python simulator, formal threat model, safety invariants, versioned Guardian policies, automated tests, and four safe attack scenarios. No real containment actions are executed.
-
-## Current Gap-Closure Program
-
-CERBERUS Cyber is now following a defined transition plan from simulator to measurable defensive research platform.
-
-The active workstreams are:
-
-- normalized telemetry replay
-- read-only identity, cloud, endpoint, and SIEM connectors
-- externalized Guardian policy artifacts
-- measurable evaluation and benchmark reporting
-- human-approved reversible lab actions
-- browser-based visualization of the three-layer decision path
-
-See:
-
-- [Gap-Closure Plan](docs/GAP_CLOSURE_PLAN.md)
-- [Integration Strategy](docs/INTEGRATION_STRATEGY.md)
-- [Evaluation Framework](docs/EVALUATION_FRAMEWORK.md)
-
-## Problem Statement
-
-Traditional security architectures often rely on perimeter controls, detection alerts, analyst review, and broad administrative tooling. In high-threat environments, that model can fail in several ways:
-
-- Advanced persistent threats may operate with valid credentials and legitimate administrative paths.
-- Identity compromise can allow an attacker to bypass network-centric controls.
-- Automated response systems may act too broadly, disrupt mission operations, or be manipulated by poisoned telemetry.
-- AI agents may be vulnerable to prompt injection, excessive permissions, compromised plugins, or malicious retrieval sources.
-- Software supply-chain compromise can enter through trusted update paths and signed dependencies.
-- Insider threats may exploit authorized access while remaining within nominal policy boundaries.
-- Recovery systems and backups may themselves become targets, eliminating the ability to restore operations.
-- Air-gapped and high-side environments may require local, auditable decision-making without reliance on external services.
-
-The core challenge is therefore not only detection. It is maintaining **resilient command and control over defensive action** after compromise is assumed.
-
-## Solution
-
-CERBERUS Cyber introduces a three-layer runtime assurance architecture that continuously evaluates whether a proposed defensive action is permitted, justified, bounded, and reversible.
-
-### Layer 1 — Sentinel Intelligence
-
-The Sentinel layer ingests and correlates security-relevant telemetry from sources such as identity systems, endpoint tools, network sensors, cloud control planes, AI-agent tool calls, privileged access workflows, software supply-chain signals, and recovery infrastructure.
-
-It produces threat hypotheses, confidence scores, blast-radius estimates, ATT&CK-aligned behavior mappings, recommended actions, and human-readable evidence summaries.
-
-The Sentinel layer is advisory. It is explicitly treated as fallible and potentially vulnerable to model error, adversarial manipulation, prompt injection, or compromised data sources.
-
-### Layer 2 — Guardian Policy Engine
-
-The Guardian layer is the core safety and positive-control mechanism. It evaluates every proposed action against deterministic policy.
-
-Authorization may depend on independent evidence count, confidence thresholds, asset criticality, mission impact, action scope, reversibility, blast-radius limits, data classification, network enclave, human authorization requirements, and continuity-of-operations constraints.
-
-The Guardian may approve, approve with constraints, escalate, or deny.
-
-This separation ensures that intelligence does not become authority merely because it is confident.
-
-### Layer 3 — Enforcement & Recovery Kernel
-
-The enforcement layer is deliberately minimal. It uses least-privilege connectors to execute only approved actions such as revoking a session, requiring step-up authentication, isolating a host, disabling a compromised key, blocking a malicious destination, preserving evidence, snapshotting state, restoring configuration, or initiating a tested recovery workflow.
-
-The kernel does not independently interpret threats. It enforces signed, authorized decisions and records each action in an auditable log.
-
-## Technical Differentiation
-
-### Separation of Intelligence from Authority
-
-Most autonomous defensive concepts combine detection, reasoning, and response in one system. CERBERUS Cyber separates those functions so that an intelligent model cannot directly exercise unrestricted operational control.
-
-### Deterministic Policy Enforcement
-
-The Guardian Policy Engine uses explicit, machine-testable rules rather than opaque model judgment. This makes authorization behavior reproducible, auditable, and suitable for formal verification efforts.
-
-### Safety Invariants
-
-CERBERUS Cyber defines actions that remain forbidden regardless of model confidence, including autonomous backup deletion, automated retaliation, offensive exploit execution, destructive remediation without authorization, direct AI access to enforcement credentials, and execution without a logged authorization decision.
-
-### Reversible-First Containment
-
-The platform favors actions that can be safely reversed: isolation, suspension, token revocation, quarantine, snapshotting, and rollback.
-
-### Human-on-the-Loop Control
-
-High-impact actions remain subject to human approval, while narrowly bounded, low-impact actions may be preauthorized under strict policy.
-
-### Resilience Against Adversary Manipulation
-
-The architecture is designed to reduce the impact of prompt injection, telemetry poisoning, compromised connectors, malicious updates, insider misuse, supply-chain compromise, adversary-induced false positives, and rogue automation.
-
-## Security Posture
-
-CERBERUS Cyber is defensive-only and safety-first.
-
-The project does not include exploit development, credential theft, destructive payloads, unauthorized scanning, automated retaliation, counterattack capability, or autonomous irreversible remediation.
-
-The current simulator is side-effect free. It does not connect to operational systems or execute real containment.
-
-Security design goals include least-privilege service identities, signed policy artifacts, immutable decision logs, policy versioning, dual authorization for high-impact changes, connector isolation, local deployment, no mandatory public-cloud dependency for core decisions, and compatibility with disconnected or high-side environments.
-
-## Mission-Relevant Use Cases
-
-- **Identity compromise:** revoke sessions or require step-up authentication without destructively deleting accounts.
-- **Ransomware containment:** isolate a host and protect shares only after independent evidence thresholds are met.
-- **AI-agent prompt injection:** deny tool use outside signed scope or without trusted authorization context.
-- **Supply-chain compromise:** correlate provenance, runtime behavior, and policy violations before rollback.
-- **Insider threat:** require corroborating evidence and mission-aware scope controls.
-- **Recovery infrastructure protection:** block attempts to disable backups, delete snapshots, or alter recovery policy.
-
-## Why This Matters to the Intelligence Community
-
-IC and DoD environments require defensive systems that can operate under persistent adversary pressure while preserving mission continuity, chain of command, and accountability.
-
-CERBERUS Cyber emphasizes assume breach, blast-radius limitation, positive control, auditable decisions, human-on-the-loop authority, deterministic policy, resilience to prompt injection and supply-chain compromise, protection of AI agents and identity systems, and deployment paths for disconnected or high-side networks.
-
-The architecture is especially relevant where AI-assisted systems are expected to support analysts or operators but cannot be permitted to independently exercise unrestricted authority.
-
-## Current Prototype
-
-The repository currently includes:
+What exists today:
 
 - a deterministic Python policy simulator
-- a formal threat model
+- a documented threat model
 - explicit safety invariants
 - versioned Guardian policies
 - four safe simulated attack scenarios
-- tests proving forbidden actions are blocked
+- automated tests proving specified forbidden actions are blocked
 - GitHub Actions CI
-- a gap-closure plan
-- an integration strategy
-- a measurable evaluation framework
+- transition, integration, and evaluation plans
 
-Supported scenarios:
+What does **not** exist yet:
 
-- ransomware behavior
+- production connectors
+- operational validation
+- formal verification
+- scale or latency evidence
+- independent red-team validation
+- accreditation for classified or mission deployment
+
+The current simulator is side-effect free and performs no real containment.
+
+## Core Research Question
+
+Modern defensive systems increasingly combine detection, reasoning, and response. That creates a dangerous failure mode: manipulation of the analytical layer may become a path to privileged defensive action.
+
+CERBERUS asks a narrower, testable question:
+
+> Can consequential defensive actions remain bounded, auditable, and reversible even when the intelligent layer is wrong, compromised, or adversarially manipulated?
+
+The project does not claim to prevent prompt injection, telemetry poisoning, insider misuse, or supply-chain compromise. It investigates whether those failures can be prevented from automatically conferring operational authority.
+
+## Architecture
+
+### Layer 1 — Sentinel Intelligence
+
+Sentinel is advisory and untrusted by design. It may ingest identity, endpoint, network, cloud, AI-agent, privileged-access, software-supply-chain, and recovery telemetry.
+
+It produces:
+
+- threat hypotheses
+- confidence scores
+- ATT&CK-aligned behavior labels
+- blast-radius estimates
+- recommended actions
+- human-readable evidence summaries
+
+Nothing Sentinel produces is executable by itself.
+
+### Layer 2 — Guardian Policy Engine
+
+Guardian evaluates proposed actions against deterministic policy.
+
+Authorization may depend on:
+
+- evidence count and provenance
+- confidence band
+- asset criticality
+- mission impact
+- action scope
+- reversibility
+- blast-radius limits
+- data classification
+- enclave
+- approval status
+- continuity-of-operations constraints
+
+Guardian may return:
+
+- **approve**
+- **approve with constraints**
+- **escalate**
+- **deny**
+
+Model confidence is treated as evidence input, never as authorization.
+
+### Layer 3 — Enforcement & Recovery Kernel
+
+The kernel is intended to remain small and least-privileged. In future phases it may mediate actions such as session revocation, step-up authentication, host isolation, key disablement, quarantine, evidence preservation, snapshotting, rollback, and tested recovery workflows.
+
+The current prototype does not execute those actions.
+
+## Technical Differentiation
+
+### Not a SOAR Replacement
+
+CERBERUS does not attempt to replace SIEM, SOAR, XDR, EDR, IAM, or cloud-security platforms.
+
+Its proposed contribution is an independent, cross-platform assurance boundary between recommendation and consequential action. Existing platforms may support approvals and safeguards, but those controls are commonly embedded within vendor-specific playbooks. CERBERUS investigates whether authorization can be made separately testable, globally constrained by invariants, and resistant to shared-fate failure.
+
+### Not an Autonomous AI Defender
+
+Some agentic security products permit models to plan or invoke tool-mediated actions. CERBERUS adopts a stricter design:
+
+- the model does not hold enforcement credentials;
+- model output is treated as untrusted input;
+- action arguments are policy-validated;
+- high-impact actions remain human-approved or human-on-the-loop;
+- prompt injection may corrupt recommendations, but should not automatically grant authority.
+
+### Runtime-Assurance Inspiration
+
+CERBERUS is inspired by the architectural separation used in Simplex-style runtime assurance: a powerful but unverified component is bounded by a smaller assurance mechanism.
+
+The analogy is limited. Cyber operations are partially observed, adversarial, context-dependent, and mission-sensitive. The current Guardian is tested, not formally verified, and no physical-safety-style guarantee is claimed.
+
+## Safety Invariants
+
+The prototype encodes actions that remain forbidden regardless of model confidence, including:
+
+- autonomous deletion or modification of backups
+- automated retaliation or offensive exploit execution
+- destructive remediation without explicit authorization
+- direct AI-layer access to enforcement credentials
+- execution without a logged authorization decision
+
+Formal verification is not yet claimed. See [Guardian Formal Assurance Path](docs/FORMAL_ASSURANCE_PATH.md).
+
+## Correlated-Failure Analysis
+
+CERBERUS treats shared models, telemetry, credentials, vendors, update channels, administrators, and recovery dependencies as potential common-mode failure paths.
+
+The project now includes a repeatable dependency-graph audit and proposed Shared-Fate Exposure metric. See [Correlated-Failure Audit Method](docs/CORRELATED_FAILURE_METHOD.md).
+
+## Skeptical Review
+
+The project documents its strongest unresolved objections:
+
+- “This is SOAR with extra steps.”
+- “Deterministic policy will not scale.”
+- “Guardian becomes a single point of failure.”
+- “There is no operational evidence yet.”
+- “Single-developer validation is insufficient.”
+
+These are treated as evaluation requirements, not dismissed as messaging problems. See [Skeptical Technical Review](docs/RED_TEAM_REVIEW.md).
+
+## 90-Day Evaluation Path
+
+The next meaningful milestone is not a broader claim. It is a sponsor-visible comparison between:
+
+```text
+Detection → response playbook → simulated execution
+```
+
+and:
+
+```text
+Detection → proposed action → Guardian authorization → simulated execution
+```
+
+using identical synthetic telemetry and adversarial scenarios.
+
+The evaluation measures:
+
+- false-containment rate
+- denial-of-defense resistance
+- invariant integrity
+- containment latency versus blast radius
+- auditability
+- policy-authoring burden
+- policy conflict and exception growth
+
+See [90-Day Sponsor Evaluation Design](docs/NINETY_DAY_EVALUATION.md).
+
+## Current Scenarios
+
+- ransomware-like behavior
 - stolen administrator session
 - prompt injection against an AI agent
 - suspicious data exfiltration
 
-No claim of production readiness is made.
-
-## Try the Simulator
-
-Requires Python 3.10 or newer.
+Run the simulator with Python 3.10 or newer:
 
 ```bash
 python simulator/cerberus_sim.py simulator/scenarios/ransomware.json
@@ -182,57 +206,47 @@ python -m unittest discover -s tests -v
 
 ### Phase 0 — Threat Model and Governance
 
-Define protected assets, mission owners, operator roles, approval boundaries, safety invariants, privacy constraints, emergency procedures, and unacceptable failure modes.
+Define protected assets, approval boundaries, safety invariants, unacceptable failure modes, and recovery constraints.
 
 ### Phase 1 — Read-Only Observer
 
-Integrate representative telemetry sources, normalize events, correlate suspicious behavior, generate evidence-backed recommendations, and measure false-positive rates without taking action.
+Add normalized telemetry replay, representative read-only connectors, evidence-backed recommendations, and benchmark reporting. No actions are taken.
 
 ### Phase 2 — Human-Approved Containment
 
-Introduce reversible defensive actions such as session revocation, endpoint isolation, workload quarantine, step-up authentication, and evidence preservation. Every action requires explicit approval.
+Introduce reversible lab actions such as session revocation, host isolation, quarantine, step-up authentication, and evidence preservation. Every action requires explicit approval.
 
 ### Phase 3 — Bounded Automation
 
-Preauthorize a narrow set of low-impact, reversible actions under strict evidence, scope, and mission-impact thresholds. Maintain human-on-the-loop oversight.
+Preauthorize only a narrow set of low-impact, reversible actions under strict evidence, scope, and mission-impact thresholds.
 
 ### Phase 4 — Recovery Assurance
 
 Add tested rollback, restoration, credential rotation, configuration recovery, and post-action verification.
 
-### Phase 5 — Classified and Mission Integration
+### Phase 5 — Mission Integration
 
-Potential future extensions may include integration with existing IC or DoD security tooling, SCIF-compatible deployment, support for air-gapped enclaves, classified policy packs, local model inference, hardware-backed identity, signed policy attestation, and deployment-specific accreditation evidence.
+Potential future work, only under sponsorship and accreditation, may include local inference, signed policy attestation, hardware-backed identity, disconnected deployment, classified policy packs, and SCIF-compatible engineering.
 
-Any classified extension would require sponsorship, accreditation, and deployment-specific security engineering.
+## Research and Transition Documents
 
-## Transition and Funding Paths
+- [Threat Model](docs/THREAT_MODEL.md)
+- [Safety Invariants](docs/SAFETY_INVARIANTS.md)
+- [Architecture](docs/architecture.md)
+- [Gap-Closure Plan](docs/GAP_CLOSURE_PLAN.md)
+- [Integration Strategy](docs/INTEGRATION_STRATEGY.md)
+- [Evaluation Framework](docs/EVALUATION_FRAMEWORK.md)
+- [90-Day Sponsor Evaluation](docs/NINETY_DAY_EVALUATION.md)
+- [Correlated-Failure Audit Method](docs/CORRELATED_FAILURE_METHOD.md)
+- [Guardian Formal Assurance Path](docs/FORMAL_ASSURANCE_PATH.md)
+- [Skeptical Technical Review](docs/RED_TEAM_REVIEW.md)
+- [One-Page Pitch](docs/ONE_PAGE_PITCH.md)
 
-Natural transition paths may include a government-sponsored prototype, SBIR/STTR topic alignment, Zero Trust modernization efforts, AI assurance programs, identity and cloud security pilots, and mission-partner integration with existing SOC and SIEM/SOAR tooling.
+## Security Posture
 
-A practical first government engagement would be a limited-scope, unclassified evaluation using synthetic telemetry and existing agency-approved defensive tools.
+CERBERUS Cyber is defensive-only.
 
-## Repository Structure
-
-```text
-cerberuscyber/
-├── .github/workflows/tests.yml
-├── CONTRIBUTING.md
-├── LICENSE
-├── README.md
-├── SECURITY.md
-├── docs/
-│   ├── architecture.md
-│   ├── SAFETY_INVARIANTS.md
-│   ├── THREAT_MODEL.md
-│   ├── ONE_PAGE_PITCH.md
-│   ├── GAP_CLOSURE_PLAN.md
-│   ├── INTEGRATION_STRATEGY.md
-│   └── EVALUATION_FRAMEWORK.md
-├── policies/
-├── simulator/
-└── tests/
-```
+The project does not include exploit development, credential theft, destructive payloads, unauthorized scanning, automated retaliation, counterattack capability, or autonomous irreversible remediation.
 
 ## Core Principle
 
