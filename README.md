@@ -12,6 +12,39 @@ The project separates intelligence from authority:
 
 > Intelligence may recommend. Policy authorizes. The enforcement layer acts.
 
+## Current Status
+
+**Research prototype with a working deterministic policy simulator.**
+
+The repository now includes:
+
+- a formal threat model
+- explicit safety invariants
+- versioned Guardian policies
+- four safe simulated attack scenarios
+- a Python policy evaluator
+- unit tests proving forbidden actions are blocked
+- GitHub Actions CI
+
+No real containment actions are performed. The simulator is intentionally side-effect free.
+
+## Try the Simulator
+
+Requires Python 3.10 or newer.
+
+```bash
+python simulator/cerberus_sim.py simulator/scenarios/ransomware.json
+python simulator/cerberus_sim.py simulator/scenarios/stolen_admin_session.json
+python simulator/cerberus_sim.py simulator/scenarios/prompt_injection.json
+python simulator/cerberus_sim.py simulator/scenarios/data_exfiltration.json
+```
+
+Run the tests:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
 ## Why CERBERUS Cyber
 
 Most security platforms focus on detecting and preventing intrusion. CERBERUS Cyber begins from a harsher assumption: some attacks will get through.
@@ -37,22 +70,30 @@ CERBERUS Cyber is designed around damage containment, reversible response, evide
 
 ```text
 cerberuscyber/
-├── README.md
-├── LICENSE
-├── SECURITY.md
+├── .github/workflows/tests.yml
 ├── CONTRIBUTING.md
+├── LICENSE
+├── README.md
+├── SECURITY.md
 ├── docs/
-│   └── architecture.md
+│   ├── architecture.md
+│   ├── SAFETY_INVARIANTS.md
+│   └── THREAT_MODEL.md
 ├── policies/
 │   ├── README.md
-│   └── examples.yaml
-└── simulator/
-    └── README.md
+│   ├── examples.yaml
+│   └── policies.json
+├── simulator/
+│   ├── README.md
+│   ├── cerberus_sim.py
+│   └── scenarios/
+│       ├── data_exfiltration.json
+│       ├── prompt_injection.json
+│       ├── ransomware.json
+│       └── stolen_admin_session.json
+└── tests/
+    └── test_simulator.py
 ```
-
-## Project Status
-
-CERBERUS Cyber is currently an early-stage architecture and simulation project. The first milestone is a read-only observer and policy simulator. Autonomous destructive actions are explicitly out of scope.
 
 ## Safety Boundaries
 
@@ -66,6 +107,8 @@ CERBERUS Cyber will not include:
 - offensive scanning of systems without authorization
 - automated retaliation or counterattack
 - autonomous deletion, wiping, or irreversible remediation
+
+See [Safety Invariants](docs/SAFETY_INVARIANTS.md) and [Threat Model](docs/THREAT_MODEL.md).
 
 ## Roadmap
 
