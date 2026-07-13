@@ -1,0 +1,11 @@
+{
+  "incident_id": "CRB-2026-0003",
+  "threat": "prompt_injection",
+  "confidence": 0.93,
+  "signals": [
+    "untrusted_instruction",
+    "secret_access_request",
+    "tool_scope_violation"
+  ],
+  "proposed_action": "none"
+}
