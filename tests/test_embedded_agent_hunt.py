@@ -24,7 +24,12 @@ class EmbeddedAgentHuntTests(unittest.TestCase):
         self.finding = self.hunter.hunt(self.events, asset=SCENARIO["asset"])
         self.assertIsNotNone(self.finding)
 
-    def test_sentinel_correlates_behavior_without_asserting_attribution(self):
+    def test_fixture_is_explicitly_fabricated_and_side_effect_free(self):
+        self.assertEqual(SCENARIO["telemetry_classification"], "fabricated")
+        self.assertFalse(SCENARIO["side_effects"])
+        self.assertIn("sandbox", SCENARIO["asset"])
+
+    def test_sentinel_correlates_requested_behaviors_without_asserting_attribution(self):
         finding = self.finding
         assert finding is not None
         self.assertEqual(finding.threat, "embedded_ai_agent")
@@ -33,9 +38,16 @@ class EmbeddedAgentHuntTests(unittest.TestCase):
         self.assertTrue(finding.reversible)
         self.assertEqual(finding.attribution_status, "unverified")
         self.assertGreaterEqual(finding.confidence, 0.9)
-        self.assertIn("telemetry_suppression", finding.signals)
-        self.assertIn("covert_egress", finding.signals)
-        self.assertGreaterEqual(len(finding.independent_sources), 4)
+        self.assertTrue(
+            {
+                "anomalous_process_behavior",
+                "hidden_persistence",
+                "credential_misuse",
+                "model_driven_deception",
+                "log_tampering",
+            }.issubset(set(finding.signals))
+        )
+        self.assertGreaterEqual(len(finding.independent_sources), 5)
 
     def test_guardian_escalates_without_two_human_approvals(self):
         finding = self.finding
@@ -49,6 +61,22 @@ class EmbeddedAgentHuntTests(unittest.TestCase):
         self.assertEqual(decision.guardian_decision, "escalate")
         self.assertEqual(decision.policy, "CYBER-EA-001")
         self.assertTrue(decision.human_approval_required)
+
+    def test_guardian_refuses_to_authorize_when_a_core_behavior_is_missing(self):
+        filtered = tuple(
+            event for event in self.events if event.event_type != "model_driven_deception"
+        )
+        finding = self.hunter.hunt(filtered, asset=SCENARIO["asset"])
+        self.assertIsNotNone(finding)
+        assert finding is not None
+        envelope = self.hunter.build_action_envelope(
+            finding,
+            incident_id="CRB-2026-MISSING-CORE",
+            human_approvals=("incident-commander", "cyber-duty-officer"),
+        )
+        decision = Guardian(POLICIES).evaluate(envelope)
+        self.assertEqual(decision.guardian_decision, "escalate")
+        self.assertIsNone(decision.policy)
 
     def test_two_approvals_allow_only_signed_single_workload_quarantine(self):
         finding = self.finding
@@ -86,10 +114,11 @@ class EmbeddedAgentHuntTests(unittest.TestCase):
             )
             for index, event_type in enumerate(
                 [
-                    "model_artifact_unsigned",
-                    "service_identity_mismatch",
-                    "telemetry_tamper",
-                    "covert_egress",
+                    "anomalous_process_behavior",
+                    "hidden_persistence",
+                    "credential_misuse",
+                    "model_driven_deception",
+                    "log_tampering",
                 ]
             )
         )
