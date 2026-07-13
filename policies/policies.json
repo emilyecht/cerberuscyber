@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0",
+  "version": "0.3.0",
   "decision_ttl_seconds": 120,
   "min_independent_sources": 2,
   "scope_order": [
@@ -75,6 +75,28 @@
       "reversible_required": true,
       "human_approval_required": true,
       "required_approval_count": 1
+    },
+    {
+      "id": "CYBER-EA-001",
+      "name": "Suspected covert embedded AI agent",
+      "match": {
+        "threat": "embedded_ai_agent",
+        "min_confidence": 0.9,
+        "required_signals": [
+          "unsigned_model_artifact",
+          "identity_masquerade",
+          "telemetry_suppression",
+          "covert_egress"
+        ],
+        "min_independent_sources": 4
+      },
+      "decision": "escalate",
+      "decision_on_approval": "approve",
+      "allowed_action": "quarantine_workload",
+      "max_scope": "single_workload",
+      "reversible_required": true,
+      "human_approval_required": true,
+      "required_approval_count": 2
     }
   ],
   "forbidden_actions": [
