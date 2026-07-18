@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from cerberus import (
+    ACTION_ENVELOPE_VERSION,
     ActionEnvelope,
     AuditLedger,
     DecisionTokenSigner,
@@ -24,7 +25,7 @@ class AssurancePathTests(unittest.TestCase):
     def _ransomware_envelope(self) -> ActionEnvelope:
         now = datetime.now(timezone.utc)
         return ActionEnvelope(
-            schema_version="1.0",
+            schema_version=ACTION_ENVELOPE_VERSION,
             envelope_id="env-test-ransomware",
             incident_id="INC-TEST-1",
             threat="ransomware",
@@ -41,6 +42,9 @@ class AssurancePathTests(unittest.TestCase):
                 Evidence("rapid_file_rewrite", "edr:sensor-1", format_time(now)),
                 Evidence("recovery_deletion_attempt", "backup:audit-1", format_time(now)),
             ),
+            actor="sentinel:ransomware-test-1",
+            required_approval_mode="none",
+            policy_version=POLICIES["version"],
         )
 
     def test_approved_decision_mints_one_time_token(self):
@@ -51,6 +55,7 @@ class AssurancePathTests(unittest.TestCase):
 
         self.assertEqual(decision.guardian_decision, "approve")
         self.assertIsNotNone(decision.decision_token)
+        self.assertEqual(decision.envelope_digest, envelope.digest())
         self.assertTrue(ledger.verify())
 
         gateway = EnforcementGateway(signer)

@@ -30,11 +30,11 @@ jobs:
       - name: Install test dependencies
         run: python -m pip install --disable-pip-version-check -r requirements-dev.txt
       - name: Compile Python sources
-        run: python -m compileall -q cerberus simulator tests
+        run: python -m compileall -q cerberus sdk simulator tests
       - name: Validate JSON artifacts
         run: |
           python -m json.tool policies/policies.json >/dev/null
           python -m json.tool schemas/action-envelope.schema.json >/dev/null
           python -m json.tool schemas/decision-token.schema.json >/dev/null
-      - name: Run unit and adversarial corpus tests
+      - name: Run unit, schema, and adversarial corpus tests
         run: python -m pytest -q
