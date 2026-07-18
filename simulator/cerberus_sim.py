@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 """CERBERUS Cyber defensive policy simulator.
 
-This prototype reads a simulated incident and evaluates it against deterministic
-Guardian policies. It performs no real containment and has no external effects.
+The CLI remains side-effect free. It can optionally demonstrate the complete signed
+Guardian-to-Enforcement path using an explicit environment-supplied prototype key.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 from typing import Any
+
+from cerberus import ActionEnvelope, DecisionTokenSigner, EnforcementGateway, Guardian
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_POLICIES = ROOT / "policies" / "policies.json"
@@ -21,78 +24,59 @@ def load_json(path: Path) -> dict[str, Any]:
         return json.load(handle)
 
 
-def evaluate(incident: dict[str, Any], policy_set: dict[str, Any]) -> dict[str, Any]:
-    proposed_action = incident.get("proposed_action", "none")
-    forbidden = set(policy_set.get("forbidden_actions", []))
+def evaluate(
+    incident: dict[str, Any],
+    policy_set: dict[str, Any],
+    *,
+    signing_key: bytes | None = None,
+) -> dict[str, Any]:
+    """Backward-compatible simulator entry point backed by the typed Guardian core."""
 
-    if proposed_action in forbidden:
-        return {
-            "incident_id": incident.get("incident_id", "unknown"),
-            "guardian_decision": "deny",
-            "reason": "proposed action is globally forbidden",
-            "policy": "GLOBAL-INVARIANT",
-            "proposed_action": proposed_action,
-            "authorized_action": "none",
-        }
-
-    incident_signals = set(incident.get("signals", []))
-    confidence = float(incident.get("confidence", 0.0))
-    threat = incident.get("threat")
-
-    for policy in policy_set.get("policies", []):
-        match = policy.get("match", {})
-        required = set(match.get("required_signals", []))
-
-        if threat != match.get("threat"):
-            continue
-        if confidence < float(match.get("min_confidence", 1.0)):
-            continue
-        if not required.issubset(incident_signals):
-            continue
-
-        allowed_action = policy.get("allowed_action", "none")
-        if proposed_action != allowed_action and policy.get("decision") == "approve":
-            return {
-                "incident_id": incident.get("incident_id", "unknown"),
-                "guardian_decision": "deny",
-                "reason": "proposed action does not match the policy allowlist",
-                "policy": policy.get("id"),
-                "proposed_action": proposed_action,
-                "authorized_action": "none",
-            }
-
-        return {
-            "incident_id": incident.get("incident_id", "unknown"),
-            "threat": threat,
-            "confidence": confidence,
-            "guardian_decision": policy.get("decision"),
-            "policy": policy.get("id"),
-            "proposed_action": proposed_action,
-            "authorized_action": allowed_action,
-            "scope": policy.get("max_scope"),
-            "reversible": policy.get("reversible"),
-            "human_approval_required": policy.get("human_approval_required"),
-            "evidence": sorted(incident_signals),
-        }
-
-    return {
-        "incident_id": incident.get("incident_id", "unknown"),
-        "guardian_decision": "escalate",
-        "reason": "no policy satisfied the evidence and confidence requirements",
-        "policy": None,
-        "proposed_action": proposed_action,
-        "authorized_action": "none",
-    }
+    envelope = ActionEnvelope.from_legacy_incident(
+        incident,
+        ttl_seconds=int(policy_set.get("decision_ttl_seconds", 120)),
+    )
+    signer = DecisionTokenSigner(signing_key) if signing_key is not None else None
+    result = Guardian(policy_set, signer=signer).evaluate(envelope)
+    return result.to_dict()
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="CERBERUS Cyber policy simulator")
     parser.add_argument("scenario", type=Path, help="Path to a scenario JSON file")
     parser.add_argument("--policies", type=Path, default=DEFAULT_POLICIES)
+    parser.add_argument(
+        "--simulate-enforcement",
+        action="store_true",
+        help="demonstrate signed, one-time, side-effect-free enforcement",
+    )
     args = parser.parse_args()
 
-    result = evaluate(load_json(args.scenario), load_json(args.policies))
-    print(json.dumps(result, indent=2, sort_keys=True))
+    policy_set = load_json(args.policies)
+    signing_key: bytes | None = None
+    if args.simulate_enforcement:
+        key_text = os.environ.get("CERBERUS_PROTOTYPE_SIGNING_KEY")
+        if key_text is None or len(key_text.encode("utf-8")) < 32:
+            parser.error(
+                "CERBERUS_PROTOTYPE_SIGNING_KEY must be set to at least 32 bytes "
+                "when --simulate-enforcement is used"
+            )
+        signing_key = key_text.encode("utf-8")
+
+    result = evaluate(load_json(args.scenario), policy_set, signing_key=signing_key)
+    output: dict[str, Any] = {"guardian": result}
+
+    if args.simulate_enforcement and result["guardian_decision"] == "approve":
+        signer = DecisionTokenSigner(signing_key or b"")
+        gateway = EnforcementGateway(signer)
+        output["enforcement"] = gateway.authorize_and_simulate(
+            result["decision_token"],
+            action=result["authorized_action"],
+            target=result["target"],
+            scope=result["scope"],
+        )
+
+    print(json.dumps(output, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

@@ -1,5 +1,15 @@
 {
-  "version": "0.1.0",
+  "version": "0.4.0",
+  "decision_ttl_seconds": 120,
+  "min_independent_sources": 2,
+  "scope_order": [
+    "none",
+    "single_identity",
+    "single_endpoint",
+    "single_workload",
+    "single_segment",
+    "enterprise"
+  ],
   "policies": [
     {
       "id": "CYBER-ID-001",
@@ -7,13 +17,15 @@
       "match": {
         "threat": "stolen_admin_session",
         "min_confidence": 0.85,
-        "required_signals": ["new_device", "mfa_disabled", "recovery_changed"]
+        "required_signals": ["new_device", "mfa_disabled", "recovery_changed"],
+        "min_independent_sources": 3
       },
       "decision": "approve",
       "allowed_action": "revoke_sessions",
       "max_scope": "single_identity",
-      "reversible": true,
-      "human_approval_required": false
+      "reversible_required": true,
+      "human_approval_required": false,
+      "required_approval_count": 0
     },
     {
       "id": "CYBER-RW-001",
@@ -21,13 +33,15 @@
       "match": {
         "threat": "ransomware",
         "min_confidence": 0.9,
-        "required_signals": ["rapid_file_rewrite", "recovery_deletion_attempt"]
+        "required_signals": ["rapid_file_rewrite", "recovery_deletion_attempt"],
+        "min_independent_sources": 2
       },
       "decision": "approve",
       "allowed_action": "isolate_endpoint",
       "max_scope": "single_endpoint",
-      "reversible": true,
-      "human_approval_required": false
+      "reversible_required": true,
+      "human_approval_required": false,
+      "required_approval_count": 0
     },
     {
       "id": "CYBER-AI-001",
@@ -35,13 +49,15 @@
       "match": {
         "threat": "prompt_injection",
         "min_confidence": 0.8,
-        "required_signals": ["untrusted_instruction", "secret_access_request"]
+        "required_signals": ["untrusted_instruction", "secret_access_request"],
+        "min_independent_sources": 2
       },
       "decision": "deny",
       "allowed_action": "none",
-      "max_scope": "single_agent",
-      "reversible": true,
-      "human_approval_required": false
+      "max_scope": "none",
+      "reversible_required": false,
+      "human_approval_required": false,
+      "required_approval_count": 0
     },
     {
       "id": "CYBER-EX-001",
@@ -49,17 +65,45 @@
       "match": {
         "threat": "data_exfiltration",
         "min_confidence": 0.9,
-        "required_signals": ["large_outbound_transfer", "new_destination"]
+        "required_signals": ["large_outbound_transfer", "new_destination"],
+        "min_independent_sources": 2
       },
       "decision": "escalate",
+      "decision_on_approval": "approve",
       "allowed_action": "temporary_egress_hold",
       "max_scope": "single_workload",
-      "reversible": true,
-      "human_approval_required": true
+      "reversible_required": true,
+      "human_approval_required": true,
+      "required_approval_count": 1
+    },
+    {
+      "id": "CYBER-EA-001",
+      "name": "Suspected adversarial AI persistence",
+      "match": {
+        "threat": "embedded_ai_agent",
+        "min_confidence": 0.9,
+        "required_signals": [
+          "anomalous_process_behavior",
+          "hidden_persistence",
+          "credential_misuse",
+          "model_driven_deception",
+          "log_tampering"
+        ],
+        "min_independent_sources": 5
+      },
+      "decision": "escalate",
+      "decision_on_approval": "approve",
+      "allowed_action": "quarantine_workload",
+      "max_scope": "single_workload",
+      "reversible_required": true,
+      "human_approval_required": true,
+      "required_approval_count": 2
     }
   ],
   "forbidden_actions": [
     "delete_backups",
+    "modify_backups",
+    "disable_recovery",
     "wipe_host",
     "retaliate",
     "execute_exploit",
