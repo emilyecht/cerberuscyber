@@ -101,6 +101,7 @@ class EmbeddedAgentHunter:
         "telemetry_tamper": ("log_tampering", 0.16),
         "covert_egress": ("covert_egress", 0.12),
         "policy_bypass_attempt": ("policy_bypass_attempt", 0.10),
+        "observer_contradiction": ("cross_signal_inconsistency", 0.0),
     }
 
     REQUIRED_CORE_SIGNALS = {
@@ -110,6 +111,8 @@ class EmbeddedAgentHunter:
         "model_driven_deception",
         "log_tampering",
     }
+
+    NON_CORROBORATING_SIGNALS = {"cross_signal_inconsistency"}
 
     def hunt(
         self,
@@ -138,7 +141,8 @@ class EmbeddedAgentHunter:
                 signals.add(signal)
                 score += weight
 
-        if len(signals) < 3 or len(sources) < 3:
+        corroborating_signals = signals.difference(self.NON_CORROBORATING_SIGNALS)
+        if len(corroborating_signals) < 3 or len(sources) < 3:
             return None
 
         core_coverage = len(self.REQUIRED_CORE_SIGNALS.intersection(signals))
@@ -152,6 +156,11 @@ class EmbeddedAgentHunter:
             "component. The result is behavior-based; sponsor and national attribution "
             "remain unverified."
         )
+        if "cross_signal_inconsistency" in signals:
+            summary += (
+                " A contradictory observer report is present and must be resolved by "
+                "deterministic policy before any authorization."
+            )
         return HuntFinding(
             threat="embedded_ai_agent",
             target=asset,
