@@ -30,10 +30,11 @@ def evaluate(
     *,
     signing_key: bytes | None = None,
 ) -> dict[str, Any]:
-    """Backward-compatible simulator entry point backed by the typed Guardian core."""
+    """Backward-compatible simulator entry point backed by ActionEnvelope v1.0.0."""
 
     envelope = ActionEnvelope.from_legacy_incident(
         incident,
+        policy_version=str(policy_set.get("version", "0.0.0-legacy")),
         ttl_seconds=int(policy_set.get("decision_ttl_seconds", 120)),
     )
     signer = DecisionTokenSigner(signing_key) if signing_key is not None else None

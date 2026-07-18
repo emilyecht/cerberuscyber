@@ -1,54 +1,116 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/emilyecht/cerberuscyber/schemas/action-envelope.schema.json",
-  "title": "CERBERUS Action Envelope",
+  "title": "CERBERUS ActionEnvelope v1.0.0",
+  "description": "Canonical membrane between untrusted Sentinel inference and deterministic Guardian authority.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "schema_version",
     "envelope_id",
     "incident_id",
+    "actor",
     "threat",
-    "confidence",
-    "proposed_action",
+    "action",
     "target",
-    "requested_scope",
-    "reversible",
+    "scope",
+    "evidence_refs",
+    "confidence",
+    "freshness",
+    "idempotency_key",
+    "reversibility_flag",
+    "required_approval_mode",
+    "policy_version",
     "mission_impact",
-    "created_at",
-    "expires_at",
-    "nonce",
-    "evidence",
     "human_approvals"
   ],
   "properties": {
-    "schema_version": {"const": "1.0"},
+    "schema_version": {"const": "1.0.0"},
     "envelope_id": {"type": "string", "minLength": 1},
     "incident_id": {"type": "string", "minLength": 1},
+    "actor": {"type": "string", "minLength": 3},
     "threat": {"type": "string", "minLength": 1},
-    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
-    "proposed_action": {"type": "string", "minLength": 1},
+    "action": {
+      "type": "string",
+      "enum": [
+        "none",
+        "revoke_sessions",
+        "require_step_up_auth",
+        "isolate_endpoint",
+        "temporary_egress_hold",
+        "preserve_evidence",
+        "quarantine_workload",
+        "delete_backups",
+        "modify_backups",
+        "disable_recovery",
+        "wipe_host",
+        "retaliate",
+        "execute_exploit",
+        "harvest_credentials"
+      ],
+      "description": "Recognized proposal vocabulary. Destructive values remain globally forbidden and are included only so Guardian can return an auditable deterministic denial."
+    },
     "target": {"type": "string", "minLength": 1},
-    "requested_scope": {"type": "string", "minLength": 1},
-    "reversible": {"type": "boolean"},
-    "mission_impact": {"type": "string", "minLength": 1},
-    "created_at": {"type": "string", "format": "date-time"},
-    "expires_at": {"type": "string", "format": "date-time"},
-    "nonce": {"type": "string", "minLength": 16},
-    "evidence": {
+    "scope": {
+      "type": "string",
+      "enum": [
+        "none",
+        "single_identity",
+        "single_session",
+        "single_endpoint",
+        "single_host",
+        "single_workload",
+        "single_segment",
+        "enterprise"
+      ]
+    },
+    "evidence_refs": {
       "type": "array",
       "minItems": 1,
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["signal", "source_id", "observed_at"],
+        "required": ["source_id", "digest", "signal", "observed_at"],
         "properties": {
-          "signal": {"type": "string", "minLength": 1},
           "source_id": {"type": "string", "minLength": 1},
-          "observed_at": {"type": "string", "format": "date-time"},
-          "digest": {"type": ["string", "null"], "minLength": 16}
+          "digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{16,128}$"
+          },
+          "signal": {"type": "string", "minLength": 1},
+          "observed_at": {"type": "string", "format": "date-time"}
         }
       }
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Sentinel-reported confidence. Informational only and never sufficient for authorization."
+    },
+    "freshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["timestamp", "expires_at", "nonce"],
+      "properties": {
+        "timestamp": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"},
+        "nonce": {"type": "string", "minLength": 16}
+      }
+    },
+    "idempotency_key": {"type": "string", "format": "uuid"},
+    "reversibility_flag": {"type": "boolean"},
+    "required_approval_mode": {
+      "type": "string",
+      "enum": ["none", "single", "dual", "emergency_breakglass"]
+    },
+    "policy_version": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"
+    },
+    "mission_impact": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"]
     },
     "human_approvals": {
       "type": "array",

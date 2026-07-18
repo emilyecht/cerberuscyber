@@ -40,6 +40,8 @@ class DecisionTokenSigner:
     key rotation, and deployment-specific trust roots.
     """
 
+    TOKEN_VERSION = "1.1.0"
+
     def __init__(self, key: bytes, *, key_id: str = "prototype-hmac-v1") -> None:
         if len(key) < 32:
             raise ValueError("signing key must be at least 32 bytes")
@@ -56,13 +58,22 @@ class DecisionTokenSigner:
     ) -> str:
         if decision.guardian_decision != "approve":
             raise ValueError("tokens may only be issued for approved decisions")
+        envelope_digest = envelope.digest()
+        if decision.envelope_digest != envelope_digest:
+            raise ValueError("decision does not bind the supplied ActionEnvelope digest")
+        if decision.idempotency_key != envelope.idempotency_key:
+            raise ValueError("decision does not bind the supplied idempotency key")
+
         issued = now or datetime.now(timezone.utc)
         expires = min(parse_time(envelope.expires_at), issued + timedelta(seconds=ttl_seconds))
         payload = {
-            "token_version": "1.0",
+            "token_version": self.TOKEN_VERSION,
             "token_id": uuid4().hex,
             "key_id": self.key_id,
             "envelope_id": envelope.envelope_id,
+            "envelope_digest": envelope_digest,
+            "idempotency_key": envelope.idempotency_key,
+            "actor": envelope.actor,
             "incident_id": envelope.incident_id,
             "action": decision.authorized_action,
             "target": decision.target,
@@ -75,7 +86,9 @@ class DecisionTokenSigner:
             "reversible": decision.reversible,
         }
         encoded = _b64encode(_canonical(payload))
-        signature = _b64encode(hmac.new(self._key, encoded.encode("ascii"), hashlib.sha256).digest())
+        signature = _b64encode(
+            hmac.new(self._key, encoded.encode("ascii"), hashlib.sha256).digest()
+        )
         return f"{encoded}.{signature}"
 
     def verify(self, token: str, *, now: datetime | None = None) -> dict[str, Any]:
@@ -96,6 +109,9 @@ class DecisionTokenSigner:
             "token_id",
             "key_id",
             "envelope_id",
+            "envelope_digest",
+            "idempotency_key",
+            "actor",
             "incident_id",
             "action",
             "target",
@@ -110,10 +126,12 @@ class DecisionTokenSigner:
         missing = sorted(required.difference(payload))
         if missing:
             raise TokenValidationError(f"token missing fields: {', '.join(missing)}")
-        if payload["token_version"] != "1.0":
+        if payload["token_version"] != self.TOKEN_VERSION:
             raise TokenValidationError("unsupported token version")
         if payload["key_id"] != self.key_id:
             raise TokenValidationError("unexpected signing key id")
+        if not isinstance(payload["envelope_digest"], str) or len(payload["envelope_digest"]) != 64:
+            raise TokenValidationError("invalid envelope digest")
         current = now or datetime.now(timezone.utc)
         if parse_time(payload["expires_at"]) <= current:
             raise TokenValidationError("decision token expired")

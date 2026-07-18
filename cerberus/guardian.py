@@ -11,6 +11,23 @@ from .models import ActionEnvelope, GuardianDecision
 from .token import DecisionTokenSigner
 
 
+class EnvelopeIdempotencyRegistry:
+    """In-memory exact-once registry for evaluated ActionEnvelope keys.
+
+    This is a prototype interface. A production Guardian must replace it with a
+    durable, atomic store shared by all Guardian replicas.
+    """
+
+    def __init__(self) -> None:
+        self._seen: dict[str, str] = {}
+
+    def claim(self, idempotency_key: str, envelope_digest: str) -> bool:
+        if idempotency_key in self._seen:
+            return False
+        self._seen[idempotency_key] = envelope_digest
+        return True
+
+
 class Guardian:
     """Small, deterministic authorization core.
 
@@ -25,10 +42,12 @@ class Guardian:
         *,
         signer: DecisionTokenSigner | None = None,
         ledger: AuditLedger | None = None,
+        idempotency_registry: EnvelopeIdempotencyRegistry | None = None,
     ) -> None:
         self.policy_set = policy_set
         self.signer = signer
         self.ledger = ledger or AuditLedger()
+        self.idempotency_registry = idempotency_registry or EnvelopeIdempotencyRegistry()
         self.policy_version = str(policy_set.get("version", "unknown"))
         self.scope_order = list(
             policy_set.get(
@@ -36,7 +55,9 @@ class Guardian:
                 [
                     "none",
                     "single_identity",
+                    "single_session",
                     "single_endpoint",
+                    "single_host",
                     "single_workload",
                     "single_segment",
                     "enterprise",
@@ -63,6 +84,7 @@ class Guardian:
         human_approval_required: bool = False,
         now: datetime | None = None,
     ) -> GuardianDecision:
+        envelope_digest = envelope.digest()
         result = GuardianDecision(
             incident_id=envelope.incident_id,
             envelope_id=envelope.envelope_id,
@@ -78,6 +100,9 @@ class Guardian:
             human_approval_required=human_approval_required,
             evidence=tuple(sorted(envelope.evidence_signals)),
             independent_source_count=len(envelope.independent_sources),
+            envelope_digest=envelope_digest,
+            idempotency_key=envelope.idempotency_key,
+            actor=envelope.actor,
         )
         token: str | None = None
         if decision == "approve" and self.signer is not None:
@@ -92,6 +117,9 @@ class Guardian:
             {
                 "incident_id": result.incident_id,
                 "envelope_id": result.envelope_id,
+                "envelope_digest": result.envelope_digest,
+                "idempotency_key": result.idempotency_key,
+                "actor": result.actor,
                 "decision": result.guardian_decision,
                 "policy": result.policy,
                 "policy_version": result.policy_version,
@@ -114,6 +142,30 @@ class Guardian:
                 decision="deny",
                 reason="action envelope expired",
                 policy_id="GLOBAL-FRESHNESS-INVARIANT",
+                now=now,
+            )
+
+        if envelope.policy_version != self.policy_version:
+            return self._finalize(
+                envelope,
+                decision="deny",
+                reason=(
+                    "action envelope requires policy version "
+                    f"{envelope.policy_version}; Guardian loaded {self.policy_version}"
+                ),
+                policy_id="GLOBAL-POLICY-VERSION-INVARIANT",
+                now=now,
+            )
+
+        envelope_digest = envelope.digest()
+        if not self.idempotency_registry.claim(
+            envelope.idempotency_key, envelope_digest
+        ):
+            return self._finalize(
+                envelope,
+                decision="deny",
+                reason="action envelope idempotency key was already evaluated",
+                policy_id="GLOBAL-IDEMPOTENCY-INVARIANT",
                 now=now,
             )
 
@@ -148,6 +200,9 @@ class Guardian:
             match = policy.get("match", {})
             if envelope.threat != match.get("threat"):
                 continue
+            # Confidence remains advisory and can never authorize by itself. A minimum
+            # threshold may force escalation, but all required behavior and provenance
+            # conditions must still be independently satisfied.
             if envelope.confidence < float(match.get("min_confidence", 1.0)):
                 continue
             required_signals = set(match.get("required_signals", []))
@@ -175,7 +230,25 @@ class Guardian:
             max_scope = str(policy.get("max_scope", "none"))
             reversible_required = bool(policy.get("reversible_required", False))
             approval_required = bool(policy.get("human_approval_required", False))
-            approval_count = int(policy.get("required_approval_count", 1 if approval_required else 0))
+            approval_count = int(
+                policy.get("required_approval_count", 1 if approval_required else 0)
+            )
+            expected_approval_mode = (
+                "dual" if approval_count >= 2 else "single" if approval_count == 1 else "none"
+            )
+
+            if approval_count > 0 and envelope.required_approval_mode != expected_approval_mode:
+                return self._finalize(
+                    envelope,
+                    decision="escalate",
+                    reason=(
+                        "envelope approval mode does not match policy requirement: "
+                        f"expected {expected_approval_mode}"
+                    ),
+                    policy_id=policy.get("id"),
+                    human_approval_required=True,
+                    now=now,
+                )
 
             if policy_decision == "approve" and envelope.proposed_action != allowed_action:
                 return self._finalize(

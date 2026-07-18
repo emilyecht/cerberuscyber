@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/emilyecht/cerberuscyber/schemas/decision-token.schema.json",
-  "title": "CERBERUS Decision Token Payload",
+  "title": "CERBERUS Decision Token Payload v1.1.0",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -9,6 +9,9 @@
     "token_id",
     "key_id",
     "envelope_id",
+    "envelope_digest",
+    "idempotency_key",
+    "actor",
     "incident_id",
     "action",
     "target",
@@ -21,10 +24,13 @@
     "reversible"
   ],
   "properties": {
-    "token_version": {"const": "1.0"},
+    "token_version": {"const": "1.1.0"},
     "token_id": {"type": "string", "minLength": 16},
     "key_id": {"type": "string", "minLength": 1},
     "envelope_id": {"type": "string", "minLength": 1},
+    "envelope_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "idempotency_key": {"type": "string", "format": "uuid"},
+    "actor": {"type": "string", "minLength": 3},
     "incident_id": {"type": "string", "minLength": 1},
     "action": {"type": "string", "minLength": 1},
     "target": {"type": "string", "minLength": 1},
