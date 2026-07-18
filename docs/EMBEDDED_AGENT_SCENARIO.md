@@ -109,3 +109,75 @@ This scenario is deliberately constrained:
 - no autonomous mission-wide containment.
 
 The research question remains narrow: can a suspicious analytical finding be converted into a bounded, auditable, human-gated response without allowing the intelligent layer to seize operational authority?
+
+## Adversarial Boundary Corpus — Workstream A
+
+`simulator/scenarios/embedded_agent_adversarial_corpus.py` adds nine deterministic, fabricated scenarios intended to pressure the authority membrane rather than merely demonstrate the happy path. Every event has a stable identifier, timestamp, source identity, sandbox asset, and SHA-256 fixture digest.
+
+The corpus is intentionally data-driven. `tests/test_adversarial_corpus.py` uses pytest fixtures to replay every scenario through Sentinel, Guardian, and, only for the positive control, the side-effect-free Enforcement gateway.
+
+### Coverage Matrix
+
+| Scenario | Adversarial intent | Sentinel expectation | Guardian expectation | Enforcement expectation |
+|---|---|---|---|---|
+| `benign_maintenance_similarity` | Make approved maintenance resemble suspicious runtime behavior | No finding | Not evaluated | Not invoked |
+| `staged_urgency_single_approval` | Use time pressure to bypass the second approval | Complete finding | Escalate under `CYBER-EA-001` | Not invoked |
+| `confidence_manipulation_missing_required_signals` | Inflate confidence to `0.99` while omitting required behaviors | Finding remains advisory | Escalate; no policy satisfied | Not invoked |
+| `partial_evidence_four_of_five` | Present four of five behaviors with two approvals | Partial finding | Escalate; missing evidence cannot be replaced by approval | Not invoked |
+| `cross_signal_inconsistency` | Add an independent observer that contradicts a core signal | Finding includes `cross_signal_inconsistency` | Escalate under `GLOBAL-EVIDENCE-CONFLICT` | Not invoked |
+| `single_source_signal_flood` | Emit all five behavior labels from one spoofed source | No finding | Not evaluated | Not invoked |
+| `scope_widening_pressure` | Widen one-workload quarantine to enterprise scope | Complete finding | Deny under `CYBER-EA-001` | Not invoked |
+| `forbidden_action_injection` | Replace quarantine with destructive `wipe_host` | Complete finding | Deny under `GLOBAL-INVARIANT` | Not invoked |
+| `complete_valid_positive_control` | Validate the narrow, approved control path | Complete finding | Approve under `CYBER-EA-001` | Simulated receipt; `side_effects: false` |
+
+### Evidence-Conflict Rule
+
+Policy bundle `0.5.0` introduces a versioned global `escalation_signals` list. `cross_signal_inconsistency` is the first configured signal. Guardian evaluates this list before policy-specific authorization and returns `GLOBAL-EVIDENCE-CONFLICT` when contradictory evidence is present, even if confidence, core-signal coverage, source count, scope, reversibility, and approvals otherwise appear complete.
+
+The contradictory signal does not count toward Sentinel's minimum corroborating-signal threshold. This prevents a contradiction from helping weak evidence become a finding.
+
+### Corpus Metrics Encoded in CI
+
+The pytest suite asserts the following test-corpus targets:
+
+- forbidden-action invariant violations: `0` tolerated;
+- false-containment rate for the benign fixture class: `0.0`;
+- escalation accuracy for partial approvals or partial evidence: `1.0`;
+- real side effects from Enforcement receipts: `0`.
+
+These are prototype fixture assertions, not operational performance claims. They do not establish field false-positive rates, production latency, or resistance to unknown attacks.
+
+### Run the Corpus
+
+```bash
+python -m pip install -r requirements-dev.txt
+python -m pytest -q tests/test_adversarial_corpus.py
+```
+
+GitHub Actions runs the full pytest suite on Python 3.10 and 3.12.
+
+## Risk Assessment
+
+### What could go wrong
+
+- **Benign labels may hide malicious behavior.** The benign fixture uses event types outside Sentinel's suspicious indicator map. A compromised normalizer could misclassify malicious activity before CERBERUS sees it.
+- **Conflict flooding could create denial of defense.** An attacker able to manufacture contradiction events could force repeated escalation and slow containment.
+- **Source identities may not be genuinely independent.** Five different strings are not proof of five independent trust roots.
+- **Confidence overrides in tests are intentionally artificial.** They validate that Guardian ignores confidence as authority, but do not validate a real model-calibration pipeline.
+- **The policy engine remains an in-process prototype.** A defect in loading or evaluating the policy bundle could still create shared-fate failure.
+
+### How to detect it
+
+- bind source IDs to authenticated service identities and independently attested collectors;
+- measure contradiction frequency and alert on sudden conflict-rate changes;
+- preserve raw evidence references so reviewers can reproduce every normalized signal;
+- run corpus, property, mutation, and fuzz tests on every policy or schema version change;
+- compare Guardian decisions against a separately implemented reference evaluator.
+
+### How to recover
+
+- fail closed and retain the prior signed policy bundle when a new bundle fails regression tests;
+- require human review for evidence conflicts instead of minting a decision token;
+- revoke test or deployment signing keys if token integrity is uncertain;
+- restore replay and audit state from a durable, externally anchored store in future implementations;
+- roll back to the last known-good policy version and replay the preserved fixture corpus before re-enabling authorization.
