@@ -10,8 +10,17 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from datetime import timedelta
 from typing import Any, Iterable
+from uuid import NAMESPACE_URL, uuid5
 
-from .models import ActionEnvelope, Evidence, ValidationError, format_time, parse_time, utc_now
+from .models import (
+    ACTION_ENVELOPE_VERSION,
+    ActionEnvelope,
+    Evidence,
+    ValidationError,
+    format_time,
+    parse_time,
+    utc_now,
+)
 
 
 @dataclass(frozen=True)
@@ -181,9 +190,11 @@ class EmbeddedAgentHunter:
         *,
         incident_id: str,
         human_approvals: Iterable[str] = (),
+        policy_version: str = "0.5.0",
+        actor: str = "sentinel:embedded-agent-hunter-1",
         ttl_seconds: int = 120,
     ) -> ActionEnvelope:
-        """Convert a finding into an untrusted proposal for Guardian evaluation."""
+        """Translate a finding into an untrusted ActionEnvelope v1.0.0 proposal."""
 
         now = utc_now()
         evidence = tuple(
@@ -196,7 +207,7 @@ class EmbeddedAgentHunter:
             for event in finding.evidence
         )
         envelope = ActionEnvelope(
-            schema_version="1.0",
+            schema_version=ACTION_ENVELOPE_VERSION,
             envelope_id=f"env-{incident_id.lower()}",
             incident_id=incident_id,
             threat=finding.threat,
@@ -211,6 +222,12 @@ class EmbeddedAgentHunter:
             nonce=f"embedded-agent-{incident_id}-nonce",
             evidence=evidence,
             human_approvals=tuple(human_approvals),
+            actor=actor,
+            idempotency_key=str(
+                uuid5(NAMESPACE_URL, f"cerberus:{incident_id}:{finding.target}")
+            ),
+            required_approval_mode="dual",
+            policy_version=policy_version,
         )
         envelope.validate()
         return envelope
