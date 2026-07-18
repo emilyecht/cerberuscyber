@@ -2,55 +2,89 @@
 
 **Assume compromise. Constrain authority. Contain damage. Recover safely.**
 
-CERBERUS Cyber is a defensive cybersecurity research prototype investigating whether a separate deterministic authorization layer can reduce the authority gained from compromising or deceiving an intelligent defensive component.
+CERBERUS Cyber is a defensive cybersecurity research prototype investigating whether a separate deterministic authorization layer can reduce the authority gained from compromising, deceiving, or pressuring an intelligent defensive component.
 
-The project applies a three-layer runtime assurance pattern:
+> **Intelligence is not authority.** Sentinel may recommend. Guardian authorizes. Enforcement acts only on a valid decision.
 
-1. **Sentinel Intelligence** observes telemetry, correlates suspicious behavior, and recommends a response.
-2. **Guardian Policy Engine** deterministically authorizes, constrains, escalates, or rejects proposed actions using explicit rules, evidence thresholds, scope limits, reversibility requirements, and human gates.
-3. **Enforcement & Recovery Kernel** executes only approved, least-privilege, reversibility-preferred actions.
+## Architecture
 
-> Intelligence may recommend. Policy authorizes. The enforcement layer acts.
+CERBERUS applies a three-layer runtime-assurance pattern:
+
+1. **Sentinel Intelligence** observes telemetry, correlates suspicious behavior, and produces an advisory finding.
+2. **Guardian Policy Engine** deterministically approves, escalates, or denies a typed action proposal using explicit policy, evidence provenance, scope ceilings, reversibility requirements, freshness, and approval gates.
+3. **Enforcement & Recovery Kernel** validates a signed decision token and dispatches only the exact approved action, target, and scope.
+
+The intelligent layer does not hold enforcement authority. Model confidence is informational and cannot replace required evidence or policy approval.
 
 ## Current Maturity
 
 CERBERUS Cyber is a **TRL 2–3 research prototype**, not a production defensive platform.
 
-What exists today:
+### Implemented
 
-- a deterministic Python policy simulator
-- a documented threat model
-- explicit safety invariants
-- versioned Guardian policies
-- four safe simulated attack scenarios
-- automated tests proving specified forbidden actions are blocked
-- GitHub Actions CI
-- transition, integration, and evaluation plans
+- deterministic Python Guardian policy engine with deny-by-default behavior
+- versioned policy bundle (`0.5.0`)
+- typed **ActionEnvelope v1.0.0** authority contract
+- JSON Schema Draft 2020-12 validation
+- canonical JSON serialization and SHA-256 envelope digests
+- actor identity, policy version, freshness, nonce, evidence references, UUID idempotency key, approval mode, and reversibility metadata
+- short-lived **DecisionToken v1.1.0** artifacts bound to the exact envelope digest, actor, action, target, scope, policy version, and idempotency key
+- one-time token consumption and replay rejection
+- side-effect-free Enforcement Gateway receipts
+- hash-chained prototype audit ledger
+- four baseline simulated cyber scenarios
+- one end-to-end adversarial AI persistence demonstration using fabricated telemetry
+- nine-case adversarial authority-boundary corpus
+- automated unit, schema, replay, substitution, and adversarial tests
+- GitHub Actions validation on Python 3.10 and 3.12
 
-What does **not** exist yet:
+### Not Yet Implemented
 
-- production connectors
-- operational validation
+- production read or write connectors
+- operational validation against real infrastructure
+- durable atomic replay and idempotency state
+- hardware-backed asymmetric signing and key rotation
+- a formally adopted cross-language canonicalization profile such as RFC 8785
+- externalized OPA/Rego policy evaluation
 - formal verification
-- scale or latency evidence
 - independent red-team validation
+- scale, latency, or field false-positive evidence
 - accreditation for classified or mission deployment
 
-The current simulator is side-effect free and performs no real containment.
+The repository performs no real containment by default.
 
 ## Core Research Question
 
-Modern defensive systems increasingly combine detection, reasoning, and response. That creates a dangerous failure mode: manipulation of the analytical layer may become a path to privileged defensive action.
+Modern defensive systems increasingly combine detection, reasoning, planning, and response. That creates a dangerous failure mode: manipulation of the analytical layer may become a path to privileged defensive action.
 
 CERBERUS asks a narrower, testable question:
 
 > Can consequential defensive actions remain bounded, auditable, and reversible even when the intelligent layer is wrong, compromised, or adversarially manipulated?
 
-The project does not claim to prevent prompt injection, telemetry poisoning, insider misuse, or supply-chain compromise. It investigates whether those failures can be prevented from automatically conferring operational authority.
+The project does not claim to prevent prompt injection, telemetry poisoning, insider misuse, supply-chain compromise, or model deception. It investigates whether those failures can be prevented from automatically conferring operational authority.
 
-## Architecture
+## The Authority Boundary
 
-### Layer 1 — Sentinel Intelligence
+Sentinel recommendations are converted into a versioned `ActionEnvelope` before Guardian evaluation.
+
+The canonical envelope carries:
+
+- proposing actor identity
+- target resource
+- requested action and maximum scope
+- evidence references and digests
+- informational confidence score
+- freshness timestamp, expiry, and nonce
+- UUID idempotency key
+- reversibility flag
+- required approval mode
+- exact policy bundle version
+
+Guardian rejects malformed, stale, unsupported, policy-version-mismatched, over-scoped, forbidden, or replayed proposals. An approved decision token authorizes only the exact canonical envelope that Guardian evaluated.
+
+See [ActionEnvelope v1.0.0](docs/ACTION_ENVELOPE_V1.md) and [ADR 0005](docs/adr/0005-action-envelope-v1-contract.md).
+
+## Layer 1 — Sentinel Intelligence
 
 Sentinel is advisory and untrusted by design. It may ingest identity, endpoint, network, cloud, AI-agent, privileged-access, software-supply-chain, and recovery telemetry.
 
@@ -58,136 +92,101 @@ It produces:
 
 - threat hypotheses
 - confidence scores
-- ATT&CK-aligned behavior labels
-- blast-radius estimates
+- behavior labels
+- target and blast-radius estimates
+- evidence provenance
 - recommended actions
-- human-readable evidence summaries
+- human-readable summaries
 
 Nothing Sentinel produces is executable by itself.
 
-### Layer 2 — Guardian Policy Engine
+The embedded-agent demonstration correlates fabricated evidence for:
 
-Guardian evaluates proposed actions against deterministic policy.
+- anomalous process behavior
+- hidden persistence
+- credential misuse
+- model-driven deception
+- log tampering
+
+National or state-sponsor attribution remains unverified and outside the authorization decision.
+
+## Layer 2 — Guardian Policy Engine
+
+Guardian evaluates a validated ActionEnvelope against deterministic policy.
 
 Authorization may depend on:
 
-- evidence count and provenance
-- confidence band
-- asset criticality
-- mission impact
-- action scope
+- required behavior classes
+- independent evidence sources
+- action allowlists
+- scope ceilings
+- freshness and replay state
+- policy-version match
 - reversibility
-- blast-radius limits
-- data classification
-- enclave
-- approval status
-- continuity-of-operations constraints
+- approval count and mode
+- globally forbidden actions
+- configured escalation signals
 
-Guardian may return:
+Guardian returns one of:
 
 - **approve**
-- **approve with constraints**
 - **escalate**
 - **deny**
 
-Model confidence is treated as evidence input, never as authorization.
+A contradictory observer signal is normalized as `cross_signal_inconsistency`. Policy bundle `0.5.0` forces that condition to `GLOBAL-EVIDENCE-CONFLICT` escalation before any action can be authorized. The contradiction cannot help Sentinel satisfy its corroboration threshold.
 
-### Layer 3 — Enforcement & Recovery Kernel
+See [ADR 0004](docs/adr/0004-evidence-conflict-escalation.md).
 
-The kernel is intended to remain small and least-privileged. In future phases it may mediate actions such as session revocation, step-up authentication, host isolation, key disablement, quarantine, evidence preservation, snapshotting, rollback, and tested recovery workflows.
+## Layer 3 — Enforcement & Recovery Kernel
 
-The current prototype does not execute those actions.
+The current Enforcement Gateway:
 
-## Technical Differentiation
+- verifies the decision-token signature
+- checks the exact action, target, and scope
+- verifies expiry and nonce freshness
+- rejects replayed tokens
+- returns a simulated receipt only
 
-### Not a SOAR Replacement
+The current prototype performs no real quarantine, session revocation, host isolation, credential rotation, or rollback.
 
-CERBERUS does not attempt to replace SIEM, SOAR, XDR, EDR, IAM, or cloud-security platforms.
+Future connectors must be capability-scoped, least-privileged, reversible where possible, and unable to reinterpret Guardian intent.
 
-Its proposed contribution is an independent, cross-platform assurance boundary between recommendation and consequential action. Existing platforms may support approvals and safeguards, but those controls are commonly embedded within vendor-specific playbooks. CERBERUS investigates whether authorization can be made separately testable, globally constrained by invariants, and resistant to shared-fate failure.
+## Adversarial Test Corpus
 
-### Not an Autonomous AI Defender
+Workstream A adds nine deterministic scenarios restricted to named sandbox workloads:
 
-Some agentic security products permit models to plan or invoke tool-mediated actions. CERBERUS adopts a stricter design:
+| Scenario | Expected authority outcome |
+|---|---|
+| benign maintenance similarity | no Sentinel finding |
+| staged urgency with one approval | escalate |
+| confidence manipulation with missing signals | escalate |
+| four of five required behaviors | escalate |
+| contradictory independent observer | escalate under `GLOBAL-EVIDENCE-CONFLICT` |
+| single-source signal flood | no Sentinel finding |
+| enterprise scope widening | deny |
+| forbidden `wipe_host` injection | deny |
+| complete valid positive control | signed simulated receipt only |
 
-- the model does not hold enforcement credentials;
-- model output is treated as untrusted input;
-- action arguments are policy-validated;
-- high-impact actions remain human-approved or human-on-the-loop;
-- prompt injection may corrupt recommendations, but should not automatically grant authority.
+The corpus asserts:
 
-### Runtime-Assurance Inspiration
+- zero tolerated forbidden-action authorizations
+- zero simulated containment for the benign fixture class
+- complete escalation for partial evidence or approval cases
+- zero real side effects
 
-CERBERUS is inspired by the architectural separation used in Simplex-style runtime assurance: a powerful but unverified component is bounded by a smaller assurance mechanism.
+These are fixture assertions, not operational performance claims.
 
-The analogy is limited. Cyber operations are partially observed, adversarial, context-dependent, and mission-sensitive. The current Guardian is tested, not formally verified, and no physical-safety-style guarantee is claimed.
+See [Adversarial AI Persistence Scenario](docs/EMBEDDED_AGENT_SCENARIO.md).
 
-## Safety Invariants
+## Quick Start
 
-The prototype encodes actions that remain forbidden regardless of model confidence, including:
+Requires Python 3.10 or newer.
 
-- autonomous deletion or modification of backups
-- automated retaliation or offensive exploit execution
-- destructive remediation without explicit authorization
-- direct AI-layer access to enforcement credentials
-- execution without a logged authorization decision
-
-Formal verification is not yet claimed. See [Guardian Formal Assurance Path](docs/FORMAL_ASSURANCE_PATH.md).
-
-## Correlated-Failure Analysis
-
-CERBERUS treats shared models, telemetry, credentials, vendors, update channels, administrators, and recovery dependencies as potential common-mode failure paths.
-
-The project now includes a repeatable dependency-graph audit and proposed Shared-Fate Exposure metric. See [Correlated-Failure Audit Method](docs/CORRELATED_FAILURE_METHOD.md).
-
-## Skeptical Review
-
-The project documents its strongest unresolved objections:
-
-- “This is SOAR with extra steps.”
-- “Deterministic policy will not scale.”
-- “Guardian becomes a single point of failure.”
-- “There is no operational evidence yet.”
-- “Single-developer validation is insufficient.”
-
-These are treated as evaluation requirements, not dismissed as messaging problems. See [Skeptical Technical Review](docs/RED_TEAM_REVIEW.md).
-
-## 90-Day Evaluation Path
-
-The next meaningful milestone is not a broader claim. It is a sponsor-visible comparison between:
-
-```text
-Detection → response playbook → simulated execution
+```bash
+python -m pip install -r requirements-dev.txt
 ```
 
-and:
-
-```text
-Detection → proposed action → Guardian authorization → simulated execution
-```
-
-using identical synthetic telemetry and adversarial scenarios.
-
-The evaluation measures:
-
-- false-containment rate
-- denial-of-defense resistance
-- invariant integrity
-- containment latency versus blast radius
-- auditability
-- policy-authoring burden
-- policy conflict and exception growth
-
-See [90-Day Sponsor Evaluation Design](docs/NINETY_DAY_EVALUATION.md).
-
-## Current Scenarios
-
-- ransomware-like behavior
-- stolen administrator session
-- prompt injection against an AI agent
-- suspicious data exfiltration
-
-Run the simulator with Python 3.10 or newer:
+Run the baseline simulator:
 
 ```bash
 python simulator/cerberus_sim.py simulator/scenarios/ransomware.json
@@ -196,11 +195,79 @@ python simulator/cerberus_sim.py simulator/scenarios/prompt_injection.json
 python simulator/cerberus_sim.py simulator/scenarios/data_exfiltration.json
 ```
 
-Run tests:
+Run the fabricated embedded-agent demonstration without approvals:
 
 ```bash
-python -m unittest discover -s tests -v
+python simulator/embedded_agent_hunt.py \
+  simulator/scenarios/embedded_ai_agent_telemetry.json
 ```
+
+Demonstrate the signed, side-effect-free approval path:
+
+```bash
+export CERBERUS_PROTOTYPE_SIGNING_KEY='replace-with-at-least-32-bytes-of-test-material'
+python simulator/embedded_agent_hunt.py \
+  simulator/scenarios/embedded_ai_agent_telemetry.json \
+  --approval incident-commander \
+  --approval cyber-duty-officer \
+  --simulate-enforcement
+```
+
+Run all tests:
+
+```bash
+python -m pytest -q
+```
+
+## Technical Differentiation
+
+### Not a SOAR Replacement
+
+CERBERUS does not attempt to replace SIEM, SOAR, XDR, EDR, IAM, or cloud-security platforms.
+
+Its proposed contribution is an independently testable assurance boundary between recommendation and consequential action. Existing products may support approvals and safeguards, but CERBERUS makes the authority contract, policy decision, signed authorization, and enforcement checks explicit and separable.
+
+### Not an Autonomous AI Defender
+
+CERBERUS adopts a stricter model than an agent with broad tool access:
+
+- the model does not hold enforcement credentials
+- model output is untrusted input
+- proposals must satisfy a typed schema
+- confidence does not authorize action
+- action arguments are policy constrained
+- high-impact actions remain approval gated
+- Enforcement cannot improvise or widen intent
+
+### Runtime-Assurance Inspiration
+
+CERBERUS is inspired by Simplex-style separation between a powerful unverified component and a smaller assurance mechanism.
+
+The analogy is limited. Cyber operations are partially observed, adversarial, context-dependent, and mission-sensitive. Guardian is tested, not formally verified, and no physical-safety-style guarantee is claimed.
+
+## Safety Invariants
+
+The prototype forbids actions including:
+
+- deleting or modifying backups
+- disabling recovery
+- wiping hosts
+- automated retaliation
+- offensive exploit execution
+- credential harvesting
+- execution without a valid authorization decision
+
+See [Safety Invariants](docs/SAFETY_INVARIANTS.md) and [Guardian Formal Assurance Path](docs/FORMAL_ASSURANCE_PATH.md).
+
+## Workstream Status
+
+- **Foundation:** typed Guardian path, signed tokens, replay rejection, simulated Enforcement — implemented
+- **Workstream A:** adversarial authority-boundary corpus — implemented
+- **Workstream B:** ActionEnvelope v1.0.0 contract — implemented
+- **Workstream C:** externalized, auditable Guardian policy engine — next
+- **Workstream D:** capability-scoped Enforcement Gateway connectors — planned
+- **Workstream E:** independent red-team engagement protocol — planned
+- **Workstream F:** sponsor evaluation package — planned
 
 ## Roadmap
 
@@ -230,6 +297,8 @@ Potential future work, only under sponsorship and accreditation, may include loc
 
 ## Research and Transition Documents
 
+- [ActionEnvelope v1.0.0](docs/ACTION_ENVELOPE_V1.md)
+- [Adversarial AI Persistence Scenario](docs/EMBEDDED_AGENT_SCENARIO.md)
 - [Threat Model](docs/THREAT_MODEL.md)
 - [Safety Invariants](docs/SAFETY_INVARIANTS.md)
 - [Architecture](docs/architecture.md)
@@ -241,18 +310,14 @@ Potential future work, only under sponsorship and accreditation, may include loc
 - [Guardian Formal Assurance Path](docs/FORMAL_ASSURANCE_PATH.md)
 - [Skeptical Technical Review](docs/RED_TEAM_REVIEW.md)
 - [One-Page Pitch](docs/ONE_PAGE_PITCH.md)
+- [ADR 0004 — Evidence Conflict Escalation](docs/adr/0004-evidence-conflict-escalation.md)
+- [ADR 0005 — ActionEnvelope v1 Contract](docs/adr/0005-action-envelope-v1-contract.md)
 
 ## Security Posture
 
 CERBERUS Cyber is defensive-only.
 
 The project does not include exploit development, credential theft, destructive payloads, unauthorized scanning, automated retaliation, counterattack capability, or autonomous irreversible remediation.
-
-## Core Principle
-
-**Intelligence is not authority.**
-
-An adversary may deceive an intelligent layer. That deception must not automatically grant operational control.
 
 ## License
 
