@@ -28,7 +28,7 @@ TEST_KEY = b"cerberus-action-envelope-v1-test-key-material-32-bytes"
 
 
 def _envelope() -> ActionEnvelope:
-    now = datetime(2026, 7, 18, 20, 0, tzinfo=timezone.utc)
+    now = datetime.now(timezone.utc)
     return ActionEnvelope(
         schema_version=ACTION_ENVELOPE_VERSION,
         envelope_id="env-action-envelope-v1-test",
