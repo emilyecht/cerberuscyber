@@ -127,6 +127,23 @@ class Guardian:
                 now=now,
             )
 
+        escalation_signals = set(self.policy_set.get("escalation_signals", []))
+        present_escalation_signals = sorted(
+            escalation_signals.intersection(envelope.evidence_signals)
+        )
+        if present_escalation_signals:
+            return self._finalize(
+                envelope,
+                decision="escalate",
+                reason=(
+                    "conflicting evidence requires review: "
+                    + ", ".join(present_escalation_signals)
+                ),
+                policy_id="GLOBAL-EVIDENCE-CONFLICT",
+                human_approval_required=True,
+                now=now,
+            )
+
         for policy in self.policy_set.get("policies", []):
             match = policy.get("match", {})
             if envelope.threat != match.get("threat"):
