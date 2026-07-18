@@ -1,7 +1,10 @@
 {
-  "version": "0.4.0",
+  "version": "0.5.0",
   "decision_ttl_seconds": 120,
   "min_independent_sources": 2,
+  "escalation_signals": [
+    "cross_signal_inconsistency"
+  ],
   "scope_order": [
     "none",
     "single_identity",
