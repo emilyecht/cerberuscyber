@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from cerberus import DecisionTokenSigner, EnforcementGateway, Guardian
+from cerberus import DecisionTokenSigner, EnforcementGateway, Guardian, PolicyBundle
 from cerberus.hunt import EmbeddedAgentHunter, TelemetryEvent
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -45,7 +45,7 @@ def main() -> None:
     args = parser.parse_args()
 
     scenario = load_json(args.telemetry)
-    policies = load_json(args.policies)
+    policies = PolicyBundle.load(args.policies)
     events = tuple(TelemetryEvent.from_dict(item) for item in scenario.get("events", []))
     asset = str(scenario.get("asset", ""))
     incident_id = str(scenario.get("incident_id", "CRB-EMBEDDED-AGENT"))
@@ -71,7 +71,7 @@ def main() -> None:
         finding,
         incident_id=incident_id,
         human_approvals=args.approval,
-        policy_version=str(policies.get("version", "0.0.0-legacy")),
+        policy_version=policies.version,
     )
 
     signing_key: bytes | None = None
