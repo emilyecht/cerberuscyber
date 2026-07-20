@@ -36,5 +36,6 @@ jobs:
           python -m json.tool policies/policies.json >/dev/null
           python -m json.tool schemas/action-envelope.schema.json >/dev/null
           python -m json.tool schemas/decision-token.schema.json >/dev/null
+          python -m json.tool schemas/policy-bundle.schema.json >/dev/null
       - name: Run unit, schema, and adversarial corpus tests
         run: python -m pytest -q
