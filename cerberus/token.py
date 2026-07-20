@@ -40,7 +40,7 @@ class DecisionTokenSigner:
     key rotation, and deployment-specific trust roots.
     """
 
-    TOKEN_VERSION = "1.1.0"
+    TOKEN_VERSION = "1.2.0"
 
     def __init__(self, key: bytes, *, key_id: str = "prototype-hmac-v1") -> None:
         if len(key) < 32:
@@ -63,6 +63,8 @@ class DecisionTokenSigner:
             raise ValueError("decision does not bind the supplied ActionEnvelope digest")
         if decision.idempotency_key != envelope.idempotency_key:
             raise ValueError("decision does not bind the supplied idempotency key")
+        if len(decision.policy_digest) != 64:
+            raise ValueError("decision does not contain a valid policy digest")
 
         issued = now or datetime.now(timezone.utc)
         expires = min(parse_time(envelope.expires_at), issued + timedelta(seconds=ttl_seconds))
@@ -80,6 +82,7 @@ class DecisionTokenSigner:
             "scope": decision.scope,
             "policy_id": decision.policy,
             "policy_version": decision.policy_version,
+            "policy_digest": decision.policy_digest,
             "issued_at": format_time(issued),
             "expires_at": format_time(expires),
             "nonce": envelope.nonce,
@@ -118,6 +121,7 @@ class DecisionTokenSigner:
             "scope",
             "policy_id",
             "policy_version",
+            "policy_digest",
             "issued_at",
             "expires_at",
             "nonce",
@@ -130,8 +134,14 @@ class DecisionTokenSigner:
             raise TokenValidationError("unsupported token version")
         if payload["key_id"] != self.key_id:
             raise TokenValidationError("unexpected signing key id")
-        if not isinstance(payload["envelope_digest"], str) or len(payload["envelope_digest"]) != 64:
-            raise TokenValidationError("invalid envelope digest")
+        for field in ("envelope_digest", "policy_digest"):
+            value = payload[field]
+            if (
+                not isinstance(value, str)
+                or len(value) != 64
+                or any(character not in "0123456789abcdef" for character in value)
+            ):
+                raise TokenValidationError(f"invalid {field.replace('_', ' ')}")
         current = now or datetime.now(timezone.utc)
         if parse_time(payload["expires_at"]) <= current:
             raise TokenValidationError("decision token expired")
