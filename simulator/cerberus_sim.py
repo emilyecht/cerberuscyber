@@ -13,7 +13,13 @@ import os
 from pathlib import Path
 from typing import Any
 
-from cerberus import ActionEnvelope, DecisionTokenSigner, EnforcementGateway, Guardian
+from cerberus import (
+    ActionEnvelope,
+    DecisionTokenSigner,
+    EnforcementGateway,
+    Guardian,
+    PolicyBundle,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_POLICIES = ROOT / "policies" / "policies.json"
@@ -26,19 +32,24 @@ def load_json(path: Path) -> dict[str, Any]:
 
 def evaluate(
     incident: dict[str, Any],
-    policy_set: dict[str, Any],
+    policy_set: PolicyBundle | dict[str, Any],
     *,
     signing_key: bytes | None = None,
 ) -> dict[str, Any]:
     """Backward-compatible simulator entry point backed by ActionEnvelope v1.0.0."""
 
+    bundle = (
+        policy_set
+        if isinstance(policy_set, PolicyBundle)
+        else PolicyBundle.from_dict(policy_set)
+    )
     envelope = ActionEnvelope.from_legacy_incident(
         incident,
-        policy_version=str(policy_set.get("version", "0.0.0-legacy")),
-        ttl_seconds=int(policy_set.get("decision_ttl_seconds", 120)),
+        policy_version=bundle.version,
+        ttl_seconds=int(bundle.to_dict()["decision_ttl_seconds"]),
     )
     signer = DecisionTokenSigner(signing_key) if signing_key is not None else None
-    result = Guardian(policy_set, signer=signer).evaluate(envelope)
+    result = Guardian(bundle, signer=signer).evaluate(envelope)
     return result.to_dict()
 
 
@@ -53,7 +64,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    policy_set = load_json(args.policies)
+    policy_set = PolicyBundle.load(args.policies)
     signing_key: bytes | None = None
     if args.simulate_enforcement:
         key_text = os.environ.get("CERBERUS_PROTOTYPE_SIGNING_KEY")
