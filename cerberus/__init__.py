@@ -11,10 +11,17 @@ from .models import (
     GuardianDecision,
     ValidationError,
 )
+from .policy import (
+    POLICY_BUNDLE_SCHEMA_VERSION,
+    PolicyBundle,
+    PolicyBundleError,
+    validate_policy_bundle,
+)
 from .token import DecisionTokenSigner, TokenValidationError
 
 __all__ = [
     "ACTION_ENVELOPE_VERSION",
+    "POLICY_BUNDLE_SCHEMA_VERSION",
     "ActionEnvelope",
     "AuditLedger",
     "DecisionTokenSigner",
@@ -25,7 +32,10 @@ __all__ = [
     "Freshness",
     "Guardian",
     "GuardianDecision",
+    "PolicyBundle",
+    "PolicyBundleError",
     "ReplayCache",
     "TokenValidationError",
     "ValidationError",
+    "validate_policy_bundle",
 ]
