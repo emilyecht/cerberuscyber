@@ -77,6 +77,8 @@ class EnforcementGateway:
             "idempotency_key": payload["idempotency_key"],
             "actor": payload["actor"],
             "incident_id": payload["incident_id"],
+            "policy_version": payload["policy_version"],
+            "policy_digest": payload["policy_digest"],
             "action": action,
             "target": target,
             "scope": scope,

@@ -8,6 +8,7 @@ from typing import Any
 
 from .audit import AuditLedger
 from .models import ActionEnvelope, GuardianDecision
+from .policy import PolicyBundle
 from .token import DecisionTokenSigner
 
 
@@ -38,32 +39,25 @@ class Guardian:
 
     def __init__(
         self,
-        policy_set: dict[str, Any],
+        policy_set: PolicyBundle | dict[str, Any],
         *,
         signer: DecisionTokenSigner | None = None,
         ledger: AuditLedger | None = None,
         idempotency_registry: EnvelopeIdempotencyRegistry | None = None,
     ) -> None:
-        self.policy_set = policy_set
+        bundle = (
+            policy_set
+            if isinstance(policy_set, PolicyBundle)
+            else PolicyBundle.from_dict(policy_set)
+        )
+        self.policy_bundle = bundle
+        self.policy_set = bundle.to_dict()
         self.signer = signer
         self.ledger = ledger or AuditLedger()
         self.idempotency_registry = idempotency_registry or EnvelopeIdempotencyRegistry()
-        self.policy_version = str(policy_set.get("version", "unknown"))
-        self.scope_order = list(
-            policy_set.get(
-                "scope_order",
-                [
-                    "none",
-                    "single_identity",
-                    "single_session",
-                    "single_endpoint",
-                    "single_host",
-                    "single_workload",
-                    "single_segment",
-                    "enterprise",
-                ],
-            )
-        )
+        self.policy_version = bundle.version
+        self.policy_digest = bundle.digest
+        self.scope_order = list(self.policy_set["scope_order"])
 
     def _scope_within_limit(self, requested: str, maximum: str) -> bool:
         try:
@@ -92,6 +86,7 @@ class Guardian:
             reason=reason,
             policy=policy_id,
             policy_version=self.policy_version,
+            policy_digest=self.policy_digest,
             proposed_action=envelope.proposed_action,
             authorized_action=authorized_action,
             target=envelope.target,
@@ -109,7 +104,7 @@ class Guardian:
             token = self.signer.issue(
                 result,
                 envelope,
-                ttl_seconds=int(self.policy_set.get("decision_ttl_seconds", 120)),
+                ttl_seconds=int(self.policy_set["decision_ttl_seconds"]),
                 now=now,
             )
         record = self.ledger.append(
@@ -123,6 +118,7 @@ class Guardian:
                 "decision": result.guardian_decision,
                 "policy": result.policy,
                 "policy_version": result.policy_version,
+                "policy_digest": result.policy_digest,
                 "proposed_action": result.proposed_action,
                 "authorized_action": result.authorized_action,
                 "target": result.target,
@@ -169,7 +165,7 @@ class Guardian:
                 now=now,
             )
 
-        forbidden = set(self.policy_set.get("forbidden_actions", []))
+        forbidden = set(self.policy_set["forbidden_actions"])
         if envelope.proposed_action in forbidden:
             return self._finalize(
                 envelope,
@@ -179,7 +175,7 @@ class Guardian:
                 now=now,
             )
 
-        escalation_signals = set(self.policy_set.get("escalation_signals", []))
+        escalation_signals = set(self.policy_set["escalation_signals"])
         present_escalation_signals = sorted(
             escalation_signals.intersection(envelope.evidence_signals)
         )
@@ -196,43 +192,36 @@ class Guardian:
                 now=now,
             )
 
-        for policy in self.policy_set.get("policies", []):
-            match = policy.get("match", {})
-            if envelope.threat != match.get("threat"):
+        for policy in self.policy_set["policies"]:
+            match = policy["match"]
+            if envelope.threat != match["threat"]:
                 continue
             # Confidence remains advisory and can never authorize by itself. A minimum
             # threshold may force escalation, but all required behavior and provenance
             # conditions must still be independently satisfied.
-            if envelope.confidence < float(match.get("min_confidence", 1.0)):
+            if envelope.confidence < float(match["min_confidence"]):
                 continue
-            required_signals = set(match.get("required_signals", []))
+            required_signals = set(match["required_signals"])
             if not required_signals.issubset(envelope.evidence_signals):
                 continue
 
-            required_sources = int(
-                match.get(
-                    "min_independent_sources",
-                    self.policy_set.get("min_independent_sources", 1),
-                )
-            )
+            required_sources = int(match["min_independent_sources"])
             if len(envelope.independent_sources) < required_sources:
                 return self._finalize(
                     envelope,
                     decision="escalate",
                     reason="insufficient independent evidence sources",
-                    policy_id=policy.get("id"),
+                    policy_id=policy["id"],
                     human_approval_required=True,
                     now=now,
                 )
 
-            policy_decision = str(policy.get("decision", "deny"))
-            allowed_action = str(policy.get("allowed_action", "none"))
-            max_scope = str(policy.get("max_scope", "none"))
-            reversible_required = bool(policy.get("reversible_required", False))
-            approval_required = bool(policy.get("human_approval_required", False))
-            approval_count = int(
-                policy.get("required_approval_count", 1 if approval_required else 0)
-            )
+            policy_decision = str(policy["decision"])
+            allowed_action = str(policy["allowed_action"])
+            max_scope = str(policy["max_scope"])
+            reversible_required = bool(policy["reversible_required"])
+            approval_required = bool(policy["human_approval_required"])
+            approval_count = int(policy["required_approval_count"])
             expected_approval_mode = (
                 "dual" if approval_count >= 2 else "single" if approval_count == 1 else "none"
             )
@@ -245,7 +234,7 @@ class Guardian:
                         "envelope approval mode does not match policy requirement: "
                         f"expected {expected_approval_mode}"
                     ),
-                    policy_id=policy.get("id"),
+                    policy_id=policy["id"],
                     human_approval_required=True,
                     now=now,
                 )
@@ -255,7 +244,7 @@ class Guardian:
                     envelope,
                     decision="deny",
                     reason="proposed action does not match the policy allowlist",
-                    policy_id=policy.get("id"),
+                    policy_id=policy["id"],
                     now=now,
                 )
 
@@ -264,7 +253,7 @@ class Guardian:
                     envelope,
                     decision="deny",
                     reason="requested scope exceeds policy maximum",
-                    policy_id=policy.get("id"),
+                    policy_id=policy["id"],
                     now=now,
                 )
 
@@ -273,7 +262,7 @@ class Guardian:
                     envelope,
                     decision="deny",
                     reason="policy requires a reversible action",
-                    policy_id=policy.get("id"),
+                    policy_id=policy["id"],
                     now=now,
                 )
 
@@ -282,7 +271,7 @@ class Guardian:
                     envelope,
                     decision="escalate",
                     reason="required human approval not present",
-                    policy_id=policy.get("id"),
+                    policy_id=policy["id"],
                     scope=max_scope,
                     reversible=envelope.reversible,
                     human_approval_required=True,
@@ -290,13 +279,13 @@ class Guardian:
                 )
 
             if policy_decision == "escalate" and approval_required:
-                policy_decision = str(policy.get("decision_on_approval", "approve"))
+                policy_decision = str(policy["decision_on_approval"])
 
             return self._finalize(
                 envelope,
                 decision=policy_decision,
                 reason="policy requirements satisfied",
-                policy_id=policy.get("id"),
+                policy_id=policy["id"],
                 authorized_action=allowed_action if policy_decision == "approve" else "none",
                 scope=max_scope if policy_decision == "approve" else "none",
                 reversible=envelope.reversible,

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/emilyecht/cerberuscyber/schemas/decision-token.schema.json",
-  "title": "CERBERUS Decision Token Payload v1.1.0",
+  "title": "CERBERUS Decision Token Payload v1.2.0",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -18,13 +18,14 @@
     "scope",
     "policy_id",
     "policy_version",
+    "policy_digest",
     "issued_at",
     "expires_at",
     "nonce",
     "reversible"
   ],
   "properties": {
-    "token_version": {"const": "1.1.0"},
+    "token_version": {"const": "1.2.0"},
     "token_id": {"type": "string", "minLength": 16},
     "key_id": {"type": "string", "minLength": 1},
     "envelope_id": {"type": "string", "minLength": 1},
@@ -37,6 +38,7 @@
     "scope": {"type": "string", "minLength": 1},
     "policy_id": {"type": "string", "minLength": 1},
     "policy_version": {"type": "string", "minLength": 1},
+    "policy_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "issued_at": {"type": "string", "format": "date-time"},
     "expires_at": {"type": "string", "format": "date-time"},
     "nonce": {"type": "string", "minLength": 16},
