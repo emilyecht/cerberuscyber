@@ -56,6 +56,7 @@ class DecisionTokenSigner:
         ttl_seconds: int,
         now: datetime | None = None,
     ) -> str:
+        envelope.validate()
         if decision.guardian_decision != "approve":
             raise ValueError("tokens may only be issued for approved decisions")
         envelope_digest = envelope.digest()
@@ -63,6 +64,23 @@ class DecisionTokenSigner:
             raise ValueError("decision does not bind the supplied ActionEnvelope digest")
         if decision.idempotency_key != envelope.idempotency_key:
             raise ValueError("decision does not bind the supplied idempotency key")
+        bindings = {
+            "envelope_id": envelope.envelope_id,
+            "incident_id": envelope.incident_id,
+            "actor": envelope.actor,
+            "proposed_action": envelope.proposed_action,
+            "authorized_action": envelope.proposed_action,
+            "target": envelope.target,
+            "scope": envelope.requested_scope,
+            "policy_version": envelope.policy_version,
+            "reversible": envelope.reversible,
+        }
+        for name, expected in bindings.items():
+            actual = getattr(decision, name)
+            if type(actual) is not type(expected) or actual != expected:
+                raise ValueError(f"decision {name} does not match the supplied ActionEnvelope")
+        if not envelope.has_supported_action_scope():
+            raise ValueError("cannot sign an unsupported action/scope combination")
 
         issued = now or datetime.now(timezone.utc)
         expires = min(parse_time(envelope.expires_at), issued + timedelta(seconds=ttl_seconds))

@@ -250,15 +250,6 @@ class Guardian:
                     now=now,
                 )
 
-            if policy_decision == "approve" and envelope.proposed_action != allowed_action:
-                return self._finalize(
-                    envelope,
-                    decision="deny",
-                    reason="proposed action does not match the policy allowlist",
-                    policy_id=policy.get("id"),
-                    now=now,
-                )
-
             if not self._scope_within_limit(envelope.requested_scope, max_scope):
                 return self._finalize(
                     envelope,
@@ -292,13 +283,33 @@ class Guardian:
             if policy_decision == "escalate" and approval_required:
                 policy_decision = str(policy.get("decision_on_approval", "approve"))
 
+            # Check the final decision, including escalation-to-approval transitions.
+            # Approval permits the submitted action; it never selects a replacement.
+            if policy_decision == "approve":
+                if envelope.proposed_action != allowed_action:
+                    return self._finalize(
+                        envelope,
+                        decision="deny",
+                        reason="proposed action does not match the policy allowlist",
+                        policy_id=policy.get("id"),
+                        now=now,
+                    )
+                if not envelope.has_supported_action_scope():
+                    return self._finalize(
+                        envelope,
+                        decision="deny",
+                        reason="requested scope is incompatible with the proposed action",
+                        policy_id=policy.get("id"),
+                        now=now,
+                    )
+
             return self._finalize(
                 envelope,
                 decision=policy_decision,
                 reason="policy requirements satisfied",
                 policy_id=policy.get("id"),
                 authorized_action=allowed_action if policy_decision == "approve" else "none",
-                scope=max_scope if policy_decision == "approve" else "none",
+                scope=envelope.requested_scope if policy_decision == "approve" else "none",
                 reversible=envelope.reversible,
                 human_approval_required=approval_required,
                 now=now,

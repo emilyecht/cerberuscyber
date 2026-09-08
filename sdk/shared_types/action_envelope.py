@@ -10,11 +10,18 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import re
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, timezone
-from typing import Any, Iterable
+from functools import lru_cache
+from pathlib import Path
+from typing import Any
 from uuid import UUID, uuid4
+
+from jsonschema import Draft202012Validator, FormatChecker
+from jsonschema.exceptions import ValidationError as SchemaValidationError
+from rfc3339_validator import validate_rfc3339
 
 ACTION_ENVELOPE_VERSION = "1.0.0"
 
@@ -62,13 +69,38 @@ class ValidationError(ValueError):
     """Raised when an authority-boundary object is malformed."""
 
 
+_FORMAT_CHECKER = FormatChecker()
+
+
+@lru_cache(maxsize=1)
+def _wire_validator() -> Draft202012Validator:
+    schema_path = Path(__file__).resolve().parents[2] / "schemas/action-envelope.schema.json"
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    return Draft202012Validator(schema, format_checker=_FORMAT_CHECKER)
+
+
+def _validate_wire(data: Any) -> None:
+    try:
+        _wire_validator().validate(data)
+    except SchemaValidationError as exc:
+        location = ".".join(str(part) for part in exc.absolute_path) or "envelope"
+        raise ValidationError(f"{location}: {exc.message}") from exc
+
+
+def _require_string(value: Any, name: str) -> None:
+    if not isinstance(value, str) or not value.strip():
+        raise ValidationError(f"{name} must be a non-empty string")
+
+
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
 
 
 def parse_time(value: str) -> datetime:
+    if not isinstance(value, str) or not validate_rfc3339(value.upper()):
+        raise ValidationError(f"invalid RFC3339 timestamp: {value!r}")
     try:
-        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        parsed = datetime.fromisoformat(value.upper().replace("Z", "+00:00"))
     except (TypeError, ValueError) as exc:
         raise ValidationError(f"invalid RFC3339 timestamp: {value!r}") from exc
     if parsed.tzinfo is None:
@@ -81,7 +113,9 @@ def format_time(value: datetime) -> str:
 
 
 def _canonical_json(data: Any) -> str:
-    return json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return json.dumps(
+        data, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False
+    )
 
 
 def _is_semver(value: str) -> bool:
@@ -106,13 +140,13 @@ class Evidence:
         self.validate()
 
     def validate(self) -> None:
-        if not self.signal.strip():
-            raise ValidationError("evidence.signal is required")
-        if not self.source_id.strip():
-            raise ValidationError("evidence.source_id is required")
+        _require_string(self.signal, "evidence.signal")
+        _require_string(self.source_id, "evidence.source_id")
         parse_time(self.observed_at)
         if self.digest is not None:
-            if not re.fullmatch(r"[0-9a-fA-F]{16,128}", self.digest):
+            if not isinstance(self.digest, str) or not re.fullmatch(
+                r"[0-9a-fA-F]{16,128}", self.digest
+            ):
                 raise ValidationError(
                     "evidence.digest must be a 16-128 character hexadecimal digest"
                 )
@@ -138,10 +172,12 @@ class Evidence:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Evidence":
+        if not isinstance(data, dict):
+            raise ValidationError("evidence must be an object")
         return cls(
-            signal=str(data.get("signal", "")),
-            source_id=str(data.get("source_id", "")),
-            observed_at=str(data.get("observed_at", "")),
+            signal=data.get("signal", ""),
+            source_id=data.get("source_id", ""),
+            observed_at=data.get("observed_at", ""),
             digest=data.get("digest"),
         )
 
@@ -157,13 +193,16 @@ class Freshness:
         expires = parse_time(self.expires_at)
         if expires <= created:
             raise ValidationError("freshness.expires_at must be later than timestamp")
-        if len(self.nonce) < 16:
+        if not isinstance(self.nonce, str) or len(self.nonce) < 16:
             raise ValidationError("freshness.nonce must be at least 16 characters")
 
     def to_dict(self) -> dict[str, str]:
         return asdict(self)
 
 
+# The prototype implements one scope per supported action. Scope-order position
+# is a policy ceiling check, not evidence that unrelated resource types fit.
+# Extending this vocabulary requires an explicit action/scope contract review.
 _ACTION_SCOPE_DEFAULTS = {
     "none": "none",
     "revoke_sessions": "single_identity",
@@ -234,6 +273,9 @@ class ActionEnvelope:
     def evidence_refs(self) -> tuple[Evidence, ...]:
         return self.evidence
 
+    def has_supported_action_scope(self) -> bool:
+        return _ACTION_SCOPE_DEFAULTS.get(self.proposed_action) == self.requested_scope
+
     def validate(self) -> None:
         required = {
             "schema_version": self.schema_version,
@@ -251,8 +293,7 @@ class ActionEnvelope:
             "policy_version": self.policy_version,
         }
         for name, value in required.items():
-            if not str(value).strip():
-                raise ValidationError(f"{name} is required")
+            _require_string(value, name)
 
         if self.schema_version != ACTION_ENVELOPE_VERSION:
             raise ValidationError(
@@ -270,8 +311,14 @@ class ActionEnvelope:
             raise ValidationError(f"unknown mission_impact: {self.mission_impact}")
         if not _is_semver(self.policy_version):
             raise ValidationError("policy_version must be SemVer-compatible")
-        if not 0.0 <= self.confidence <= 1.0:
-            raise ValidationError("confidence must be between 0 and 1")
+        if (
+            type(self.confidence) not in (int, float)
+            or not 0.0 <= self.confidence <= 1.0
+            or not math.isfinite(self.confidence)
+        ):
+            raise ValidationError("confidence must be a finite number between 0 and 1")
+        if type(self.reversible) is not bool:
+            raise ValidationError("reversibility_flag must be a boolean")
 
         self.freshness  # validates timestamps, expiry ordering, and nonce length
 
@@ -282,15 +329,23 @@ class ActionEnvelope:
         if parsed_idempotency.version is None:
             raise ValidationError("idempotency_key must be a versioned UUID")
 
-        if not self.evidence:
+        if not isinstance(self.evidence, tuple) or not self.evidence:
             raise ValidationError("at least one evidence_ref is required")
         for item in self.evidence:
+            if not isinstance(item, Evidence):
+                raise ValidationError("evidence_refs must contain Evidence objects")
             item.validate()
 
+        if not isinstance(self.human_approvals, tuple):
+            raise ValidationError("human approvals must be a tuple of strings")
+        for item in self.human_approvals:
+            _require_string(item, "human approval")
         if len(set(self.human_approvals)) != len(self.human_approvals):
             raise ValidationError("human approvals must be unique")
-        if any(not item.strip() for item in self.human_approvals):
-            raise ValidationError("human approvals must be non-empty")
+
+        # Direct Python construction must satisfy the same wire constraints.
+        # Canonical from_dict also checks the original input before serialization.
+        _validate_wire(self.to_canonical_dict())
 
     @property
     def evidence_signals(self) -> set[str]:
@@ -358,80 +413,80 @@ class ActionEnvelope:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "ActionEnvelope":
-        """Parse canonical v1.0.0 or the deprecated pre-v1 representation."""
+        """Parse only canonical v1.0.0, validating input before any conversion.
 
-        if "action" in data or "freshness" in data or "evidence_refs" in data:
-            freshness_raw = data.get("freshness", {})
-            if not isinstance(freshness_raw, dict):
-                raise ValidationError("freshness must be an object")
-            evidence_raw = data.get("evidence_refs", [])
-            if not isinstance(evidence_raw, list):
-                raise ValidationError("evidence_refs must be a list")
-            approvals_raw = data.get("human_approvals", [])
-            if not isinstance(approvals_raw, list):
-                raise ValidationError("human_approvals must be a list")
-            return cls(
-                schema_version=str(data.get("schema_version", "")),
-                envelope_id=str(data.get("envelope_id", "")),
-                incident_id=str(data.get("incident_id", "")),
-                threat=str(data.get("threat", "")),
-                confidence=float(data.get("confidence", -1.0)),
-                proposed_action=str(data.get("action", "")),
-                target=str(data.get("target", "")),
-                requested_scope=str(data.get("scope", "")),
-                reversible=bool(data.get("reversibility_flag", False)),
-                mission_impact=str(data.get("mission_impact", "")),
-                created_at=str(freshness_raw.get("timestamp", "")),
-                expires_at=str(freshness_raw.get("expires_at", "")),
-                nonce=str(freshness_raw.get("nonce", "")),
-                evidence=tuple(Evidence.from_dict(item) for item in evidence_raw),
-                human_approvals=tuple(str(item) for item in approvals_raw),
-                actor=str(data.get("actor", "")),
-                idempotency_key=str(data.get("idempotency_key", "")),
-                required_approval_mode=str(data.get("required_approval_mode", "")),
-                policy_version=str(data.get("policy_version", "")),
-            )
+        Missing fields, extra fields, and wrong JSON types are errors. Legacy
+        dictionaries require an explicit migration adapter, never auto-detection.
+        """
 
-        return cls._from_legacy_envelope_dict(data)
+        _validate_wire(data)
+        freshness_raw = data["freshness"]
+        return cls(
+            schema_version=data["schema_version"],
+            envelope_id=data["envelope_id"],
+            incident_id=data["incident_id"],
+            threat=data["threat"],
+            confidence=data["confidence"],
+            proposed_action=data["action"],
+            target=data["target"],
+            requested_scope=data["scope"],
+            reversible=data["reversibility_flag"],
+            mission_impact=data["mission_impact"],
+            created_at=freshness_raw["timestamp"],
+            expires_at=freshness_raw["expires_at"],
+            nonce=freshness_raw["nonce"],
+            evidence=tuple(Evidence.from_dict(item) for item in data["evidence_refs"]),
+            human_approvals=tuple(data["human_approvals"]),
+            actor=data["actor"],
+            idempotency_key=data["idempotency_key"],
+            required_approval_mode=data["required_approval_mode"],
+            policy_version=data["policy_version"],
+        )
 
     @classmethod
-    def _from_legacy_envelope_dict(cls, data: dict[str, Any]) -> "ActionEnvelope":
+    def from_legacy_envelope_dict(cls, data: dict[str, Any]) -> "ActionEnvelope":
+        """Explicit offline migration of pre-v1 envelope dictionaries.
+
+        Defaults fill absent legacy metadata; supplied values are never coerced.
+        This adapter is not a canonical integration input boundary.
+        """
+
+        if not isinstance(data, dict):
+            raise ValidationError("legacy envelope must be an object")
         evidence_raw = data.get("evidence", [])
         approvals_raw = data.get("human_approvals", [])
         if not isinstance(evidence_raw, list):
             raise ValidationError("evidence must be a list")
         if not isinstance(approvals_raw, list):
             raise ValidationError("human_approvals must be a list")
-        action = str(data.get("proposed_action", "none"))
+        action = data.get("proposed_action", "none")
+        _require_string(action, "proposed_action")
         return cls(
             schema_version=ACTION_ENVELOPE_VERSION,
-            envelope_id=str(data.get("envelope_id", uuid4())),
-            incident_id=str(data.get("incident_id", "unknown")),
-            threat=str(data.get("threat", "unknown")),
-            confidence=float(data.get("confidence", 0.0)),
+            envelope_id=data.get("envelope_id", str(uuid4())),
+            incident_id=data.get("incident_id", "unknown"),
+            threat=data.get("threat", "unknown"),
+            confidence=data.get("confidence", 0.0),
             proposed_action=action,
-            target=str(data.get("target", "simulated-resource:unknown")),
-            requested_scope=str(
-                data.get("requested_scope", _ACTION_SCOPE_DEFAULTS.get(action, "none"))
+            target=data.get("target", "simulated-resource:unknown"),
+            requested_scope=data.get(
+                "requested_scope", _ACTION_SCOPE_DEFAULTS.get(action, "none")
             ),
-            reversible=bool(data.get("reversible", True)),
-            mission_impact=str(data.get("mission_impact", "low")),
-            created_at=str(data.get("created_at", format_time(utc_now()))),
-            expires_at=str(
-                data.get("expires_at", format_time(utc_now() + timedelta(seconds=120)))
+            reversible=data.get("reversible", True),
+            mission_impact=data.get("mission_impact", "low"),
+            created_at=data.get("created_at", format_time(utc_now())),
+            expires_at=data.get(
+                "expires_at", format_time(utc_now() + timedelta(seconds=120))
             ),
-            nonce=str(data.get("nonce", uuid4().hex)),
+            nonce=data.get("nonce", uuid4().hex),
             evidence=tuple(Evidence.from_dict(item) for item in evidence_raw),
-            human_approvals=tuple(str(item) for item in approvals_raw),
-            actor=str(data.get("actor", "sentinel:legacy-adapter")),
-            idempotency_key=str(data.get("idempotency_key", uuid4())),
-            required_approval_mode=str(
-                data.get(
-                    "required_approval_mode",
-                    _APPROVAL_MODE_DEFAULTS.get(action, "none"),
-                )
+            human_approvals=tuple(approvals_raw),
+            actor=data.get("actor", "sentinel:legacy-adapter"),
+            idempotency_key=data.get("idempotency_key", str(uuid4())),
+            required_approval_mode=data.get(
+                "required_approval_mode", _APPROVAL_MODE_DEFAULTS.get(action, "none")
             ),
-            policy_version=str(data.get("policy_version", "0.0.0-legacy")),
+            policy_version=data.get("policy_version", "0.0.0-legacy"),
         )
 
     @classmethod
@@ -451,50 +506,51 @@ class ActionEnvelope:
         a current Guardian, making unpinned migration mistakes visible.
         """
 
+        if not isinstance(incident, dict):
+            raise ValidationError("legacy incident must be an object")
         created = now or utc_now()
-        signals: Iterable[str] = incident.get("signals", [])
+        signals = incident.get("signals", [])
+        approvals = incident.get("human_approvals", [])
+        if not isinstance(signals, (list, tuple)):
+            raise ValidationError("signals must be a list or tuple of strings")
+        if not isinstance(approvals, (list, tuple)):
+            raise ValidationError("human_approvals must be a list or tuple of strings")
+        for signal in signals:
+            _require_string(signal, "signal")
         evidence = tuple(
             Evidence(
-                signal=str(signal),
+                signal=signal,
                 source_id=f"legacy:{signal}",
                 observed_at=format_time(created),
             )
             for signal in signals
         )
-        action = str(incident.get("proposed_action", "none"))
+        action = incident.get("proposed_action", "none")
+        _require_string(action, "proposed_action")
         return cls(
             schema_version=ACTION_ENVELOPE_VERSION,
-            envelope_id=str(incident.get("envelope_id", uuid4())),
-            incident_id=str(incident.get("incident_id", "unknown")),
-            threat=str(incident.get("threat", "unknown")),
-            confidence=float(incident.get("confidence", 0.0)),
+            envelope_id=incident.get("envelope_id", str(uuid4())),
+            incident_id=incident.get("incident_id", "unknown"),
+            threat=incident.get("threat", "unknown"),
+            confidence=incident.get("confidence", 0.0),
             proposed_action=action,
-            target=str(
-                incident.get(
-                    "target",
-                    f"simulated-resource:{incident.get('incident_id', 'unknown')}",
-                )
+            target=incident.get(
+                "target", f"simulated-resource:{incident.get('incident_id', 'unknown')}"
             ),
-            requested_scope=str(
-                incident.get(
-                    "requested_scope",
-                    _ACTION_SCOPE_DEFAULTS.get(action, "none"),
-                )
+            requested_scope=incident.get(
+                "requested_scope", _ACTION_SCOPE_DEFAULTS.get(action, "none")
             ),
-            reversible=bool(incident.get("reversible", True)),
-            mission_impact=str(incident.get("mission_impact", "low")),
+            reversible=incident.get("reversible", True),
+            mission_impact=incident.get("mission_impact", "low"),
             created_at=format_time(created),
             expires_at=format_time(created + timedelta(seconds=ttl_seconds)),
-            nonce=str(incident.get("nonce", uuid4().hex)),
+            nonce=incident.get("nonce", uuid4().hex),
             evidence=evidence,
-            human_approvals=tuple(incident.get("human_approvals", [])),
-            actor=str(incident.get("actor", actor)),
-            idempotency_key=str(incident.get("idempotency_key", uuid4())),
-            required_approval_mode=str(
-                incident.get(
-                    "required_approval_mode",
-                    _APPROVAL_MODE_DEFAULTS.get(action, "none"),
-                )
+            human_approvals=tuple(approvals),
+            actor=incident.get("actor", actor),
+            idempotency_key=incident.get("idempotency_key", str(uuid4())),
+            required_approval_mode=incident.get(
+                "required_approval_mode", _APPROVAL_MODE_DEFAULTS.get(action, "none")
             ),
-            policy_version=str(incident.get("policy_version", policy_version)),
+            policy_version=incident.get("policy_version", policy_version),
         )

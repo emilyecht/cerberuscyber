@@ -25,10 +25,11 @@ CERBERUS Cyber is a **TRL 2–3 research prototype**, not a production defensive
 - deterministic Python Guardian policy engine with deny-by-default behavior
 - versioned policy bundle (`0.5.0`)
 - typed **ActionEnvelope v1.0.0** authority contract
-- JSON Schema Draft 2020-12 validation
+- JSON Schema Draft 2020-12 validation of original canonical inputs, without type coercion
 - canonical JSON serialization and SHA-256 envelope digests
 - actor identity, policy version, freshness, nonce, evidence references, UUID idempotency key, approval mode, and reversibility metadata
 - short-lived **DecisionToken v1.1.0** artifacts bound to the exact envelope digest, actor, action, target, scope, policy version, and idempotency key
+- final approval checks that preserve the requested action and scope, including after human approval gates
 - one-time token consumption and replay rejection
 - side-effect-free Enforcement Gateway receipts
 - hash-chained prototype audit ledger
@@ -71,7 +72,7 @@ The canonical envelope carries:
 
 - proposing actor identity
 - target resource
-- requested action and maximum scope
+- requested action and exact scope, bounded by a separate policy ceiling
 - evidence references and digests
 - informational confidence score
 - freshness timestamp, expiry, and nonce
@@ -82,7 +83,11 @@ The canonical envelope carries:
 
 Guardian rejects malformed, stale, unsupported, policy-version-mismatched, over-scoped, forbidden, or replayed proposals. An approved decision token authorizes only the exact canonical envelope that Guardian evaluated.
 
-See [ActionEnvelope v1.0.0](docs/ACTION_ENVELOPE_V1.md) and [ADR 0005](docs/adr/0005-action-envelope-v1-contract.md).
+Final approval must match the submitted action, and the action must support the requested scope. A higher policy ceiling never widens that scope. The signer independently rejects decisions that change the envelope's action, target, scope, or bound metadata.
+
+`ActionEnvelope.from_dict()` accepts canonical v1.0.0 inputs only. Missing or extra fields and incorrect types raise `ValidationError`; for example, `"false"` is rejected, while JSON `false` remains false. Pre-v1 fixtures must use an explicit legacy adapter.
+
+See [ActionEnvelope v1.0.0](docs/ACTION_ENVELOPE_V1.md), [ADR 0005](docs/adr/0005-action-envelope-v1-contract.md), and [ADR 0007](docs/adr/0007-exact-action-contract-validation.md).
 
 ## Layer 1 — Sentinel Intelligence
 
@@ -184,9 +189,13 @@ For measured authorization outcomes, see the [Guardian authorization benchmark](
 
 Requires Python 3.10 or newer.
 
+Install runtime and test dependencies (including schema date-time validation):
+
 ```bash
 python -m pip install -r requirements-dev.txt
 ```
+
+For simulator use without pytest, install `requirements.txt` instead.
 
 Run the baseline simulator:
 
