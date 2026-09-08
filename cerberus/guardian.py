@@ -3,16 +3,21 @@
 from __future__ import annotations
 
 from dataclasses import replace
-from datetime import datetime
+from datetime import datetime, timezone
+from threading import Lock
 from typing import Any
 
 from .audit import AuditLedger
 from .models import ActionEnvelope, GuardianDecision
 from .token import DecisionTokenSigner
+from .freshness import FreshnessError, evidence_deadline
+from .state import SQLiteStateStore, StateUnavailable
+from .assurance import AssuranceBundle, AssuranceError, AssuranceVerifier, VerifiedAssurance
+from .models import format_time
 
 
 class EnvelopeIdempotencyRegistry:
-    """In-memory exact-once registry for evaluated ActionEnvelope keys.
+    """In-memory atomic registry for evaluated ActionEnvelope keys.
 
     This is a prototype interface. A production Guardian must replace it with a
     durable, atomic store shared by all Guardian replicas.
@@ -20,12 +25,14 @@ class EnvelopeIdempotencyRegistry:
 
     def __init__(self) -> None:
         self._seen: dict[str, str] = {}
+        self._lock = Lock()
 
     def claim(self, idempotency_key: str, envelope_digest: str) -> bool:
-        if idempotency_key in self._seen:
-            return False
-        self._seen[idempotency_key] = envelope_digest
-        return True
+        with self._lock:
+            if idempotency_key in self._seen:
+                return False
+            self._seen[idempotency_key] = envelope_digest
+            return True
 
 
 class Guardian:
@@ -42,10 +49,12 @@ class Guardian:
         *,
         signer: DecisionTokenSigner | None = None,
         ledger: AuditLedger | None = None,
-        idempotency_registry: EnvelopeIdempotencyRegistry | None = None,
+        idempotency_registry: EnvelopeIdempotencyRegistry | SQLiteStateStore | None = None,
+        assurance_verifier: AssuranceVerifier | None = None,
     ) -> None:
         self.policy_set = policy_set
         self.signer = signer
+        self.assurance_verifier = assurance_verifier
         self.ledger = ledger or AuditLedger()
         self.idempotency_registry = idempotency_registry or EnvelopeIdempotencyRegistry()
         self.policy_version = str(policy_set.get("version", "unknown"))
@@ -83,6 +92,7 @@ class Guardian:
         reversible: bool = False,
         human_approval_required: bool = False,
         now: datetime | None = None,
+        assurance: VerifiedAssurance | None = None,
     ) -> GuardianDecision:
         envelope_digest = envelope.digest()
         result = GuardianDecision(
@@ -103,6 +113,11 @@ class Guardian:
             envelope_digest=envelope_digest,
             idempotency_key=envelope.idempotency_key,
             actor=envelope.actor,
+            assurance_verified=assurance is not None,
+            assurance_digest=assurance.digest if assurance else None,
+            assurance_expires_at=format_time(assurance.expires_at) if assurance else None,
+            authenticated_source_count=len(assurance.source_domains) if assurance else 0,
+            authenticated_approval_count=len(assurance.approval_principals) if assurance else 0,
         )
         token: str | None = None
         if decision == "approve" and self.signer is not None:
@@ -129,12 +144,20 @@ class Guardian:
                 "scope": result.scope,
                 "reason": result.reason,
                 "token_issued": token is not None,
+                "assurance_digest": result.assurance_digest,
+                "assurance_expires_at": result.assurance_expires_at,
+                "authenticated_source_count": result.authenticated_source_count,
+                "authenticated_approval_count": result.authenticated_approval_count,
             },
         )
         return replace(result, decision_token=token, audit_record_hash=record.record_hash)
 
-    def evaluate(self, envelope: ActionEnvelope, *, now: datetime | None = None) -> GuardianDecision:
+    def evaluate(
+        self, envelope: ActionEnvelope, *, now: datetime | None = None,
+        assurance: AssuranceBundle | None = None,
+    ) -> GuardianDecision:
         envelope.validate()
+        now = now or datetime.now(timezone.utc)
 
         if envelope.is_expired(now):
             return self._finalize(
@@ -143,6 +166,14 @@ class Guardian:
                 reason="action envelope expired",
                 policy_id="GLOBAL-FRESHNESS-INVARIANT",
                 now=now,
+            )
+
+        try:
+            evidence_deadline(envelope, now)
+        except FreshnessError as exc:
+            return self._finalize(
+                envelope, decision="deny", reason=str(exc),
+                policy_id="GLOBAL-EVIDENCE-FRESHNESS", now=now,
             )
 
         if envelope.policy_version != self.policy_version:
@@ -154,18 +185,6 @@ class Guardian:
                     f"{envelope.policy_version}; Guardian loaded {self.policy_version}"
                 ),
                 policy_id="GLOBAL-POLICY-VERSION-INVARIANT",
-                now=now,
-            )
-
-        envelope_digest = envelope.digest()
-        if not self.idempotency_registry.claim(
-            envelope.idempotency_key, envelope_digest
-        ):
-            return self._finalize(
-                envelope,
-                decision="deny",
-                reason="action envelope idempotency key was already evaluated",
-                policy_id="GLOBAL-IDEMPOTENCY-INVARIANT",
                 now=now,
             )
 
@@ -285,6 +304,7 @@ class Guardian:
 
             # Check the final decision, including escalation-to-approval transitions.
             # Approval permits the submitted action; it never selects a replacement.
+            verified: VerifiedAssurance | None = None
             if policy_decision == "approve":
                 if envelope.proposed_action != allowed_action:
                     return self._finalize(
@@ -302,6 +322,44 @@ class Guardian:
                         policy_id=policy.get("id"),
                         now=now,
                     )
+                if self.assurance_verifier is None:
+                    return self._finalize(
+                        envelope, decision="deny", reason="trusted assurance verifier is not configured",
+                        policy_id="GLOBAL-ASSURANCE-INVARIANT", now=now,
+                    )
+                try:
+                    verified = self.assurance_verifier.verify(envelope, assurance, now=now)
+                except (AssuranceError, FreshnessError) as exc:
+                    return self._finalize(
+                        envelope, decision="deny", reason=str(exc),
+                        policy_id="GLOBAL-ASSURANCE-INVARIANT", now=now,
+                    )
+                if len(verified.source_domains) < required_sources:
+                    return self._finalize(
+                        envelope, decision="escalate", reason="insufficient authenticated independent source domains",
+                        policy_id="GLOBAL-SOURCE-INDEPENDENCE", human_approval_required=True,
+                        now=now, assurance=verified,
+                    )
+                if len(verified.approval_principals) < approval_count:
+                    return self._finalize(
+                        envelope, decision="escalate", reason="insufficient authenticated approval principals",
+                        policy_id="GLOBAL-APPROVAL-AUTHENTICITY", human_approval_required=True,
+                        now=now, assurance=verified,
+                    )
+                # Unauthenticated input must not reserve a legitimate request's
+                # idempotency key. Claim only after all approval gates pass.
+                try:
+                    claimed = self.idempotency_registry.claim(envelope.idempotency_key, envelope.digest())
+                except StateUnavailable:
+                    return self._finalize(
+                        envelope, decision="deny", reason="durable authority state unavailable",
+                        policy_id="GLOBAL-STATE-AVAILABILITY", now=now, assurance=verified,
+                    )
+                if not claimed:
+                    return self._finalize(
+                        envelope, decision="deny", reason="action envelope idempotency key was already evaluated",
+                        policy_id="GLOBAL-IDEMPOTENCY-INVARIANT", now=now, assurance=verified,
+                    )
 
             return self._finalize(
                 envelope,
@@ -313,6 +371,7 @@ class Guardian:
                 reversible=envelope.reversible,
                 human_approval_required=approval_required,
                 now=now,
+                assurance=verified,
             )
 
         return self._finalize(

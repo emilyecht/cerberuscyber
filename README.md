@@ -28,7 +28,10 @@ CERBERUS Cyber is a **TRL 2–3 research prototype**, not a production defensive
 - JSON Schema Draft 2020-12 validation of original canonical inputs, without type coercion
 - canonical JSON serialization and SHA-256 envelope digests
 - actor identity, policy version, freshness, nonce, evidence references, UUID idempotency key, approval mode, and reversibility metadata
-- short-lived **DecisionToken v1.1.0** artifacts bound to the exact envelope digest, actor, action, target, scope, policy version, and idempotency key
+- short-lived **DecisionToken v1.2.0** artifacts bound to the exact envelope digest, verified assurance digest, actor, action, target, scope, policy version, and idempotency key
+- Ed25519 evidence and approval verification against operator-configured public-key authorities; raw labels cannot grant authority
+- per-observation freshness and token expiry capped by evidence and approval deadlines
+- optional explicit shared SQLite state for atomic, durable authorization and execution claims on one host
 - final approval checks that preserve the requested action and scope, including after human approval gates
 - one-time token consumption and replay rejection
 - side-effect-free Enforcement Gateway receipts
@@ -43,7 +46,7 @@ CERBERUS Cyber is a **TRL 2–3 research prototype**, not a production defensive
 
 - production read or write connectors
 - operational validation against real infrastructure
-- durable atomic replay and idempotency state
+- distributed replay state, rollback-resistant storage, and real-connector crash reconciliation
 - hardware-backed asymmetric signing and key rotation
 - a formally adopted cross-language canonicalization profile such as RFC 8785
 - externalized OPA/Rego policy evaluation
@@ -53,6 +56,10 @@ CERBERUS Cyber is a **TRL 2–3 research prototype**, not a production defensive
 - accreditation for classified or mission deployment
 
 The repository performs no real containment by default.
+
+See [assurance boundary and migration](docs/ASSURANCE_BOUNDARY.md) and the
+[v2 configured-boundary benchmark](benchmarks/assurance_boundaries_v2/README.md).
+These controls are prototype mechanisms, not operational or independent validation.
 
 ## Core Research Question
 
@@ -197,6 +204,10 @@ For simulator use without pytest, install `requirements.txt` instead.
 
 Run the baseline simulator:
 
+The commands below use strict defaults: unsigned proposals cannot be approved.
+For historical policy-only demonstrations, explicitly add `--assume-trusted-fixture`.
+That flag manufactures public test attestations; it does not authenticate real telemetry.
+
 ```bash
 python simulator/cerberus_sim.py simulator/scenarios/ransomware.json
 python simulator/cerberus_sim.py simulator/scenarios/stolen_admin_session.json
@@ -219,6 +230,8 @@ python simulator/embedded_agent_hunt.py \
   simulator/scenarios/embedded_ai_agent_telemetry.json \
   --approval incident-commander \
   --approval cyber-duty-officer \
+  --assume-trusted-fixture \
+  --at 2026-07-13T14:40:30Z \
   --simulate-enforcement
 ```
 

@@ -13,7 +13,8 @@ import os
 from pathlib import Path
 from typing import Any
 
-from cerberus import ActionEnvelope, DecisionTokenSigner, EnforcementGateway, Guardian
+from cerberus import ActionEnvelope, DecisionTokenSigner, EnforcementGateway, Guardian, ReplayCache
+from simulator.assurance_fixtures import fixture_assurance
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_POLICIES = ROOT / "policies" / "policies.json"
@@ -29,6 +30,7 @@ def evaluate(
     policy_set: dict[str, Any],
     *,
     signing_key: bytes | None = None,
+    assume_trusted_fixture: bool = False,
 ) -> dict[str, Any]:
     """Backward-compatible simulator entry point backed by ActionEnvelope v1.0.0."""
 
@@ -38,14 +40,18 @@ def evaluate(
         ttl_seconds=int(policy_set.get("decision_ttl_seconds", 120)),
     )
     signer = DecisionTokenSigner(signing_key) if signing_key is not None else None
-    result = Guardian(policy_set, signer=signer).evaluate(envelope)
-    return result.to_dict()
+    verifier, bundle = fixture_assurance(envelope) if assume_trusted_fixture else (None, None)
+    result = Guardian(policy_set, signer=signer, assurance_verifier=verifier).evaluate(envelope, assurance=bundle)
+    output = result.to_dict()
+    output["fixture_trust_assumption"] = assume_trusted_fixture
+    return output
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="CERBERUS Cyber policy simulator")
     parser.add_argument("scenario", type=Path, help="Path to a scenario JSON file")
     parser.add_argument("--policies", type=Path, default=DEFAULT_POLICIES)
+    parser.add_argument("--assume-trusted-fixture", action="store_true", help="synthesize test attestations for this offline fixture; does not verify real origins")
     parser.add_argument(
         "--simulate-enforcement",
         action="store_true",
@@ -64,12 +70,12 @@ def main() -> None:
             )
         signing_key = key_text.encode("utf-8")
 
-    result = evaluate(load_json(args.scenario), policy_set, signing_key=signing_key)
+    result = evaluate(load_json(args.scenario), policy_set, signing_key=signing_key, assume_trusted_fixture=args.assume_trusted_fixture)
     output: dict[str, Any] = {"guardian": result}
 
     if args.simulate_enforcement and result["guardian_decision"] == "approve":
         signer = DecisionTokenSigner(signing_key or b"")
-        gateway = EnforcementGateway(signer)
+        gateway = EnforcementGateway(signer, replay_cache=ReplayCache())
         output["enforcement"] = gateway.authorize_and_simulate(
             result["decision_token"],
             action=result["authorized_action"],

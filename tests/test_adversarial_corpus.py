@@ -12,6 +12,12 @@ from cerberus.hunt import EmbeddedAgentHunter, TelemetryEvent
 from simulator.scenarios.embedded_agent_adversarial_corpus import SCENARIOS
 
 
+from tests.assurance_support import FixtureGuardian
+from cerberus import ReplayCache
+
+from cerberus.models import parse_time
+SIMULATION_NOW = parse_time("2026-07-18T16:00:50Z")
+
 ROOT = Path(__file__).resolve().parents[1]
 TEST_KEY = b"cerberus-adversarial-corpus-test-key-material-32-bytes-minimum"
 
@@ -79,6 +85,7 @@ def _evaluate_scenario(
 
     envelope = hunter.build_action_envelope(
         finding,
+        now=SIMULATION_NOW,
         incident_id=f"CRB-CORPUS-{scenario['id'].upper()}",
         human_approvals=tuple(scenario.get("human_approvals", [])),
     )
@@ -87,7 +94,7 @@ def _evaluate_scenario(
         envelope = replace(envelope, **envelope_overrides)
         envelope.validate()
 
-    decision = Guardian(policy_set, signer=signer).evaluate(envelope)
+    decision = FixtureGuardian(policy_set, signer=signer).evaluate(envelope, now=SIMULATION_NOW)
     result["decision"] = decision
 
     guardian_expectation = scenario["guardian_expectation"]
@@ -102,11 +109,12 @@ def _evaluate_scenario(
         return result
 
     assert decision.decision_token is not None
-    receipt = EnforcementGateway(signer).authorize_and_simulate(
+    receipt = EnforcementGateway(signer, replay_cache=ReplayCache()).authorize_and_simulate(
         decision.decision_token,
         action=decision.authorized_action,
         target=decision.target,
         scope=decision.scope,
+        now=SIMULATION_NOW,
     )
     result["receipt"] = receipt
     assert receipt["status"] == enforcement_expectation["status"]

@@ -19,6 +19,9 @@ from cerberus import (
 )
 from cerberus.models import format_time
 
+from tests.assurance_support import FixtureGuardian
+from cerberus import ReplayCache
+
 ROOT = Path(__file__).resolve().parents[1]
 POLICIES = json.loads((ROOT / "policies" / "policies.json").read_text(encoding="utf-8"))
 SCHEMA = json.loads(
@@ -90,14 +93,14 @@ def test_unknown_action_type_fails_closed_on_construction() -> None:
 
 def test_guardian_rejects_policy_version_mismatch() -> None:
     envelope = replace(_envelope(), policy_version="9.9.9")
-    decision = Guardian(POLICIES).evaluate(envelope)
+    decision = FixtureGuardian(POLICIES).evaluate(envelope)
     assert decision.guardian_decision == "deny"
     assert decision.policy == "GLOBAL-POLICY-VERSION-INVARIANT"
     assert "requires policy version" in decision.reason
 
 
 def test_guardian_rejects_reused_idempotency_key() -> None:
-    guardian = Guardian(POLICIES)
+    guardian = FixtureGuardian(POLICIES)
     envelope = _envelope()
     first = guardian.evaluate(envelope)
     second = guardian.evaluate(envelope)
@@ -110,7 +113,7 @@ def test_guardian_rejects_reused_idempotency_key() -> None:
 def test_signed_token_binds_exact_canonical_envelope_digest() -> None:
     signer = DecisionTokenSigner(TEST_KEY)
     envelope = _envelope()
-    decision = Guardian(POLICIES, signer=signer).evaluate(envelope)
+    decision = FixtureGuardian(POLICIES, signer=signer).evaluate(envelope)
     assert decision.decision_token is not None
 
     payload = signer.verify(decision.decision_token)

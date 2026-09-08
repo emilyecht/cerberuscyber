@@ -41,6 +41,11 @@ class GuardianDecision:
     envelope_digest: str
     idempotency_key: str
     actor: str
+    assurance_verified: bool = False
+    assurance_digest: str | None = None
+    assurance_expires_at: str | None = None
+    authenticated_source_count: int = 0
+    authenticated_approval_count: int = 0
     decision_token: str | None = None
     audit_record_hash: str | None = None
 
