@@ -1,0 +1,57 @@
+{
+  "threat": "embedded_ai_agent",
+  "action": "quarantine_workload",
+  "scope": "single_workload",
+  "confidence": 0.99,
+  "required_approval_mode": "dual",
+  "human_approvals": [
+    "incident-commander",
+    "cyber-duty-officer"
+  ],
+  "schema_version": "1.0.0",
+  "envelope_id": "benchmark:F02",
+  "incident_id": "BENCH-F02",
+  "actor": "sentinel:benchmark-sandbox",
+  "target": "sandbox:embedded:F02",
+  "evidence_refs": [
+    {
+      "signal": "anomalous_process_behavior",
+      "source_id": "trusted-observer:0",
+      "observed_at": "2026-09-07T11:59:55Z",
+      "digest": "ed9b9705f28a9f16ed2fbceba7e317b964ede51425f8b551f5697ba2e936f663"
+    },
+    {
+      "signal": "hidden_persistence",
+      "source_id": "trusted-observer:1",
+      "observed_at": "2026-09-07T11:59:55Z",
+      "digest": "3a01bbeef9279208a13d01115664d1ccb2fb3619055adfb682dad5daa8317fb6"
+    },
+    {
+      "signal": "credential_misuse",
+      "source_id": "trusted-observer:2",
+      "observed_at": "2026-09-07T11:59:55Z",
+      "digest": "4c5bd249eef41f1d6cfe9d9bbb7a3e398fc33b6ed453a82abb565af69ba89075"
+    },
+    {
+      "signal": "model_driven_deception",
+      "source_id": "trusted-observer:3",
+      "observed_at": "2026-09-07T11:59:55Z",
+      "digest": "feee5ddfa09c5be09f7434e4c3511504fff63c1efd183133a16c7407624e32d7"
+    },
+    {
+      "signal": "log_tampering",
+      "source_id": "trusted-observer:4",
+      "observed_at": "2026-09-07T11:58:00Z",
+      "digest": "d1c6267913273686c99917ad5a0986a7f7b6f08ed7462f860c13d5f16f353e53"
+    }
+  ],
+  "freshness": {
+    "timestamp": "2026-09-07T11:59:59Z",
+    "expires_at": "2026-09-07T12:02:00Z",
+    "nonce": "ee6415f5fbbe51a00d769f2f92474321"
+  },
+  "idempotency_key": "dce1f997-7f3d-576e-8b3f-d1c2a1389f51",
+  "reversibility_flag": true,
+  "policy_version": "0.5.0",
+  "mission_impact": "low"
+}

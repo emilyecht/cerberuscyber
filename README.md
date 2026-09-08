@@ -180,6 +180,8 @@ See [Adversarial AI Persistence Scenario](docs/EMBEDDED_AGENT_SCENARIO.md).
 
 ## Quick Start
 
+For measured authorization outcomes, see the [Guardian authorization benchmark](benchmarks/guardian_authorization_v1/README.md) and its [pinned baseline-versus-repair results](results/guardian_authorization_v1/README.md). The results distinguish existing-contract repairs from additional freshness, authenticity, and durable-state requirements; they do not assign an overall security score.
+
 Requires Python 3.10 or newer.
 
 ```bash
