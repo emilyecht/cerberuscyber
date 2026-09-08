@@ -1,5 +1,7 @@
 # Authorization benchmark results — 7 September 2026
 
+Inspect the [complete reviewer evidence packet](reviewer_packet/README.md): all 33 unsafe requests and 8 eligible controls, fully expanded JSON, before/after observations, and reproduction commands. The [replay verification record](reviewer-verification.json) reproduces all 41 requests on each pinned version.
+
 **The hardening branch closes the exercised action, scope, and input failures while preserving eligible responses. Authenticity, evidence-age, and durable-state gaps remain.**
 
 Targets: baseline `ac22a922fae1475cbfa9921534222df96cbdf2b5`; repaired PR #8 head `651bd4a465661c7c54d58d3c60c279338b727c4f`. At assessment, PR #8 is open and unmerged. Both were evaluated with the same corpus, runner, policy bytes, and clock. All 59 cases completed without measurement errors on each target.

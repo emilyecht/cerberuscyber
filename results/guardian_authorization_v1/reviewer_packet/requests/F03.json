@@ -1,0 +1,36 @@
+{
+  "threat": "ransomware",
+  "action": "isolate_endpoint",
+  "scope": "single_endpoint",
+  "confidence": 0.99,
+  "required_approval_mode": "none",
+  "human_approvals": [],
+  "schema_version": "1.0.0",
+  "envelope_id": "benchmark:F03",
+  "incident_id": "BENCH-F03",
+  "actor": "sentinel:benchmark-sandbox",
+  "target": "sandbox:ransomware:F03",
+  "evidence_refs": [
+    {
+      "signal": "rapid_file_rewrite",
+      "source_id": "trusted-observer:0",
+      "observed_at": "2026-09-07T12:00:31Z",
+      "digest": "8d45c44d919918fb0f92bf1c7110fbc2284fdf3888c22aa31321ec956c02d95b"
+    },
+    {
+      "signal": "recovery_deletion_attempt",
+      "source_id": "trusted-observer:1",
+      "observed_at": "2026-09-07T11:59:55Z",
+      "digest": "36c37e334c21553fafb5a88bf78a48901dc0462dbb959da78c70255d4ba33cdb"
+    }
+  ],
+  "freshness": {
+    "timestamp": "2026-09-07T11:59:59Z",
+    "expires_at": "2026-09-07T12:02:00Z",
+    "nonce": "267bc1cb90ca0a590ee4305dee151abd"
+  },
+  "idempotency_key": "d8411e80-299a-583c-b1e5-292ddfd457f2",
+  "reversibility_flag": true,
+  "policy_version": "0.5.0",
+  "mission_impact": "low"
+}

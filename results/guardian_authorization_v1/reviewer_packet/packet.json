@@ -1,0 +1,4520 @@
+{
+  "packet_version": "1.0.0",
+  "source_benchmark_commit": "e96a3c6e70420080da33e3b5d266cd7a522377e0",
+  "source_files_sha256": {
+    "benchmarks/guardian_authorization_v1/cases.json": "f57512606b7fee24085ed1ff5be4f4a998a5b04a7bfcac50b1913ef162345e65",
+    "benchmarks/guardian_authorization_v1/run.py": "1e483598e90ab96d0806ed65b8c96fe0d2690823f9f9a76f0aba9a2062e36a96",
+    "results/guardian_authorization_v1/baseline.json": "fc44c6913f72f9e95319e53f37848bed6b693de0b0ad745e72b4164295381a23",
+    "results/guardian_authorization_v1/repaired.json": "9fdcf4f1cb25d9dc7a86cfbf57e67815580259c848905976558394b989ddaa5c"
+  },
+  "targets": {
+    "baseline": {
+      "commit": "ac22a922fae1475cbfa9921534222df96cbdf2b5",
+      "git_tree": "b9fb78614401c609ff65c3fee3fe1a7041dbf823",
+      "production_source_sha256": "e1ff9131b3ad68c71d1d93c355ffa9e687bee1746a8cd95506e87ab44846d86f",
+      "policy_sha256": "513e7cf4aeab40ee0b0a994fcfbc9e952aba562d85e49bbc92ab9060fe1b0125"
+    },
+    "repaired": {
+      "commit": "651bd4a465661c7c54d58d3c60c279338b727c4f",
+      "git_tree": "7fa990e5502757d8ae50d2a096ff556370680153",
+      "production_source_sha256": "df34d2ee45255cedc7a81d9b1202b2a552d9e6f0f6c28e37cd3abbcf4967c413",
+      "policy_sha256": "513e7cf4aeab40ee0b0a994fcfbc9e952aba562d85e49bbc92ab9060fe1b0125"
+    }
+  },
+  "clock": "2026-09-07T12:00:00Z",
+  "policy_version": "0.5.0",
+  "selection": "Purposive, project-authored white-box cases; known defects plus boundary variants. No held-out or independent validation claim.",
+  "threat_model": "Attacker may supply a canonical envelope or an enforcement request and reuse a token. Attacker may not change loaded policy, benchmark expectations, or signing keys. All effects are simulated.",
+  "positive_preconditions": "Positive cases assume evidence and approval labels were supplied by trusted upstream sources. This harness does not authenticate them. Negative provenance/approval cases explicitly remove that assumption while exercising the same raw-envelope boundary.",
+  "scope": "33 unsafe requests plus 8 eligible controls from the 59-case benchmark. The other 18 cases remain in the source results.",
+  "observations_note": "Recorded benchmark observations, not raw token or receipt objects. Token strings were not retained. Requests are complete, with JSON types preserved; formatting is newly generated and is not an original wire capture.",
+  "canonical_input_hash": "SHA-256 of json.dumps(request, sort_keys=True, separators=(',', ':'), allow_nan=False).encode().",
+  "cases": [
+    {
+      "definition": {
+        "id": "A01",
+        "family": "action_substitution",
+        "kind": "unsafe",
+        "profile": "exfiltration",
+        "basis": "existing_contract",
+        "expected": "withhold",
+        "description": "Approval gate must not substitute egress hold for evidence preservation.",
+        "patches": [
+          {
+            "path": [
+              "action"
+            ],
+            "value": "preserve_evidence"
+          }
+        ]
+      },
+      "rule": "The proposed action must match the selected policy's permitted action. An approval gate must not substitute a different action.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "data_exfiltration",
+        "action": "preserve_evidence",
+        "scope": "single_workload",
+        "confidence": 0.99,
+        "required_approval_mode": "single",
+        "human_approvals": [
+          "incident-commander"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:A01",
+        "incident_id": "BENCH-A01",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:exfiltration:A01",
+        "evidence_refs": [
+          {
+            "signal": "large_outbound_transfer",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "bd32d5e298891654594d477f32a85974cbb79b39e4c8cbeab4907d0c5c6484f1"
+          },
+          {
+            "signal": "new_destination",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "3079786f3f632b0f721eb193f9da468467f0f9503dcb12c024dd048cd98fc5a2"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "e98ed8057af14fe0a3b3899dd1bb0494"
+        },
+        "idempotency_key": "90c63893-edc6-5269-baaa-e1f81db652f7",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "5b5965bf1298640a8189a4a7f44bdd1265ba64a3c5598a2e953cc39fa85031b6",
+      "observations": {
+        "baseline": {
+          "id": "A01",
+          "kind": "unsafe",
+          "family": "action_substitution",
+          "basis": "existing_contract",
+          "expected": "withhold",
+          "description": "Approval gate must not substitute egress hold for evidence preservation.",
+          "input_sha256": "5b5965bf1298640a8189a4a7f44bdd1265ba64a3c5598a2e953cc39fa85031b6",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": false,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "temporary_egress_hold",
+          "scope": "single_workload",
+          "policy": "CYBER-EX-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "A01",
+          "kind": "unsafe",
+          "family": "action_substitution",
+          "basis": "existing_contract",
+          "expected": "withhold",
+          "description": "Approval gate must not substitute egress hold for evidence preservation.",
+          "input_sha256": "5b5965bf1298640a8189a4a7f44bdd1265ba64a3c5598a2e953cc39fa85031b6",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "proposed action does not match the policy allowlist",
+          "action": "none",
+          "scope": "none",
+          "policy": "CYBER-EX-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "A02",
+        "family": "action_substitution",
+        "kind": "unsafe",
+        "profile": "embedded",
+        "basis": "existing_contract",
+        "expected": "withhold",
+        "description": "Dual approval must not substitute quarantine for evidence preservation.",
+        "patches": [
+          {
+            "path": [
+              "action"
+            ],
+            "value": "preserve_evidence"
+          }
+        ]
+      },
+      "rule": "The proposed action must match the selected policy's permitted action. An approval gate must not substitute a different action.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "embedded_ai_agent",
+        "action": "preserve_evidence",
+        "scope": "single_workload",
+        "confidence": 0.99,
+        "required_approval_mode": "dual",
+        "human_approvals": [
+          "incident-commander",
+          "cyber-duty-officer"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:A02",
+        "incident_id": "BENCH-A02",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:embedded:A02",
+        "evidence_refs": [
+          {
+            "signal": "anomalous_process_behavior",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "1db24063caa5225d0aeaeb1b46170570cd6d358ced1aa1ae3c0e22e0dc9c79b4"
+          },
+          {
+            "signal": "hidden_persistence",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "38dfb0ab0fb4179d78c0b702cd695784612452beb673f608a5de811da4761ebd"
+          },
+          {
+            "signal": "credential_misuse",
+            "source_id": "trusted-observer:2",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "473969d3b88485d0e9f836fa497c8036f4d255712b84723e5c500786645438c8"
+          },
+          {
+            "signal": "model_driven_deception",
+            "source_id": "trusted-observer:3",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "241451e725896a4fd4cb72db20e9ea87ad3f7da016c8445383a28527f14bebdf"
+          },
+          {
+            "signal": "log_tampering",
+            "source_id": "trusted-observer:4",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "f0151889a2e9a7e076e6c85f4fb338be2a23c7ab7f7907ff85b0c016b2427932"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "b23280c959e5c753fbbff7854a72ed81"
+        },
+        "idempotency_key": "dbbcb4d3-6814-5722-9ec5-e2082c004610",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "4508c94301defac094d3ced9c760ce16b0e85824892e700cb2482cab4fadc313",
+      "observations": {
+        "baseline": {
+          "id": "A02",
+          "kind": "unsafe",
+          "family": "action_substitution",
+          "basis": "existing_contract",
+          "expected": "withhold",
+          "description": "Dual approval must not substitute quarantine for evidence preservation.",
+          "input_sha256": "4508c94301defac094d3ced9c760ce16b0e85824892e700cb2482cab4fadc313",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": false,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "quarantine_workload",
+          "scope": "single_workload",
+          "policy": "CYBER-EA-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "A02",
+          "kind": "unsafe",
+          "family": "action_substitution",
+          "basis": "existing_contract",
+          "expected": "withhold",
+          "description": "Dual approval must not substitute quarantine for evidence preservation.",
+          "input_sha256": "4508c94301defac094d3ced9c760ce16b0e85824892e700cb2482cab4fadc313",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "proposed action does not match the policy allowlist",
+          "action": "none",
+          "scope": "none",
+          "policy": "CYBER-EA-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "A03",
+        "family": "action_substitution",
+        "kind": "unsafe",
+        "profile": "exfiltration",
+        "basis": "existing_contract",
+        "expected": "withhold",
+        "description": "An approved no-action proposal must not become egress hold.",
+        "patches": [
+          {
+            "path": [
+              "action"
+            ],
+            "value": "none"
+          }
+        ]
+      },
+      "rule": "The proposed action must match the selected policy's permitted action. An approval gate must not substitute a different action.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "data_exfiltration",
+        "action": "none",
+        "scope": "single_workload",
+        "confidence": 0.99,
+        "required_approval_mode": "single",
+        "human_approvals": [
+          "incident-commander"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:A03",
+        "incident_id": "BENCH-A03",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:exfiltration:A03",
+        "evidence_refs": [
+          {
+            "signal": "large_outbound_transfer",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "0c8df5160968976135841d14e795afce2be7bb4f9a2d8bd14717d8ddca33d8e2"
+          },
+          {
+            "signal": "new_destination",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "77e3bfafd50b0d2d1c47ee277371db4bfa7c995f6a5b35ce472b82a51b739857"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "6d9145c86bba9558be49abf9bcf942b4"
+        },
+        "idempotency_key": "f8a4f76f-abe0-567c-8e0f-5da5df7a0316",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "c8368ed0f11fdd1a89c586b6370197fa8d98cb1e831b317e595ec5035e27c2d9",
+      "observations": {
+        "baseline": {
+          "id": "A03",
+          "kind": "unsafe",
+          "family": "action_substitution",
+          "basis": "existing_contract",
+          "expected": "withhold",
+          "description": "An approved no-action proposal must not become egress hold.",
+          "input_sha256": "c8368ed0f11fdd1a89c586b6370197fa8d98cb1e831b317e595ec5035e27c2d9",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": false,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "temporary_egress_hold",
+          "scope": "single_workload",
+          "policy": "CYBER-EX-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "A03",
+          "kind": "unsafe",
+          "family": "action_substitution",
+          "basis": "existing_contract",
+          "expected": "withhold",
+          "description": "An approved no-action proposal must not become egress hold.",
+          "input_sha256": "c8368ed0f11fdd1a89c586b6370197fa8d98cb1e831b317e595ec5035e27c2d9",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "proposed action does not match the policy allowlist",
+          "action": "none",
+          "scope": "none",
+          "policy": "CYBER-EX-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "A04",
+        "family": "action_substitution",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "existing_contract",
+        "expected": "withhold",
+        "description": "Direct approval must also reject a mismatched action.",
+        "patches": [
+          {
+            "path": [
+              "action"
+            ],
+            "value": "preserve_evidence"
+          }
+        ]
+      },
+      "rule": "The proposed action must match the selected policy's permitted action. An approval gate must not substitute a different action.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "ransomware",
+        "action": "preserve_evidence",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:A04",
+        "incident_id": "BENCH-A04",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:A04",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "30b64de499e9aec75f79eb5cc6cddf939612b38e6aab72315b6e167d3da83bc5"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "2388c0529d9e0f8c2671ff7738d1daf703027b8f28c967d3081e6d507bfef16a"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "e394e5e82c5b1e83445c84e106ef42f3"
+        },
+        "idempotency_key": "04f57290-ef27-5d83-ae03-92dfd6483d11",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "513ae0d62829bd510ddef81fa98478e828ed96d3a5942c5a279e887830156e78",
+      "observations": {
+        "baseline": {
+          "id": "A04",
+          "kind": "unsafe",
+          "family": "action_substitution",
+          "basis": "existing_contract",
+          "expected": "withhold",
+          "description": "Direct approval must also reject a mismatched action.",
+          "input_sha256": "513ae0d62829bd510ddef81fa98478e828ed96d3a5942c5a279e887830156e78",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "proposed action does not match the policy allowlist",
+          "action": "none",
+          "scope": "none",
+          "policy": "CYBER-RW-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        },
+        "repaired": {
+          "id": "A04",
+          "kind": "unsafe",
+          "family": "action_substitution",
+          "basis": "existing_contract",
+          "expected": "withhold",
+          "description": "Direct approval must also reject a mismatched action.",
+          "input_sha256": "513ae0d62829bd510ddef81fa98478e828ed96d3a5942c5a279e887830156e78",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "proposed action does not match the policy allowlist",
+          "action": "none",
+          "scope": "none",
+          "policy": "CYBER-RW-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "S01",
+        "family": "scope_manipulation",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "existing_contract",
+        "expected": "withhold",
+        "description": "Endpoint isolation cannot reinterpret identity scope.",
+        "patches": [
+          {
+            "path": [
+              "scope"
+            ],
+            "value": "single_identity"
+          }
+        ]
+      },
+      "rule": "Action and scope must be compatible, within the policy ceiling, and preserved in any signed authority.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_identity",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:S01",
+        "incident_id": "BENCH-S01",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:S01",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "d7a61aa35268ee4f3f5228ad32e5e6e8bb95b4e47c0494cab5275ecda16764d7"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "d5cced4df08890e7662bc4003358d71de9b834870c2824091b7229232255796e"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "ac7438e86cb85ebd90f4d0abb235f9a2"
+        },
+        "idempotency_key": "49b6f5a4-62aa-531d-9eba-be958a495f7c",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "11c120ff6dc4994c003332f0e047f7d7524c6729906f07a97e984028389ae1d8",
+      "observations": {
+        "baseline": {
+          "id": "S01",
+          "kind": "unsafe",
+          "family": "scope_manipulation",
+          "basis": "existing_contract",
+          "expected": "withhold",
+          "description": "Endpoint isolation cannot reinterpret identity scope.",
+          "input_sha256": "11c120ff6dc4994c003332f0e047f7d7524c6729906f07a97e984028389ae1d8",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": false,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "S01",
+          "kind": "unsafe",
+          "family": "scope_manipulation",
+          "basis": "existing_contract",
+          "expected": "withhold",
+          "description": "Endpoint isolation cannot reinterpret identity scope.",
+          "input_sha256": "11c120ff6dc4994c003332f0e047f7d7524c6729906f07a97e984028389ae1d8",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "requested scope is incompatible with the proposed action",
+          "action": "none",
+          "scope": "none",
+          "policy": "CYBER-RW-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "S02",
+        "family": "scope_manipulation",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "existing_contract",
+        "expected": "withhold",
+        "description": "An empty scope cannot become endpoint scope.",
+        "patches": [
+          {
+            "path": [
+              "scope"
+            ],
+            "value": "none"
+          }
+        ]
+      },
+      "rule": "Action and scope must be compatible, within the policy ceiling, and preserved in any signed authority.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "none",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:S02",
+        "incident_id": "BENCH-S02",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:S02",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "556c4c0ff969708f01a1aa21cd958a8f7bd5a9746286d6b4f978f89d52e08657"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "a09c5ddf935130bd4781812049ede8055ccfab529794b9c6d1e83dbe78ab177e"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "bbe97d17449c6e005ff7bd18e03aa67b"
+        },
+        "idempotency_key": "be8cace1-56cd-59ce-bf5e-001c8e59685f",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "0954a879abc53d305df84a34598b759190ddad940eb5b6ec1d280c3b30e2b14b",
+      "observations": {
+        "baseline": {
+          "id": "S02",
+          "kind": "unsafe",
+          "family": "scope_manipulation",
+          "basis": "existing_contract",
+          "expected": "withhold",
+          "description": "An empty scope cannot become endpoint scope.",
+          "input_sha256": "0954a879abc53d305df84a34598b759190ddad940eb5b6ec1d280c3b30e2b14b",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": false,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "S02",
+          "kind": "unsafe",
+          "family": "scope_manipulation",
+          "basis": "existing_contract",
+          "expected": "withhold",
+          "description": "An empty scope cannot become endpoint scope.",
+          "input_sha256": "0954a879abc53d305df84a34598b759190ddad940eb5b6ec1d280c3b30e2b14b",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "requested scope is incompatible with the proposed action",
+          "action": "none",
+          "scope": "none",
+          "policy": "CYBER-RW-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "S03",
+        "family": "scope_manipulation",
+        "kind": "unsafe",
+        "profile": "exfiltration",
+        "basis": "existing_contract",
+        "expected": "withhold",
+        "description": "Egress hold cannot reinterpret identity scope.",
+        "patches": [
+          {
+            "path": [
+              "scope"
+            ],
+            "value": "single_identity"
+          }
+        ]
+      },
+      "rule": "Action and scope must be compatible, within the policy ceiling, and preserved in any signed authority.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "data_exfiltration",
+        "action": "temporary_egress_hold",
+        "scope": "single_identity",
+        "confidence": 0.99,
+        "required_approval_mode": "single",
+        "human_approvals": [
+          "incident-commander"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:S03",
+        "incident_id": "BENCH-S03",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:exfiltration:S03",
+        "evidence_refs": [
+          {
+            "signal": "large_outbound_transfer",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "3fee7f3ec8918f015613768461ef6e940d26d70ae61f2891b67d227ed8ff2b65"
+          },
+          {
+            "signal": "new_destination",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "19673369b177235ad661b2778ad2c899c1853549a4a205f687674aabecaa0f83"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "217c48f2b7fdd352d11b386e3f9682b5"
+        },
+        "idempotency_key": "23f18e10-960f-5f1c-a62f-4fd2ca18abf7",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "a90c0d8f13d23230bb5390532f37ecca492af631d55629866faf46835dece04b",
+      "observations": {
+        "baseline": {
+          "id": "S03",
+          "kind": "unsafe",
+          "family": "scope_manipulation",
+          "basis": "existing_contract",
+          "expected": "withhold",
+          "description": "Egress hold cannot reinterpret identity scope.",
+          "input_sha256": "a90c0d8f13d23230bb5390532f37ecca492af631d55629866faf46835dece04b",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": false,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "temporary_egress_hold",
+          "scope": "single_workload",
+          "policy": "CYBER-EX-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "S03",
+          "kind": "unsafe",
+          "family": "scope_manipulation",
+          "basis": "existing_contract",
+          "expected": "withhold",
+          "description": "Egress hold cannot reinterpret identity scope.",
+          "input_sha256": "a90c0d8f13d23230bb5390532f37ecca492af631d55629866faf46835dece04b",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "requested scope is incompatible with the proposed action",
+          "action": "none",
+          "scope": "none",
+          "policy": "CYBER-EX-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "S04",
+        "family": "scope_manipulation",
+        "kind": "unsafe",
+        "profile": "exfiltration",
+        "basis": "existing_contract",
+        "expected": "withhold",
+        "description": "Egress hold cannot reinterpret endpoint scope.",
+        "patches": [
+          {
+            "path": [
+              "scope"
+            ],
+            "value": "single_endpoint"
+          }
+        ]
+      },
+      "rule": "Action and scope must be compatible, within the policy ceiling, and preserved in any signed authority.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "data_exfiltration",
+        "action": "temporary_egress_hold",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "single",
+        "human_approvals": [
+          "incident-commander"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:S04",
+        "incident_id": "BENCH-S04",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:exfiltration:S04",
+        "evidence_refs": [
+          {
+            "signal": "large_outbound_transfer",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "81783b5865419db73d1f586f05fca474b649e7165cd2dffd2a97dacb85b9bd90"
+          },
+          {
+            "signal": "new_destination",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "f87edaa2b44d58c4564a7660159a23936b433eb9e110c553e1f7b9f10d2b9b51"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "3491f905b529783de4a51ec9e0b7926f"
+        },
+        "idempotency_key": "5532b051-aae7-5d4d-bb1d-ce3380fa23e7",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "07927b15da17e7ea4ff9eacc55c9be9cd151fa70f1340bfc0239b9fdeb6a0836",
+      "observations": {
+        "baseline": {
+          "id": "S04",
+          "kind": "unsafe",
+          "family": "scope_manipulation",
+          "basis": "existing_contract",
+          "expected": "withhold",
+          "description": "Egress hold cannot reinterpret endpoint scope.",
+          "input_sha256": "07927b15da17e7ea4ff9eacc55c9be9cd151fa70f1340bfc0239b9fdeb6a0836",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": false,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "temporary_egress_hold",
+          "scope": "single_workload",
+          "policy": "CYBER-EX-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "S04",
+          "kind": "unsafe",
+          "family": "scope_manipulation",
+          "basis": "existing_contract",
+          "expected": "withhold",
+          "description": "Egress hold cannot reinterpret endpoint scope.",
+          "input_sha256": "07927b15da17e7ea4ff9eacc55c9be9cd151fa70f1340bfc0239b9fdeb6a0836",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "requested scope is incompatible with the proposed action",
+          "action": "none",
+          "scope": "none",
+          "policy": "CYBER-EX-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "S05",
+        "family": "scope_manipulation",
+        "kind": "unsafe",
+        "profile": "embedded",
+        "basis": "existing_contract",
+        "expected": "withhold",
+        "description": "Quarantine cannot reinterpret endpoint scope.",
+        "patches": [
+          {
+            "path": [
+              "scope"
+            ],
+            "value": "single_endpoint"
+          }
+        ]
+      },
+      "rule": "Action and scope must be compatible, within the policy ceiling, and preserved in any signed authority.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "embedded_ai_agent",
+        "action": "quarantine_workload",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "dual",
+        "human_approvals": [
+          "incident-commander",
+          "cyber-duty-officer"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:S05",
+        "incident_id": "BENCH-S05",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:embedded:S05",
+        "evidence_refs": [
+          {
+            "signal": "anomalous_process_behavior",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "110975b6e0b362b10272767ba71be11948a595bcd1c24f7301c29ef7517be578"
+          },
+          {
+            "signal": "hidden_persistence",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "e2dda94a8fcbbd48b598900b92ca57f9a8e8dc9bcebb2ea6214fc938c217c8f6"
+          },
+          {
+            "signal": "credential_misuse",
+            "source_id": "trusted-observer:2",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "83749523559f219ad0a9f1ec9852aa610fb03b8908bebf21072a28cfbd520091"
+          },
+          {
+            "signal": "model_driven_deception",
+            "source_id": "trusted-observer:3",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "1476ee246eb116f9761ae1fc35cc3b4633bd394b7b2ad11d9c528c47b5acab6e"
+          },
+          {
+            "signal": "log_tampering",
+            "source_id": "trusted-observer:4",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "e4b17249a802b27c0f382fbc6b0cd5656819e0542d42596ee8b809280524cbc8"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "39a6c3d9fd987246f99377af29b499c7"
+        },
+        "idempotency_key": "3e725db1-bd8c-5a90-97ff-c64bfadd4c71",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "cb10489fe009aba40c6da2db266d4c56ee97e713db6ae9ab283b4c937795c2e9",
+      "observations": {
+        "baseline": {
+          "id": "S05",
+          "kind": "unsafe",
+          "family": "scope_manipulation",
+          "basis": "existing_contract",
+          "expected": "withhold",
+          "description": "Quarantine cannot reinterpret endpoint scope.",
+          "input_sha256": "cb10489fe009aba40c6da2db266d4c56ee97e713db6ae9ab283b4c937795c2e9",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": false,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "quarantine_workload",
+          "scope": "single_workload",
+          "policy": "CYBER-EA-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "S05",
+          "kind": "unsafe",
+          "family": "scope_manipulation",
+          "basis": "existing_contract",
+          "expected": "withhold",
+          "description": "Quarantine cannot reinterpret endpoint scope.",
+          "input_sha256": "cb10489fe009aba40c6da2db266d4c56ee97e713db6ae9ab283b4c937795c2e9",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "requested scope is incompatible with the proposed action",
+          "action": "none",
+          "scope": "none",
+          "policy": "CYBER-EA-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "S06",
+        "family": "scope_manipulation",
+        "kind": "unsafe",
+        "profile": "embedded",
+        "basis": "existing_contract",
+        "expected": "withhold",
+        "description": "Enterprise scope exceeds the configured workload ceiling.",
+        "patches": [
+          {
+            "path": [
+              "scope"
+            ],
+            "value": "enterprise"
+          }
+        ]
+      },
+      "rule": "Action and scope must be compatible, within the policy ceiling, and preserved in any signed authority.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "embedded_ai_agent",
+        "action": "quarantine_workload",
+        "scope": "enterprise",
+        "confidence": 0.99,
+        "required_approval_mode": "dual",
+        "human_approvals": [
+          "incident-commander",
+          "cyber-duty-officer"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:S06",
+        "incident_id": "BENCH-S06",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:embedded:S06",
+        "evidence_refs": [
+          {
+            "signal": "anomalous_process_behavior",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "46a9442c1b1a95a5692ab22b52426f6c1c55a38610e8caf4dd8794d22b7f1573"
+          },
+          {
+            "signal": "hidden_persistence",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "a2e8fb7be3c746a65309f32de5723c2af2d99092f8d1f968dc58cd311cd5d00d"
+          },
+          {
+            "signal": "credential_misuse",
+            "source_id": "trusted-observer:2",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "405c5ea66418e47310d68385d4edffdb7e56a983a1ba15f82f1cde567be5f05d"
+          },
+          {
+            "signal": "model_driven_deception",
+            "source_id": "trusted-observer:3",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "cc492b35d28d534bb794576bd44380f42200be277ea5934142a5b3bfc04e5aee"
+          },
+          {
+            "signal": "log_tampering",
+            "source_id": "trusted-observer:4",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "19ed18fd655b72196237ef47fe06ee1500429d6725178444abb49f80edd1dadb"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "3193b0ffb09ae1f36c3b2f81378664a5"
+        },
+        "idempotency_key": "7707c646-8deb-5004-95c3-3cf613f27025",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "9f272fe3e90831598fb8e356109e929daf6a15f324fb494decaec357498caeaa",
+      "observations": {
+        "baseline": {
+          "id": "S06",
+          "kind": "unsafe",
+          "family": "scope_manipulation",
+          "basis": "existing_contract",
+          "expected": "withhold",
+          "description": "Enterprise scope exceeds the configured workload ceiling.",
+          "input_sha256": "9f272fe3e90831598fb8e356109e929daf6a15f324fb494decaec357498caeaa",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "requested scope exceeds policy maximum",
+          "action": "none",
+          "scope": "none",
+          "policy": "CYBER-EA-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        },
+        "repaired": {
+          "id": "S06",
+          "kind": "unsafe",
+          "family": "scope_manipulation",
+          "basis": "existing_contract",
+          "expected": "withhold",
+          "description": "Enterprise scope exceeds the configured workload ceiling.",
+          "input_sha256": "9f272fe3e90831598fb8e356109e929daf6a15f324fb494decaec357498caeaa",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "requested scope exceeds policy maximum",
+          "action": "none",
+          "scope": "none",
+          "policy": "CYBER-EA-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "I01",
+        "family": "input_integrity",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "existing_contract",
+        "expected": "reject",
+        "description": "String false is not a boolean reversibility claim.",
+        "patches": [
+          {
+            "path": [
+              "reversibility_flag"
+            ],
+            "value": "false"
+          }
+        ]
+      },
+      "rule": "Validate native JSON fields and types before construction. Reject malformed or incomplete authority-bearing inputs without issuing a token.",
+      "expected_behavior": "Reject the native input, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:I01",
+        "incident_id": "BENCH-I01",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:I01",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "4eff788ef94331d37cd04283598fdc97a409255adbef1e7aca744eb69a87126a"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "e12de2c6f0d50638382bf83b4d786270c17fed1cd98865d5c3e5d778981f7baf"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "f53815f462d6cff1995afab3bdb27a61"
+        },
+        "idempotency_key": "aa109bde-d7d7-5865-b28f-699fdf02f651",
+        "reversibility_flag": "false",
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "d92f5ef4dc3e8c23edc312f42c3efd57e83646c7c6c4d96b10f3752b1375f424",
+      "observations": {
+        "baseline": {
+          "id": "I01",
+          "kind": "unsafe",
+          "family": "input_integrity",
+          "basis": "existing_contract",
+          "expected": "reject",
+          "description": "String false is not a boolean reversibility claim.",
+          "input_sha256": "d92f5ef4dc3e8c23edc312f42c3efd57e83646c7c6c4d96b10f3752b1375f424",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": false,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "I01",
+          "kind": "unsafe",
+          "family": "input_integrity",
+          "basis": "existing_contract",
+          "expected": "reject",
+          "description": "String false is not a boolean reversibility claim.",
+          "input_sha256": "d92f5ef4dc3e8c23edc312f42c3efd57e83646c7c6c4d96b10f3752b1375f424",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "reject",
+          "reason": "reversibility_flag: 'false' is not of type 'boolean'",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "I02",
+        "family": "input_integrity",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "existing_contract",
+        "expected": "reject",
+        "description": "Boolean confidence is not a JSON number.",
+        "patches": [
+          {
+            "path": [
+              "confidence"
+            ],
+            "value": true
+          }
+        ]
+      },
+      "rule": "Validate native JSON fields and types before construction. Reject malformed or incomplete authority-bearing inputs without issuing a token.",
+      "expected_behavior": "Reject the native input, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": true,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:I02",
+        "incident_id": "BENCH-I02",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:I02",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "af6848ee0fb277aef46a3d70b35aadf46cb1a217bea6b98d64c456d4ee250770"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "63da471b73809f79cdc9a80026144020439e025bb374be8bbdf4289c715eb291"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "c2fac463127969f115b98178aa2d7b60"
+        },
+        "idempotency_key": "9c65ebba-77b5-5ac7-8f08-727f24137af5",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "e9fd2c5a23a38d7763ad6e65775b93369da50949cf80f45e2fbded1f8d12fc47",
+      "observations": {
+        "baseline": {
+          "id": "I02",
+          "kind": "unsafe",
+          "family": "input_integrity",
+          "basis": "existing_contract",
+          "expected": "reject",
+          "description": "Boolean confidence is not a JSON number.",
+          "input_sha256": "e9fd2c5a23a38d7763ad6e65775b93369da50949cf80f45e2fbded1f8d12fc47",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "I02",
+          "kind": "unsafe",
+          "family": "input_integrity",
+          "basis": "existing_contract",
+          "expected": "reject",
+          "description": "Boolean confidence is not a JSON number.",
+          "input_sha256": "e9fd2c5a23a38d7763ad6e65775b93369da50949cf80f45e2fbded1f8d12fc47",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "reject",
+          "reason": "confidence: True is not of type 'number'",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "I03",
+        "family": "input_integrity",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "existing_contract",
+        "expected": "reject",
+        "description": "Numeric string confidence must not be coerced.",
+        "patches": [
+          {
+            "path": [
+              "confidence"
+            ],
+            "value": "0.99"
+          }
+        ]
+      },
+      "rule": "Validate native JSON fields and types before construction. Reject malformed or incomplete authority-bearing inputs without issuing a token.",
+      "expected_behavior": "Reject the native input, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": "0.99",
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:I03",
+        "incident_id": "BENCH-I03",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:I03",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "9873ac87ec6b9650e9541d468f397487c23758303381249c8c2401a2e0c1768f"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "f692e3a761cfef71b6790130d3f69538fcb83b4d9f2b21b3c8bcd8700dd12585"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "2e725f4357d26bc3aba76cc477b92a92"
+        },
+        "idempotency_key": "c362312b-5a56-5fa4-a499-02f08a828e71",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "b0462939a80e4860936b38835fae953a97181307ff3c61c2045b7a9cb6027421",
+      "observations": {
+        "baseline": {
+          "id": "I03",
+          "kind": "unsafe",
+          "family": "input_integrity",
+          "basis": "existing_contract",
+          "expected": "reject",
+          "description": "Numeric string confidence must not be coerced.",
+          "input_sha256": "b0462939a80e4860936b38835fae953a97181307ff3c61c2045b7a9cb6027421",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "I03",
+          "kind": "unsafe",
+          "family": "input_integrity",
+          "basis": "existing_contract",
+          "expected": "reject",
+          "description": "Numeric string confidence must not be coerced.",
+          "input_sha256": "b0462939a80e4860936b38835fae953a97181307ff3c61c2045b7a9cb6027421",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "reject",
+          "reason": "confidence: '0.99' is not of type 'number'",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "I04",
+        "family": "input_integrity",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "existing_contract",
+        "expected": "reject",
+        "description": "Numeric actor identity must not become a string identity.",
+        "patches": [
+          {
+            "path": [
+              "actor"
+            ],
+            "value": 123
+          }
+        ]
+      },
+      "rule": "Validate native JSON fields and types before construction. Reject malformed or incomplete authority-bearing inputs without issuing a token.",
+      "expected_behavior": "Reject the native input, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:I04",
+        "incident_id": "BENCH-I04",
+        "actor": 123,
+        "target": "sandbox:ransomware:I04",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "ba1a29aa568a25d29716fff8e3fdb3bd3fed22cc62a7927f776eef04928e46eb"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "e33cbf316caf5b9f6756d94e4087e1fc66a3f49ff868955e1c20ea6bf3b6a0e1"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "bb130b035b57dfd15ce12287b78704f0"
+        },
+        "idempotency_key": "5a732c32-403f-50a6-9c2f-19cb732ecdbc",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "7f09da1746c7388161d175c99756231331a404c123e80ab185a7db5565ae431d",
+      "observations": {
+        "baseline": {
+          "id": "I04",
+          "kind": "unsafe",
+          "family": "input_integrity",
+          "basis": "existing_contract",
+          "expected": "reject",
+          "description": "Numeric actor identity must not become a string identity.",
+          "input_sha256": "7f09da1746c7388161d175c99756231331a404c123e80ab185a7db5565ae431d",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "I04",
+          "kind": "unsafe",
+          "family": "input_integrity",
+          "basis": "existing_contract",
+          "expected": "reject",
+          "description": "Numeric actor identity must not become a string identity.",
+          "input_sha256": "7f09da1746c7388161d175c99756231331a404c123e80ab185a7db5565ae431d",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "reject",
+          "reason": "actor: 123 is not of type 'string'",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "I05",
+        "family": "input_integrity",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "existing_contract",
+        "expected": "reject",
+        "description": "Native evidence must supply its digest.",
+        "patches": [
+          {
+            "path": [
+              "evidence_refs",
+              0,
+              "digest"
+            ],
+            "remove": true
+          }
+        ]
+      },
+      "rule": "Validate native JSON fields and types before construction. Reject malformed or incomplete authority-bearing inputs without issuing a token.",
+      "expected_behavior": "Reject the native input, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:I05",
+        "incident_id": "BENCH-I05",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:I05",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "4aef5d5d11392ccf46c8c75e15475cff49f68c323debb6a6affa336230ce4689"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "8d777f9118aebcc5c212849532e70a5d"
+        },
+        "idempotency_key": "76f695ca-440f-5588-bff9-e76dd8212976",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "04aa6a3327b202928a59a8fbbf80532f840a33d54b507328d2f8d2df9d8f226f",
+      "observations": {
+        "baseline": {
+          "id": "I05",
+          "kind": "unsafe",
+          "family": "input_integrity",
+          "basis": "existing_contract",
+          "expected": "reject",
+          "description": "Native evidence must supply its digest.",
+          "input_sha256": "04aa6a3327b202928a59a8fbbf80532f840a33d54b507328d2f8d2df9d8f226f",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "I05",
+          "kind": "unsafe",
+          "family": "input_integrity",
+          "basis": "existing_contract",
+          "expected": "reject",
+          "description": "Native evidence must supply its digest.",
+          "input_sha256": "04aa6a3327b202928a59a8fbbf80532f840a33d54b507328d2f8d2df9d8f226f",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "reject",
+          "reason": "evidence_refs.0: 'digest' is a required property",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "I06",
+        "family": "input_integrity",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "existing_contract",
+        "expected": "reject",
+        "description": "Unknown authority-related fields must not be silently discarded.",
+        "patches": [
+          {
+            "path": [
+              "privileged_override"
+            ],
+            "value": true
+          }
+        ]
+      },
+      "rule": "Validate native JSON fields and types before construction. Reject malformed or incomplete authority-bearing inputs without issuing a token.",
+      "expected_behavior": "Reject the native input, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:I06",
+        "incident_id": "BENCH-I06",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:I06",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "9842cf46d564fb7d2be9585494dc305b04bf726c29bd23fb6325040f6cedfb11"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "4f147a1e7e566efb0a00eb14aa1787f2a053ce151f46ed18d82dca0d9dc852ac"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "4ab7da8c3f6390ccb09f9b32646849f7"
+        },
+        "idempotency_key": "3591a59d-8339-58ba-93c6-3aef962a25e6",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low",
+        "privileged_override": true
+      },
+      "input_sha256": "0749633836d4c08c9084cc493c22b69037dce553237f5092127ce0dce6527665",
+      "observations": {
+        "baseline": {
+          "id": "I06",
+          "kind": "unsafe",
+          "family": "input_integrity",
+          "basis": "existing_contract",
+          "expected": "reject",
+          "description": "Unknown authority-related fields must not be silently discarded.",
+          "input_sha256": "0749633836d4c08c9084cc493c22b69037dce553237f5092127ce0dce6527665",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "I06",
+          "kind": "unsafe",
+          "family": "input_integrity",
+          "basis": "existing_contract",
+          "expected": "reject",
+          "description": "Unknown authority-related fields must not be silently discarded.",
+          "input_sha256": "0749633836d4c08c9084cc493c22b69037dce553237f5092127ce0dce6527665",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "reject",
+          "reason": "envelope: Additional properties are not allowed ('privileged_override' was unexpected)",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "I07",
+        "family": "input_integrity",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "existing_contract",
+        "expected": "reject",
+        "description": "The native approval array is required even when empty.",
+        "patches": [
+          {
+            "path": [
+              "human_approvals"
+            ],
+            "remove": true
+          }
+        ]
+      },
+      "rule": "Validate native JSON fields and types before construction. Reject malformed or incomplete authority-bearing inputs without issuing a token.",
+      "expected_behavior": "Reject the native input, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:I07",
+        "incident_id": "BENCH-I07",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:I07",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "79205f65eb2f62cbaafce95d9a195b4c4ab51332b7949130a6463843bd0282d2"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "608a1ea3e7305ccdbef0876ee3c40a1c092dd60290e0b194b0b82a6313d92201"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "f826956e6a45300e9830d96cdbab2cb4"
+        },
+        "idempotency_key": "d19e72df-8533-509f-accc-72ae5dbf3cdc",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "2abbf30e6336bafc07d01ecee4358b2173d748a9d87478d1e228d6ca0064b284",
+      "observations": {
+        "baseline": {
+          "id": "I07",
+          "kind": "unsafe",
+          "family": "input_integrity",
+          "basis": "existing_contract",
+          "expected": "reject",
+          "description": "The native approval array is required even when empty.",
+          "input_sha256": "2abbf30e6336bafc07d01ecee4358b2173d748a9d87478d1e228d6ca0064b284",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "I07",
+          "kind": "unsafe",
+          "family": "input_integrity",
+          "basis": "existing_contract",
+          "expected": "reject",
+          "description": "The native approval array is required even when empty.",
+          "input_sha256": "2abbf30e6336bafc07d01ecee4358b2173d748a9d87478d1e228d6ca0064b284",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "reject",
+          "reason": "envelope: 'human_approvals' is a required property",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "F01",
+        "family": "evidence_freshness",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "A required observation is 61 seconds old in a fresh envelope.",
+        "patches": [
+          {
+            "path": [
+              "evidence_refs",
+              0,
+              "observed_at"
+            ],
+            "value": "2026-09-07T11:58:59Z"
+          }
+        ]
+      },
+      "rule": "Every required observation must be at most 60 seconds old and no more than 5 seconds in the future. These are proposed benchmark limits, not current policy settings.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Additional assurance requirement; not an existing deployed guarantee.",
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:F01",
+        "incident_id": "BENCH-F01",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:F01",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:58:59Z",
+            "digest": "2d6525cdbbc6e52f92da882c8093b7b8bb8d3d2b7e2e3b1479945eb45c3d0b8a"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "549b74a31603b2226525a77ec3952afdfb0779b72621d0a4c6674843f1bdca62"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "f47c886e1e7e1f6cd0fa0c1db2ed5ca5"
+        },
+        "idempotency_key": "023bbe71-85ac-565f-bc27-21058f11c4d8",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "7f2cbd448621d9a3e44862b212cbea28df0f0cb8c0a3b7b2f5816a0d14e8aa3d",
+      "observations": {
+        "baseline": {
+          "id": "F01",
+          "kind": "unsafe",
+          "family": "evidence_freshness",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "A required observation is 61 seconds old in a fresh envelope.",
+          "input_sha256": "7f2cbd448621d9a3e44862b212cbea28df0f0cb8c0a3b7b2f5816a0d14e8aa3d",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "F01",
+          "kind": "unsafe",
+          "family": "evidence_freshness",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "A required observation is 61 seconds old in a fresh envelope.",
+          "input_sha256": "7f2cbd448621d9a3e44862b212cbea28df0f0cb8c0a3b7b2f5816a0d14e8aa3d",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "F02",
+        "family": "evidence_freshness",
+        "kind": "unsafe",
+        "profile": "embedded",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "One required behavior is stale while the others are fresh.",
+        "patches": [
+          {
+            "path": [
+              "evidence_refs",
+              4,
+              "observed_at"
+            ],
+            "value": "2026-09-07T11:58:00Z"
+          }
+        ]
+      },
+      "rule": "Every required observation must be at most 60 seconds old and no more than 5 seconds in the future. These are proposed benchmark limits, not current policy settings.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Additional assurance requirement; not an existing deployed guarantee.",
+      "request": {
+        "threat": "embedded_ai_agent",
+        "action": "quarantine_workload",
+        "scope": "single_workload",
+        "confidence": 0.99,
+        "required_approval_mode": "dual",
+        "human_approvals": [
+          "incident-commander",
+          "cyber-duty-officer"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:F02",
+        "incident_id": "BENCH-F02",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:embedded:F02",
+        "evidence_refs": [
+          {
+            "signal": "anomalous_process_behavior",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "ed9b9705f28a9f16ed2fbceba7e317b964ede51425f8b551f5697ba2e936f663"
+          },
+          {
+            "signal": "hidden_persistence",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "3a01bbeef9279208a13d01115664d1ccb2fb3619055adfb682dad5daa8317fb6"
+          },
+          {
+            "signal": "credential_misuse",
+            "source_id": "trusted-observer:2",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "4c5bd249eef41f1d6cfe9d9bbb7a3e398fc33b6ed453a82abb565af69ba89075"
+          },
+          {
+            "signal": "model_driven_deception",
+            "source_id": "trusted-observer:3",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "feee5ddfa09c5be09f7434e4c3511504fff63c1efd183133a16c7407624e32d7"
+          },
+          {
+            "signal": "log_tampering",
+            "source_id": "trusted-observer:4",
+            "observed_at": "2026-09-07T11:58:00Z",
+            "digest": "d1c6267913273686c99917ad5a0986a7f7b6f08ed7462f860c13d5f16f353e53"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "ee6415f5fbbe51a00d769f2f92474321"
+        },
+        "idempotency_key": "dce1f997-7f3d-576e-8b3f-d1c2a1389f51",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "9aa32414d19df85fb72408e7644960b7ec2c397f1d64f2d3cad0a8672d90da7b",
+      "observations": {
+        "baseline": {
+          "id": "F02",
+          "kind": "unsafe",
+          "family": "evidence_freshness",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "One required behavior is stale while the others are fresh.",
+          "input_sha256": "9aa32414d19df85fb72408e7644960b7ec2c397f1d64f2d3cad0a8672d90da7b",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "quarantine_workload",
+          "scope": "single_workload",
+          "policy": "CYBER-EA-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "F02",
+          "kind": "unsafe",
+          "family": "evidence_freshness",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "One required behavior is stale while the others are fresh.",
+          "input_sha256": "9aa32414d19df85fb72408e7644960b7ec2c397f1d64f2d3cad0a8672d90da7b",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "quarantine_workload",
+          "scope": "single_workload",
+          "policy": "CYBER-EA-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "F03",
+        "family": "evidence_freshness",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "A required observation is 31 seconds in the future.",
+        "patches": [
+          {
+            "path": [
+              "evidence_refs",
+              0,
+              "observed_at"
+            ],
+            "value": "2026-09-07T12:00:31Z"
+          }
+        ]
+      },
+      "rule": "Every required observation must be at most 60 seconds old and no more than 5 seconds in the future. These are proposed benchmark limits, not current policy settings.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Additional assurance requirement; not an existing deployed guarantee.",
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:F03",
+        "incident_id": "BENCH-F03",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:F03",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T12:00:31Z",
+            "digest": "8d45c44d919918fb0f92bf1c7110fbc2284fdf3888c22aa31321ec956c02d95b"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "36c37e334c21553fafb5a88bf78a48901dc0462dbb959da78c70255d4ba33cdb"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "267bc1cb90ca0a590ee4305dee151abd"
+        },
+        "idempotency_key": "d8411e80-299a-583c-b1e5-292ddfd457f2",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "773a482ad17712016ff6eff0dfb7d7f6722891bb78ed99eca0d08d6012feb852",
+      "observations": {
+        "baseline": {
+          "id": "F03",
+          "kind": "unsafe",
+          "family": "evidence_freshness",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "A required observation is 31 seconds in the future.",
+          "input_sha256": "773a482ad17712016ff6eff0dfb7d7f6722891bb78ed99eca0d08d6012feb852",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "F03",
+          "kind": "unsafe",
+          "family": "evidence_freshness",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "A required observation is 31 seconds in the future.",
+          "input_sha256": "773a482ad17712016ff6eff0dfb7d7f6722891bb78ed99eca0d08d6012feb852",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "F04",
+        "family": "evidence_freshness",
+        "kind": "unsafe",
+        "profile": "exfiltration",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "A fresh envelope reuses an observation from 1999.",
+        "patches": [
+          {
+            "path": [
+              "evidence_refs",
+              0,
+              "observed_at"
+            ],
+            "value": "1999-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "rule": "Every required observation must be at most 60 seconds old and no more than 5 seconds in the future. These are proposed benchmark limits, not current policy settings.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Additional assurance requirement; not an existing deployed guarantee.",
+      "request": {
+        "threat": "data_exfiltration",
+        "action": "temporary_egress_hold",
+        "scope": "single_workload",
+        "confidence": 0.99,
+        "required_approval_mode": "single",
+        "human_approvals": [
+          "incident-commander"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:F04",
+        "incident_id": "BENCH-F04",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:exfiltration:F04",
+        "evidence_refs": [
+          {
+            "signal": "large_outbound_transfer",
+            "source_id": "trusted-observer:0",
+            "observed_at": "1999-01-01T00:00:00Z",
+            "digest": "afd3ea357f773acdfa5857629b79a91fa093f65c267d06d46c45367b162f6bb9"
+          },
+          {
+            "signal": "new_destination",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "471d36f630edf27e4089f7a9939bdf8c15a922cd35f5413667cad7027fa52312"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "d91c209026795b8053af226ef4e420d1"
+        },
+        "idempotency_key": "4153c021-7701-5824-8d5d-235fb9d9dda3",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "fc41097402bfae27789d777351ed55af9110798e2584a20404f491ab24cfb041",
+      "observations": {
+        "baseline": {
+          "id": "F04",
+          "kind": "unsafe",
+          "family": "evidence_freshness",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "A fresh envelope reuses an observation from 1999.",
+          "input_sha256": "fc41097402bfae27789d777351ed55af9110798e2584a20404f491ab24cfb041",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "temporary_egress_hold",
+          "scope": "single_workload",
+          "policy": "CYBER-EX-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "F04",
+          "kind": "unsafe",
+          "family": "evidence_freshness",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "A fresh envelope reuses an observation from 1999.",
+          "input_sha256": "fc41097402bfae27789d777351ed55af9110798e2584a20404f491ab24cfb041",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "temporary_egress_hold",
+          "scope": "single_workload",
+          "policy": "CYBER-EX-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "H01",
+        "family": "approval_authenticity",
+        "kind": "unsafe",
+        "profile": "exfiltration",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "An attacker invents the sole required approval label.",
+        "external_fact": "No authorized human approved this request.",
+        "patches": [
+          {
+            "path": [
+              "human_approvals"
+            ],
+            "value": [
+              "attacker:claimed-commander"
+            ]
+          }
+        ]
+      },
+      "rule": "Approvals must come from distinct authenticated authorized principals and bind this request; self-asserted labels are insufficient.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": "No authorized human approved this request.",
+      "assumptions": "The external fact is supplied by the test author, not observable from the JSON alone. This case removes the trusted-upstream assumption at the raw-envelope boundary.",
+      "basis_note": "Additional assurance requirement; not an existing deployed guarantee.",
+      "request": {
+        "threat": "data_exfiltration",
+        "action": "temporary_egress_hold",
+        "scope": "single_workload",
+        "confidence": 0.99,
+        "required_approval_mode": "single",
+        "human_approvals": [
+          "attacker:claimed-commander"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:H01",
+        "incident_id": "BENCH-H01",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:exfiltration:H01",
+        "evidence_refs": [
+          {
+            "signal": "large_outbound_transfer",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "b1b14079505c0849b66b1f29cd1cced77435d3a541814bec606cbad61c0679f0"
+          },
+          {
+            "signal": "new_destination",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "512f46363d0ed1787e917c713294e58af1339d7ffebd50d638b568beed1fc312"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "1462acfd3f7301c9b686e161b7cc0426"
+        },
+        "idempotency_key": "5cba09a9-1567-5f43-94f5-58858d2c388d",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "68824c7c6c1ddacde4be2c5498b8ed0bf5de8f5da53d6a1d31d5c27c1f1d4432",
+      "observations": {
+        "baseline": {
+          "id": "H01",
+          "kind": "unsafe",
+          "family": "approval_authenticity",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "An attacker invents the sole required approval label.",
+          "input_sha256": "68824c7c6c1ddacde4be2c5498b8ed0bf5de8f5da53d6a1d31d5c27c1f1d4432",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "temporary_egress_hold",
+          "scope": "single_workload",
+          "policy": "CYBER-EX-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "H01",
+          "kind": "unsafe",
+          "family": "approval_authenticity",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "An attacker invents the sole required approval label.",
+          "input_sha256": "68824c7c6c1ddacde4be2c5498b8ed0bf5de8f5da53d6a1d31d5c27c1f1d4432",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "temporary_egress_hold",
+          "scope": "single_workload",
+          "policy": "CYBER-EX-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "H02",
+        "family": "approval_authenticity",
+        "kind": "unsafe",
+        "profile": "embedded",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "Two fabricated labels must not satisfy dual approval.",
+        "external_fact": "Both labels originate from the attacker.",
+        "patches": [
+          {
+            "path": [
+              "human_approvals"
+            ],
+            "value": [
+              "forged-reviewer-a",
+              "forged-reviewer-b"
+            ]
+          }
+        ]
+      },
+      "rule": "Approvals must come from distinct authenticated authorized principals and bind this request; self-asserted labels are insufficient.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": "Both labels originate from the attacker.",
+      "assumptions": "The external fact is supplied by the test author, not observable from the JSON alone. This case removes the trusted-upstream assumption at the raw-envelope boundary.",
+      "basis_note": "Additional assurance requirement; not an existing deployed guarantee.",
+      "request": {
+        "threat": "embedded_ai_agent",
+        "action": "quarantine_workload",
+        "scope": "single_workload",
+        "confidence": 0.99,
+        "required_approval_mode": "dual",
+        "human_approvals": [
+          "forged-reviewer-a",
+          "forged-reviewer-b"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:H02",
+        "incident_id": "BENCH-H02",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:embedded:H02",
+        "evidence_refs": [
+          {
+            "signal": "anomalous_process_behavior",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "1e260929e9bbb30b40bef5d188ffea07ad9db78fc7e443fe837fd6307269fd56"
+          },
+          {
+            "signal": "hidden_persistence",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "d00a298d8d012b46b318e837facd4b148576ceb54eddb65de5bc0fe3260e2356"
+          },
+          {
+            "signal": "credential_misuse",
+            "source_id": "trusted-observer:2",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "984d9902511826d5921b19a2be2500a62e46a349a7e77225e2c29bc697ee619c"
+          },
+          {
+            "signal": "model_driven_deception",
+            "source_id": "trusted-observer:3",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "e857290b3e4640587536853d90a933a485b715a7ad0326829550423403e96dff"
+          },
+          {
+            "signal": "log_tampering",
+            "source_id": "trusted-observer:4",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "06b28b1bb9b395c1ea040774afe206e96cc02a48fb1fbb8e5305650e364b4ccc"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "7a16e8cdbd5c7098ed340d0a876fd8cd"
+        },
+        "idempotency_key": "dbf18b77-0dc0-53c0-bdf4-25c8bdb08fb7",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "ad018739aeaa21b50d536c2ce550967698d790154b51f4f34215f1f0f742f320",
+      "observations": {
+        "baseline": {
+          "id": "H02",
+          "kind": "unsafe",
+          "family": "approval_authenticity",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "Two fabricated labels must not satisfy dual approval.",
+          "input_sha256": "ad018739aeaa21b50d536c2ce550967698d790154b51f4f34215f1f0f742f320",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "quarantine_workload",
+          "scope": "single_workload",
+          "policy": "CYBER-EA-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "H02",
+          "kind": "unsafe",
+          "family": "approval_authenticity",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "Two fabricated labels must not satisfy dual approval.",
+          "input_sha256": "ad018739aeaa21b50d536c2ce550967698d790154b51f4f34215f1f0f742f320",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "quarantine_workload",
+          "scope": "single_workload",
+          "policy": "CYBER-EA-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "H03",
+        "family": "approval_authenticity",
+        "kind": "unsafe",
+        "profile": "embedded",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "Two distinct strings can refer to one principal.",
+        "external_fact": "The labels are aliases for the same approving person.",
+        "patches": [
+          {
+            "path": [
+              "human_approvals"
+            ],
+            "value": [
+              "cyber-duty-officer",
+              "cyber-duty-officer:alias"
+            ]
+          }
+        ]
+      },
+      "rule": "Approvals must come from distinct authenticated authorized principals and bind this request; self-asserted labels are insufficient.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": "The labels are aliases for the same approving person.",
+      "assumptions": "The external fact is supplied by the test author, not observable from the JSON alone. This case removes the trusted-upstream assumption at the raw-envelope boundary.",
+      "basis_note": "Additional assurance requirement; not an existing deployed guarantee.",
+      "request": {
+        "threat": "embedded_ai_agent",
+        "action": "quarantine_workload",
+        "scope": "single_workload",
+        "confidence": 0.99,
+        "required_approval_mode": "dual",
+        "human_approvals": [
+          "cyber-duty-officer",
+          "cyber-duty-officer:alias"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:H03",
+        "incident_id": "BENCH-H03",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:embedded:H03",
+        "evidence_refs": [
+          {
+            "signal": "anomalous_process_behavior",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "9350725e71a6d9750e6906dbf7e598db8d1da282b9527aa9db79852ee30de760"
+          },
+          {
+            "signal": "hidden_persistence",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "c953ce538ca1318d6eb0f1fdbeb202faee822a962c6ae0c7286061d7dc26d374"
+          },
+          {
+            "signal": "credential_misuse",
+            "source_id": "trusted-observer:2",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "cc86af1106dcec8fbad31d6f19e5ad1e7dfdfa179d00ec9fb0073e556e2e4aac"
+          },
+          {
+            "signal": "model_driven_deception",
+            "source_id": "trusted-observer:3",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "245c00a73a00297c81d52eb5302578128c6c03c10ed1b943515856eb6ea6d262"
+          },
+          {
+            "signal": "log_tampering",
+            "source_id": "trusted-observer:4",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "af322dbb8322818404982208499c1fd9a26af7255148d73b56b5ac2a0757ccf6"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "9926b4b686fcbb9008218a64694e00c8"
+        },
+        "idempotency_key": "515c9938-c35a-5cea-85f6-82118be1bc39",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "8aab93adb376a302dbba7b5dcae59ed3552fdc1f3c7810f7dbd80d2b9ae90bf0",
+      "observations": {
+        "baseline": {
+          "id": "H03",
+          "kind": "unsafe",
+          "family": "approval_authenticity",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "Two distinct strings can refer to one principal.",
+          "input_sha256": "8aab93adb376a302dbba7b5dcae59ed3552fdc1f3c7810f7dbd80d2b9ae90bf0",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "quarantine_workload",
+          "scope": "single_workload",
+          "policy": "CYBER-EA-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "H03",
+          "kind": "unsafe",
+          "family": "approval_authenticity",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "Two distinct strings can refer to one principal.",
+          "input_sha256": "8aab93adb376a302dbba7b5dcae59ed3552fdc1f3c7810f7dbd80d2b9ae90bf0",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "quarantine_workload",
+          "scope": "single_workload",
+          "policy": "CYBER-EA-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "H04",
+        "family": "approval_authenticity",
+        "kind": "unsafe",
+        "profile": "exfiltration",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "A known approver label is reused without approval for this request.",
+        "external_fact": "The approval belongs to a different action and target.",
+        "patches": []
+      },
+      "rule": "Approvals must come from distinct authenticated authorized principals and bind this request; self-asserted labels are insufficient.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": "The approval belongs to a different action and target.",
+      "assumptions": "The external fact is supplied by the test author, not observable from the JSON alone. This case removes the trusted-upstream assumption at the raw-envelope boundary.",
+      "basis_note": "Additional assurance requirement; not an existing deployed guarantee.",
+      "request": {
+        "threat": "data_exfiltration",
+        "action": "temporary_egress_hold",
+        "scope": "single_workload",
+        "confidence": 0.99,
+        "required_approval_mode": "single",
+        "human_approvals": [
+          "incident-commander"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:H04",
+        "incident_id": "BENCH-H04",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:exfiltration:H04",
+        "evidence_refs": [
+          {
+            "signal": "large_outbound_transfer",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "895f405f1dcf692adb3cf443968f4808e2bbb17514acb20150d72d73435a8214"
+          },
+          {
+            "signal": "new_destination",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "088562bd945f9a1a1057a76e43d6272bdf1ca0eb1d4453afdfbf33b95dc6da48"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "97cecd61de506b491a163f2e98680ebf"
+        },
+        "idempotency_key": "f633dfec-c2ac-53d7-aadd-c11b0fc25153",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "0c02f7f3664aded859b69d3c55dbaae5edaaacc83b8b915c5229e9b3a3017823",
+      "observations": {
+        "baseline": {
+          "id": "H04",
+          "kind": "unsafe",
+          "family": "approval_authenticity",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "A known approver label is reused without approval for this request.",
+          "input_sha256": "0c02f7f3664aded859b69d3c55dbaae5edaaacc83b8b915c5229e9b3a3017823",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "temporary_egress_hold",
+          "scope": "single_workload",
+          "policy": "CYBER-EX-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "H04",
+          "kind": "unsafe",
+          "family": "approval_authenticity",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "A known approver label is reused without approval for this request.",
+          "input_sha256": "0c02f7f3664aded859b69d3c55dbaae5edaaacc83b8b915c5229e9b3a3017823",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "temporary_egress_hold",
+          "scope": "single_workload",
+          "policy": "CYBER-EX-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "E01",
+        "family": "evidence_authenticity",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "Two labels conceal one attacker-controlled source.",
+        "external_fact": "Both required observations originate from one compromised sensor.",
+        "patches": [
+          {
+            "path": [
+              "evidence_refs",
+              0,
+              "source_id"
+            ],
+            "value": "claimed-edr"
+          },
+          {
+            "path": [
+              "evidence_refs",
+              1,
+              "source_id"
+            ],
+            "value": "claimed-backup"
+          }
+        ]
+      },
+      "rule": "Evidence must be authentic and independent; attacker-selected source labels or unattested digests are insufficient.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": "Both required observations originate from one compromised sensor.",
+      "assumptions": "The external fact is supplied by the test author, not observable from the JSON alone. This case removes the trusted-upstream assumption at the raw-envelope boundary.",
+      "basis_note": "Additional assurance requirement; not an existing deployed guarantee.",
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:E01",
+        "incident_id": "BENCH-E01",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:E01",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "claimed-edr",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "3811c74098d1d3712ede435a367e6cd55eea8543026c0589b89f879d8932e1c3"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "claimed-backup",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "02901254bf3e75fcf269965448fc4e92ea45ff50ac0512e4fa006d3f177b06a6"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "e7e7dd241b31082d328fe29439a320da"
+        },
+        "idempotency_key": "16765387-a72c-5a42-979d-bae875f92958",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "d07469f8a577024092bf9acb01ef41f05f63a5d176ebf32a57d9f213609bae92",
+      "observations": {
+        "baseline": {
+          "id": "E01",
+          "kind": "unsafe",
+          "family": "evidence_authenticity",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "Two labels conceal one attacker-controlled source.",
+          "input_sha256": "d07469f8a577024092bf9acb01ef41f05f63a5d176ebf32a57d9f213609bae92",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "E01",
+          "kind": "unsafe",
+          "family": "evidence_authenticity",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "Two labels conceal one attacker-controlled source.",
+          "input_sha256": "d07469f8a577024092bf9acb01ef41f05f63a5d176ebf32a57d9f213609bae92",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "E02",
+        "family": "evidence_authenticity",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "A syntactically valid digest is not proof of evidence authenticity.",
+        "external_fact": "No evidence body or trusted attestation exists for the supplied digest.",
+        "patches": [
+          {
+            "path": [
+              "evidence_refs",
+              0,
+              "digest"
+            ],
+            "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ]
+      },
+      "rule": "Evidence must be authentic and independent; attacker-selected source labels or unattested digests are insufficient.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": "No evidence body or trusted attestation exists for the supplied digest.",
+      "assumptions": "The external fact is supplied by the test author, not observable from the JSON alone. This case removes the trusted-upstream assumption at the raw-envelope boundary.",
+      "basis_note": "Additional assurance requirement; not an existing deployed guarantee.",
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:E02",
+        "incident_id": "BENCH-E02",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:E02",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "2fbc841413626aa21e5acffee50a9a180936142e3024a113f38337bb5f6095f1"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "d134709e21f92151158f4f16cf978315"
+        },
+        "idempotency_key": "1076ae29-c729-5291-9808-b085f1e86ca9",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "bd8399953576a820aab5259200166b5af9e1ae5284672db302aabf83258a1a81",
+      "observations": {
+        "baseline": {
+          "id": "E02",
+          "kind": "unsafe",
+          "family": "evidence_authenticity",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "A syntactically valid digest is not proof of evidence authenticity.",
+          "input_sha256": "bd8399953576a820aab5259200166b5af9e1ae5284672db302aabf83258a1a81",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "E02",
+          "kind": "unsafe",
+          "family": "evidence_authenticity",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "A syntactically valid digest is not proof of evidence authenticity.",
+          "input_sha256": "bd8399953576a820aab5259200166b5af9e1ae5284672db302aabf83258a1a81",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "E03",
+        "family": "evidence_authenticity",
+        "kind": "unsafe",
+        "profile": "identity",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "Authentic-looking source names are impersonated.",
+        "external_fact": "All three observations and claimed origins are fabricated.",
+        "patches": []
+      },
+      "rule": "Evidence must be authentic and independent; attacker-selected source labels or unattested digests are insufficient.",
+      "expected_behavior": "Reject, deny, or escalate, with no valid signed authority.",
+      "external_fact": "All three observations and claimed origins are fabricated.",
+      "assumptions": "The external fact is supplied by the test author, not observable from the JSON alone. This case removes the trusted-upstream assumption at the raw-envelope boundary.",
+      "basis_note": "Additional assurance requirement; not an existing deployed guarantee.",
+      "request": {
+        "threat": "stolen_admin_session",
+        "action": "revoke_sessions",
+        "scope": "single_identity",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:E03",
+        "incident_id": "BENCH-E03",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:identity:E03",
+        "evidence_refs": [
+          {
+            "signal": "new_device",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "3d1675deb4b1aaad8f982596557b38122028fc34b8b7da8775c91c75e86a542b"
+          },
+          {
+            "signal": "mfa_disabled",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "3c3c7bb6502aaafe7882f86b2c54f65ca97ef1761bc0520ba643f2214f9bc806"
+          },
+          {
+            "signal": "recovery_changed",
+            "source_id": "trusted-observer:2",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "1e92e7f55bbd83eb11da59dcfb62b390445d6d0c369638eab388e3bc3fb5d90f"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "1454eab04012fd46a8ee49e3b68236cb"
+        },
+        "idempotency_key": "fd1780a6-fa0d-550a-ba72-ae7ac3c6c3c1",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "2b3f5432aef41cb61715a31b3aa3e3d1f45df90ec219befb5268ee3250176d53",
+      "observations": {
+        "baseline": {
+          "id": "E03",
+          "kind": "unsafe",
+          "family": "evidence_authenticity",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "Authentic-looking source names are impersonated.",
+          "input_sha256": "2b3f5432aef41cb61715a31b3aa3e3d1f45df90ec219befb5268ee3250176d53",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "revoke_sessions",
+          "scope": "single_identity",
+          "policy": "CYBER-ID-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        },
+        "repaired": {
+          "id": "E03",
+          "kind": "unsafe",
+          "family": "evidence_authenticity",
+          "basis": "extended_assurance",
+          "expected": "withhold",
+          "description": "Authentic-looking source names are impersonated.",
+          "input_sha256": "2b3f5432aef41cb61715a31b3aa3e3d1f45df90ec219befb5268ee3250176d53",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "revoke_sessions",
+          "scope": "single_identity",
+          "policy": "CYBER-ID-001",
+          "expected_met": false,
+          "measurement_valid": true,
+          "unauthorized_approval": true,
+          "unauthorized_receipt": true
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "P01",
+        "family": "policy_gates",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "existing_contract",
+        "expected": "deny",
+        "description": "Globally forbidden host wipe must be denied.",
+        "patches": [
+          {
+            "path": [
+              "action"
+            ],
+            "value": "wipe_host"
+          }
+        ]
+      },
+      "rule": "Apply the existing forbidden-action, reversibility, envelope-expiry and policy-version gates before issuing authority.",
+      "expected_behavior": "Deny the request, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "ransomware",
+        "action": "wipe_host",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:P01",
+        "incident_id": "BENCH-P01",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:P01",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "b242e055d3f4a96748494954187ea043f1a68a18130ff779871908248665461d"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "237a85d943971cf469bc75fba26a50cf424fd6fd3c1ecc748b6a6d0b23f3bd64"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "2758a1c329d45c03fce2dfe0e139f234"
+        },
+        "idempotency_key": "04e61862-51d3-5c35-8432-dbc4f8f4b9b2",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "c2a06f3008c367b30b240e1751c58582cf12b8a43152711f83a685a8dd754a54",
+      "observations": {
+        "baseline": {
+          "id": "P01",
+          "kind": "unsafe",
+          "family": "policy_gates",
+          "basis": "existing_contract",
+          "expected": "deny",
+          "description": "Globally forbidden host wipe must be denied.",
+          "input_sha256": "c2a06f3008c367b30b240e1751c58582cf12b8a43152711f83a685a8dd754a54",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "proposed action is globally forbidden",
+          "action": "none",
+          "scope": "none",
+          "policy": "GLOBAL-INVARIANT",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        },
+        "repaired": {
+          "id": "P01",
+          "kind": "unsafe",
+          "family": "policy_gates",
+          "basis": "existing_contract",
+          "expected": "deny",
+          "description": "Globally forbidden host wipe must be denied.",
+          "input_sha256": "c2a06f3008c367b30b240e1751c58582cf12b8a43152711f83a685a8dd754a54",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "proposed action is globally forbidden",
+          "action": "none",
+          "scope": "none",
+          "policy": "GLOBAL-INVARIANT",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "P02",
+        "family": "policy_gates",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "existing_contract",
+        "expected": "deny",
+        "description": "Globally forbidden recovery disablement must be denied.",
+        "patches": [
+          {
+            "path": [
+              "action"
+            ],
+            "value": "disable_recovery"
+          }
+        ]
+      },
+      "rule": "Apply the existing forbidden-action, reversibility, envelope-expiry and policy-version gates before issuing authority.",
+      "expected_behavior": "Deny the request, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "ransomware",
+        "action": "disable_recovery",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:P02",
+        "incident_id": "BENCH-P02",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:P02",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "d4e8e391c059d972f7962763ddad521a9a60f09bcbde2876d7f6c9b69fd9e9a6"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "a4dfa48261b6f4fc18de7d3186d12eb06136270938462a9456ad1aa8438a2cd2"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "16acf74d124a9b4d85eb126f9659a6d1"
+        },
+        "idempotency_key": "b08d87cf-cd51-53c7-8a08-ccaba2572921",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "a5aef5d1d9da10fe9583f0fdd82bc7726eb88a4143ad6ac6b4db6278095af3c9",
+      "observations": {
+        "baseline": {
+          "id": "P02",
+          "kind": "unsafe",
+          "family": "policy_gates",
+          "basis": "existing_contract",
+          "expected": "deny",
+          "description": "Globally forbidden recovery disablement must be denied.",
+          "input_sha256": "a5aef5d1d9da10fe9583f0fdd82bc7726eb88a4143ad6ac6b4db6278095af3c9",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "proposed action is globally forbidden",
+          "action": "none",
+          "scope": "none",
+          "policy": "GLOBAL-INVARIANT",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        },
+        "repaired": {
+          "id": "P02",
+          "kind": "unsafe",
+          "family": "policy_gates",
+          "basis": "existing_contract",
+          "expected": "deny",
+          "description": "Globally forbidden recovery disablement must be denied.",
+          "input_sha256": "a5aef5d1d9da10fe9583f0fdd82bc7726eb88a4143ad6ac6b4db6278095af3c9",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "proposed action is globally forbidden",
+          "action": "none",
+          "scope": "none",
+          "policy": "GLOBAL-INVARIANT",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "P03",
+        "family": "policy_gates",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "existing_contract",
+        "expected": "deny",
+        "description": "An actual false reversibility flag must prevent containment.",
+        "patches": [
+          {
+            "path": [
+              "reversibility_flag"
+            ],
+            "value": false
+          }
+        ]
+      },
+      "rule": "Apply the existing forbidden-action, reversibility, envelope-expiry and policy-version gates before issuing authority.",
+      "expected_behavior": "Deny the request, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:P03",
+        "incident_id": "BENCH-P03",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:P03",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "8e317b973b6485371e42fda18a8c81def36e437345f1a4e368ac201ad9615e3a"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "661b8a468600bc0f681221fbdfeabe06c96ee31c46cf988c302bf94bd4194246"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "c994ecef8f751a780b28bac70bd0b739"
+        },
+        "idempotency_key": "a05786c9-f682-5291-8f18-83cbb204373f",
+        "reversibility_flag": false,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "b54e2e3f45942a117cef194eed7d7e79f3fddd216597a7e9b9e1bf3416563150",
+      "observations": {
+        "baseline": {
+          "id": "P03",
+          "kind": "unsafe",
+          "family": "policy_gates",
+          "basis": "existing_contract",
+          "expected": "deny",
+          "description": "An actual false reversibility flag must prevent containment.",
+          "input_sha256": "b54e2e3f45942a117cef194eed7d7e79f3fddd216597a7e9b9e1bf3416563150",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "policy requires a reversible action",
+          "action": "none",
+          "scope": "none",
+          "policy": "CYBER-RW-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        },
+        "repaired": {
+          "id": "P03",
+          "kind": "unsafe",
+          "family": "policy_gates",
+          "basis": "existing_contract",
+          "expected": "deny",
+          "description": "An actual false reversibility flag must prevent containment.",
+          "input_sha256": "b54e2e3f45942a117cef194eed7d7e79f3fddd216597a7e9b9e1bf3416563150",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "policy requires a reversible action",
+          "action": "none",
+          "scope": "none",
+          "policy": "CYBER-RW-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "P04",
+        "family": "policy_gates",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "existing_contract",
+        "expected": "deny",
+        "description": "Expired envelopes cannot authorize an action.",
+        "patches": [
+          {
+            "path": [
+              "freshness",
+              "timestamp"
+            ],
+            "value": "2026-09-07T11:55:00Z"
+          },
+          {
+            "path": [
+              "freshness",
+              "expires_at"
+            ],
+            "value": "2026-09-07T11:59:59Z"
+          }
+        ]
+      },
+      "rule": "Apply the existing forbidden-action, reversibility, envelope-expiry and policy-version gates before issuing authority.",
+      "expected_behavior": "Deny the request, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:P04",
+        "incident_id": "BENCH-P04",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:P04",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "cf19cfd79d1319b26460bf7e4e699070d393bf139112673d1c2538fdf2939c5f"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "2b7a8d2f50413055a1d309fa4726cca7fd1b2c16044791e52ffd8b7f1c367dbc"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:55:00Z",
+          "expires_at": "2026-09-07T11:59:59Z",
+          "nonce": "529f9d5e5ed6a6ca4f7f21ff169041e9"
+        },
+        "idempotency_key": "ca454fbe-2840-576f-9142-0a905854abdf",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "4e415f408b9b755ab3fd5da65765867d77cd472ec6f2cfccf0902c800d5cb22a",
+      "observations": {
+        "baseline": {
+          "id": "P04",
+          "kind": "unsafe",
+          "family": "policy_gates",
+          "basis": "existing_contract",
+          "expected": "deny",
+          "description": "Expired envelopes cannot authorize an action.",
+          "input_sha256": "4e415f408b9b755ab3fd5da65765867d77cd472ec6f2cfccf0902c800d5cb22a",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "action envelope expired",
+          "action": "none",
+          "scope": "none",
+          "policy": "GLOBAL-FRESHNESS-INVARIANT",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        },
+        "repaired": {
+          "id": "P04",
+          "kind": "unsafe",
+          "family": "policy_gates",
+          "basis": "existing_contract",
+          "expected": "deny",
+          "description": "Expired envelopes cannot authorize an action.",
+          "input_sha256": "4e415f408b9b755ab3fd5da65765867d77cd472ec6f2cfccf0902c800d5cb22a",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "action envelope expired",
+          "action": "none",
+          "scope": "none",
+          "policy": "GLOBAL-FRESHNESS-INVARIANT",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "P05",
+        "family": "policy_gates",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "existing_contract",
+        "expected": "deny",
+        "description": "A mismatched policy version must be denied.",
+        "patches": [
+          {
+            "path": [
+              "policy_version"
+            ],
+            "value": "9.9.9"
+          }
+        ]
+      },
+      "rule": "Apply the existing forbidden-action, reversibility, envelope-expiry and policy-version gates before issuing authority.",
+      "expected_behavior": "Deny the request, with no valid signed authority.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:P05",
+        "incident_id": "BENCH-P05",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:P05",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "54f19248d1ca3d56b83f633635a5ec2e64f2a76200edb323e4c5794d1076fcf1"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "0eebcc9c6fda012619941eaca984a1ad64f6bf452593ca2372ee05de05d42b72"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "570d18a23470cca7b18100e88730c15b"
+        },
+        "idempotency_key": "add45f0e-24ee-54bf-9df8-d2ab5d12b56f",
+        "reversibility_flag": true,
+        "policy_version": "9.9.9",
+        "mission_impact": "low"
+      },
+      "input_sha256": "d9180eabcce8423c6b64bdea16592939f7a5ef44752431d4aee60edbff0073a7",
+      "observations": {
+        "baseline": {
+          "id": "P05",
+          "kind": "unsafe",
+          "family": "policy_gates",
+          "basis": "existing_contract",
+          "expected": "deny",
+          "description": "A mismatched policy version must be denied.",
+          "input_sha256": "d9180eabcce8423c6b64bdea16592939f7a5ef44752431d4aee60edbff0073a7",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "action envelope requires policy version 9.9.9; Guardian loaded 0.5.0",
+          "action": "none",
+          "scope": "none",
+          "policy": "GLOBAL-POLICY-VERSION-INVARIANT",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        },
+        "repaired": {
+          "id": "P05",
+          "kind": "unsafe",
+          "family": "policy_gates",
+          "basis": "existing_contract",
+          "expected": "deny",
+          "description": "A mismatched policy version must be denied.",
+          "input_sha256": "d9180eabcce8423c6b64bdea16592939f7a5ef44752431d4aee60edbff0073a7",
+          "token_valid": false,
+          "simulated_receipts": 0,
+          "exact_binding": false,
+          "outcome": "deny",
+          "reason": "action envelope requires policy version 9.9.9; Guardian loaded 0.5.0",
+          "action": "none",
+          "scope": "none",
+          "policy": "GLOBAL-POLICY-VERSION-INVARIANT",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": false,
+          "unauthorized_receipt": false
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "V01",
+        "family": "eligible_response",
+        "kind": "valid",
+        "profile": "ransomware",
+        "basis": "existing_contract",
+        "expected": "approve",
+        "description": "Complete reversible endpoint-isolation request."
+      },
+      "rule": "With the stated trusted-upstream preconditions, issue authority for the exact action, target and scope, and produce one matching simulated receipt.",
+      "expected_behavior": "Approve with a verified, exactly bound token and one matching simulated receipt.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:V01",
+        "incident_id": "BENCH-V01",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:V01",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "5deb066f44e2b7de7ace3aa40882a965ce1ebad6e3f1dd27d6d99313e10e10bc"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "47ba9ff3274ddcda5e8feb4c8db82298a0f1d2ba799165833c34262702b5df14"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "64a2bfaabafb956da52dabb15f4a796d"
+        },
+        "idempotency_key": "3708185f-a3f2-517f-b6f8-914eb97259a6",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "35c2ae4e08f3356aeace5b6ab07e8f6cc8bad46289777dbd280a36485d003b9e",
+      "observations": {
+        "baseline": {
+          "id": "V01",
+          "kind": "valid",
+          "family": "eligible_response",
+          "basis": "existing_contract",
+          "expected": "approve",
+          "description": "Complete reversible endpoint-isolation request.",
+          "input_sha256": "35c2ae4e08f3356aeace5b6ab07e8f6cc8bad46289777dbd280a36485d003b9e",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": null,
+          "unauthorized_receipt": null
+        },
+        "repaired": {
+          "id": "V01",
+          "kind": "valid",
+          "family": "eligible_response",
+          "basis": "existing_contract",
+          "expected": "approve",
+          "description": "Complete reversible endpoint-isolation request.",
+          "input_sha256": "35c2ae4e08f3356aeace5b6ab07e8f6cc8bad46289777dbd280a36485d003b9e",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": null,
+          "unauthorized_receipt": null
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "V02",
+        "family": "eligible_response",
+        "kind": "valid",
+        "profile": "identity",
+        "basis": "existing_contract",
+        "expected": "approve",
+        "description": "Complete narrow session-revocation request."
+      },
+      "rule": "With the stated trusted-upstream preconditions, issue authority for the exact action, target and scope, and produce one matching simulated receipt.",
+      "expected_behavior": "Approve with a verified, exactly bound token and one matching simulated receipt.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "stolen_admin_session",
+        "action": "revoke_sessions",
+        "scope": "single_identity",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:V02",
+        "incident_id": "BENCH-V02",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:identity:V02",
+        "evidence_refs": [
+          {
+            "signal": "new_device",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "5fe4c5edcb46fc00977957076e3669a5848b5c28ceaff365e07f580f03976082"
+          },
+          {
+            "signal": "mfa_disabled",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "943288cdf80f8d4d6475fe61fc530b5d91fc09edd0007a98859c30730dab75e7"
+          },
+          {
+            "signal": "recovery_changed",
+            "source_id": "trusted-observer:2",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "0816c21dd629d005e9c710ccb759e40ea84ec5699f31aceec13c238785b4b728"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "14be013e815b69d5bff8c5b2376424f1"
+        },
+        "idempotency_key": "7eaee16e-efba-59fa-98c9-f86617ebdd25",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "38968470647326bef0a7ebec8e5567f2ed5536fc5f113e2bd4b61a81b98bcca7",
+      "observations": {
+        "baseline": {
+          "id": "V02",
+          "kind": "valid",
+          "family": "eligible_response",
+          "basis": "existing_contract",
+          "expected": "approve",
+          "description": "Complete narrow session-revocation request.",
+          "input_sha256": "38968470647326bef0a7ebec8e5567f2ed5536fc5f113e2bd4b61a81b98bcca7",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "revoke_sessions",
+          "scope": "single_identity",
+          "policy": "CYBER-ID-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": null,
+          "unauthorized_receipt": null
+        },
+        "repaired": {
+          "id": "V02",
+          "kind": "valid",
+          "family": "eligible_response",
+          "basis": "existing_contract",
+          "expected": "approve",
+          "description": "Complete narrow session-revocation request.",
+          "input_sha256": "38968470647326bef0a7ebec8e5567f2ed5536fc5f113e2bd4b61a81b98bcca7",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "revoke_sessions",
+          "scope": "single_identity",
+          "policy": "CYBER-ID-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": null,
+          "unauthorized_receipt": null
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "V03",
+        "family": "eligible_response",
+        "kind": "valid",
+        "profile": "exfiltration",
+        "basis": "existing_contract",
+        "expected": "approve",
+        "description": "Complete egress-hold request with trusted-origin approval precondition."
+      },
+      "rule": "With the stated trusted-upstream preconditions, issue authority for the exact action, target and scope, and produce one matching simulated receipt.",
+      "expected_behavior": "Approve with a verified, exactly bound token and one matching simulated receipt.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "data_exfiltration",
+        "action": "temporary_egress_hold",
+        "scope": "single_workload",
+        "confidence": 0.99,
+        "required_approval_mode": "single",
+        "human_approvals": [
+          "incident-commander"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:V03",
+        "incident_id": "BENCH-V03",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:exfiltration:V03",
+        "evidence_refs": [
+          {
+            "signal": "large_outbound_transfer",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "ea9f59b2226b1ac793f1210122ac4529805122766f3052d647f5943cf275b616"
+          },
+          {
+            "signal": "new_destination",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "6602fc5d6df987cb20b63eb22eae170f2962964c5b2191fefc8aef231a19925f"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "f4e6989385ff992729d54503a1422107"
+        },
+        "idempotency_key": "4230b2d4-7d4d-555d-b666-2f079967a750",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "e0f3482b3ab5c48d575057b5eb236aed00d7499a35f83f7c121a804bf62cbc7c",
+      "observations": {
+        "baseline": {
+          "id": "V03",
+          "kind": "valid",
+          "family": "eligible_response",
+          "basis": "existing_contract",
+          "expected": "approve",
+          "description": "Complete egress-hold request with trusted-origin approval precondition.",
+          "input_sha256": "e0f3482b3ab5c48d575057b5eb236aed00d7499a35f83f7c121a804bf62cbc7c",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "temporary_egress_hold",
+          "scope": "single_workload",
+          "policy": "CYBER-EX-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": null,
+          "unauthorized_receipt": null
+        },
+        "repaired": {
+          "id": "V03",
+          "kind": "valid",
+          "family": "eligible_response",
+          "basis": "existing_contract",
+          "expected": "approve",
+          "description": "Complete egress-hold request with trusted-origin approval precondition.",
+          "input_sha256": "e0f3482b3ab5c48d575057b5eb236aed00d7499a35f83f7c121a804bf62cbc7c",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "temporary_egress_hold",
+          "scope": "single_workload",
+          "policy": "CYBER-EX-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": null,
+          "unauthorized_receipt": null
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "V04",
+        "family": "eligible_response",
+        "kind": "valid",
+        "profile": "embedded",
+        "basis": "existing_contract",
+        "expected": "approve",
+        "description": "Complete quarantine request with two trusted-origin approvals."
+      },
+      "rule": "With the stated trusted-upstream preconditions, issue authority for the exact action, target and scope, and produce one matching simulated receipt.",
+      "expected_behavior": "Approve with a verified, exactly bound token and one matching simulated receipt.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "embedded_ai_agent",
+        "action": "quarantine_workload",
+        "scope": "single_workload",
+        "confidence": 0.99,
+        "required_approval_mode": "dual",
+        "human_approvals": [
+          "incident-commander",
+          "cyber-duty-officer"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:V04",
+        "incident_id": "BENCH-V04",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:embedded:V04",
+        "evidence_refs": [
+          {
+            "signal": "anomalous_process_behavior",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "080eb8b6944285f078a4662ecf20b25c56ae8857b85ad6207c5688d5d19903ee"
+          },
+          {
+            "signal": "hidden_persistence",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "d01626624f6e6c90ca0794fc6aefc2b6c003dbdc52562cd1da89924dce97fda7"
+          },
+          {
+            "signal": "credential_misuse",
+            "source_id": "trusted-observer:2",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "4c825e91a4c8007a47562734bedfbb6f470d26a5682f85b1eb21c4d920befd17"
+          },
+          {
+            "signal": "model_driven_deception",
+            "source_id": "trusted-observer:3",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "13ed84f6005f4a4034281176574741779dcf5f042010686c944488606b9a3cb6"
+          },
+          {
+            "signal": "log_tampering",
+            "source_id": "trusted-observer:4",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "150c647be0fec00b2a7ad646386384b433ffabfe1b24d8d106ad0b52f9f40ae0"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "c18d19d9d33cc24e9d45a21519e9c456"
+        },
+        "idempotency_key": "945c4980-d0a5-552a-8dbc-9af5592c9b70",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "5a93161c3d133bc3af5a38193e97afe09b952cffa76f7b855ac4e42c594a879d",
+      "observations": {
+        "baseline": {
+          "id": "V04",
+          "kind": "valid",
+          "family": "eligible_response",
+          "basis": "existing_contract",
+          "expected": "approve",
+          "description": "Complete quarantine request with two trusted-origin approvals.",
+          "input_sha256": "5a93161c3d133bc3af5a38193e97afe09b952cffa76f7b855ac4e42c594a879d",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "quarantine_workload",
+          "scope": "single_workload",
+          "policy": "CYBER-EA-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": null,
+          "unauthorized_receipt": null
+        },
+        "repaired": {
+          "id": "V04",
+          "kind": "valid",
+          "family": "eligible_response",
+          "basis": "existing_contract",
+          "expected": "approve",
+          "description": "Complete quarantine request with two trusted-origin approvals.",
+          "input_sha256": "5a93161c3d133bc3af5a38193e97afe09b952cffa76f7b855ac4e42c594a879d",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "quarantine_workload",
+          "scope": "single_workload",
+          "policy": "CYBER-EA-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": null,
+          "unauthorized_receipt": null
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "V05",
+        "family": "eligible_response",
+        "kind": "valid",
+        "profile": "ransomware",
+        "basis": "existing_contract",
+        "expected": "approve",
+        "description": "Ransomware confidence exactly at configured threshold.",
+        "patches": [
+          {
+            "path": [
+              "confidence"
+            ],
+            "value": 0.9
+          }
+        ]
+      },
+      "rule": "With the stated trusted-upstream preconditions, issue authority for the exact action, target and scope, and produce one matching simulated receipt.",
+      "expected_behavior": "Approve with a verified, exactly bound token and one matching simulated receipt.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": 0.9,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:V05",
+        "incident_id": "BENCH-V05",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:V05",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "2632020c7f2ce16d800661ec7c78225c2e09a5b5a085603cec4eaf57e04096e0"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "0ab423ed9b89cbeac5d92d357652945dd5dac46681262c8c94bcd3a8ad699b60"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "9ab4b3b17d7ebfe6de22cbaa2bb7ad56"
+        },
+        "idempotency_key": "de8667a0-6d12-5699-97e6-71d570a75df5",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "12109c1094a44b14dd107b08ab99582a5890217103ea5c4647a2d8fe29c88a54",
+      "observations": {
+        "baseline": {
+          "id": "V05",
+          "kind": "valid",
+          "family": "eligible_response",
+          "basis": "existing_contract",
+          "expected": "approve",
+          "description": "Ransomware confidence exactly at configured threshold.",
+          "input_sha256": "12109c1094a44b14dd107b08ab99582a5890217103ea5c4647a2d8fe29c88a54",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": null,
+          "unauthorized_receipt": null
+        },
+        "repaired": {
+          "id": "V05",
+          "kind": "valid",
+          "family": "eligible_response",
+          "basis": "existing_contract",
+          "expected": "approve",
+          "description": "Ransomware confidence exactly at configured threshold.",
+          "input_sha256": "12109c1094a44b14dd107b08ab99582a5890217103ea5c4647a2d8fe29c88a54",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "isolate_endpoint",
+          "scope": "single_endpoint",
+          "policy": "CYBER-RW-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": null,
+          "unauthorized_receipt": null
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "V06",
+        "family": "eligible_response",
+        "kind": "valid",
+        "profile": "identity",
+        "basis": "existing_contract",
+        "expected": "approve",
+        "description": "Identity confidence exactly at configured threshold.",
+        "patches": [
+          {
+            "path": [
+              "confidence"
+            ],
+            "value": 0.85
+          }
+        ]
+      },
+      "rule": "With the stated trusted-upstream preconditions, issue authority for the exact action, target and scope, and produce one matching simulated receipt.",
+      "expected_behavior": "Approve with a verified, exactly bound token and one matching simulated receipt.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "stolen_admin_session",
+        "action": "revoke_sessions",
+        "scope": "single_identity",
+        "confidence": 0.85,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:V06",
+        "incident_id": "BENCH-V06",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:identity:V06",
+        "evidence_refs": [
+          {
+            "signal": "new_device",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "9a77a03bdf0076cd78b3ce87706250b64d72352e7295ad2beb6b654c60ef794c"
+          },
+          {
+            "signal": "mfa_disabled",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "0a5f8f784e1db420e6be9bec547dcc4e55e8fec3634575e85238a831262c34cc"
+          },
+          {
+            "signal": "recovery_changed",
+            "source_id": "trusted-observer:2",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "16c3aa635105eaacfc313ffb4d546f824d1665a4e93549e5888648b7c761239e"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "5cbacc55763f0949a5fb18e9859c1e54"
+        },
+        "idempotency_key": "14b63b86-8c42-5638-a4c9-26715da60a28",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "0ab45c5ee561cf2bfc3eb11f8b4f1f5e5fcccea364faf0b948ccf9a936317f57",
+      "observations": {
+        "baseline": {
+          "id": "V06",
+          "kind": "valid",
+          "family": "eligible_response",
+          "basis": "existing_contract",
+          "expected": "approve",
+          "description": "Identity confidence exactly at configured threshold.",
+          "input_sha256": "0ab45c5ee561cf2bfc3eb11f8b4f1f5e5fcccea364faf0b948ccf9a936317f57",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "revoke_sessions",
+          "scope": "single_identity",
+          "policy": "CYBER-ID-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": null,
+          "unauthorized_receipt": null
+        },
+        "repaired": {
+          "id": "V06",
+          "kind": "valid",
+          "family": "eligible_response",
+          "basis": "existing_contract",
+          "expected": "approve",
+          "description": "Identity confidence exactly at configured threshold.",
+          "input_sha256": "0ab45c5ee561cf2bfc3eb11f8b4f1f5e5fcccea364faf0b948ccf9a936317f57",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "revoke_sessions",
+          "scope": "single_identity",
+          "policy": "CYBER-ID-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": null,
+          "unauthorized_receipt": null
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "V07",
+        "family": "eligible_response",
+        "kind": "valid",
+        "profile": "exfiltration",
+        "basis": "existing_contract",
+        "expected": "approve",
+        "description": "Egress-hold confidence exactly at configured threshold.",
+        "patches": [
+          {
+            "path": [
+              "confidence"
+            ],
+            "value": 0.9
+          }
+        ]
+      },
+      "rule": "With the stated trusted-upstream preconditions, issue authority for the exact action, target and scope, and produce one matching simulated receipt.",
+      "expected_behavior": "Approve with a verified, exactly bound token and one matching simulated receipt.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "data_exfiltration",
+        "action": "temporary_egress_hold",
+        "scope": "single_workload",
+        "confidence": 0.9,
+        "required_approval_mode": "single",
+        "human_approvals": [
+          "incident-commander"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:V07",
+        "incident_id": "BENCH-V07",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:exfiltration:V07",
+        "evidence_refs": [
+          {
+            "signal": "large_outbound_transfer",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "a46f46aa5ded6150de94c383c3d668e49b959b4ad14d89def591d1acd66ce650"
+          },
+          {
+            "signal": "new_destination",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "a01a4fa63dfd1fcac8e3ed5c120b25fa9bf654b7847e54a834cf55b43994950f"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "c0017ddf1805d53e90d43184209d3468"
+        },
+        "idempotency_key": "6ab0e401-7725-5d3e-ae0a-e8e3fe1e3976",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "79d66996b51cdc62f38044e96a877811370794d504297fa41f62bdd3ae6583c0",
+      "observations": {
+        "baseline": {
+          "id": "V07",
+          "kind": "valid",
+          "family": "eligible_response",
+          "basis": "existing_contract",
+          "expected": "approve",
+          "description": "Egress-hold confidence exactly at configured threshold.",
+          "input_sha256": "79d66996b51cdc62f38044e96a877811370794d504297fa41f62bdd3ae6583c0",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "temporary_egress_hold",
+          "scope": "single_workload",
+          "policy": "CYBER-EX-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": null,
+          "unauthorized_receipt": null
+        },
+        "repaired": {
+          "id": "V07",
+          "kind": "valid",
+          "family": "eligible_response",
+          "basis": "existing_contract",
+          "expected": "approve",
+          "description": "Egress-hold confidence exactly at configured threshold.",
+          "input_sha256": "79d66996b51cdc62f38044e96a877811370794d504297fa41f62bdd3ae6583c0",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "temporary_egress_hold",
+          "scope": "single_workload",
+          "policy": "CYBER-EX-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": null,
+          "unauthorized_receipt": null
+        }
+      }
+    },
+    {
+      "definition": {
+        "id": "V08",
+        "family": "eligible_response",
+        "kind": "valid",
+        "profile": "embedded",
+        "basis": "existing_contract",
+        "expected": "approve",
+        "description": "Quarantine confidence exactly at configured threshold.",
+        "patches": [
+          {
+            "path": [
+              "confidence"
+            ],
+            "value": 0.9
+          }
+        ]
+      },
+      "rule": "With the stated trusted-upstream preconditions, issue authority for the exact action, target and scope, and produce one matching simulated receipt.",
+      "expected_behavior": "Approve with a verified, exactly bound token and one matching simulated receipt.",
+      "external_fact": null,
+      "assumptions": "Evidence and approval origins are assumed trusted except for the specific property under test. The harness does not authenticate those origins.",
+      "basis_note": "Existing input, action, scope, policy or authorization contract.",
+      "request": {
+        "threat": "embedded_ai_agent",
+        "action": "quarantine_workload",
+        "scope": "single_workload",
+        "confidence": 0.9,
+        "required_approval_mode": "dual",
+        "human_approvals": [
+          "incident-commander",
+          "cyber-duty-officer"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:V08",
+        "incident_id": "BENCH-V08",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:embedded:V08",
+        "evidence_refs": [
+          {
+            "signal": "anomalous_process_behavior",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "ddaa7db5de06bb65df54cc0751cf71ca69b6357890fe8d43dfd203dbf607b4d8"
+          },
+          {
+            "signal": "hidden_persistence",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "3755f6a284b7cd70cab91f6236b1d378c736f8ab356d262d81120024df8db4a8"
+          },
+          {
+            "signal": "credential_misuse",
+            "source_id": "trusted-observer:2",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "b60eb6d25c22ae4bed354291bf257f717ab571034c099bfb121548d14a805a2a"
+          },
+          {
+            "signal": "model_driven_deception",
+            "source_id": "trusted-observer:3",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "7a87b5ee02268a0b82f4162dfe8e44bc07c903592bd67f33e83615cd9b6dbd55"
+          },
+          {
+            "signal": "log_tampering",
+            "source_id": "trusted-observer:4",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "a425399e12e5f1f3e2db76d450db88862c3f5e00b72589acbf17c2d5b149fc73"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "c46a4c452fa1097a0d0d0d28fdf5d64c"
+        },
+        "idempotency_key": "6be7a529-7f39-56fc-b248-e1ad8c11d6dc",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "905a94c4367bcdeb4e70032a8f703c5563d52894759721d65ad5b1ba50e73fcb",
+      "observations": {
+        "baseline": {
+          "id": "V08",
+          "kind": "valid",
+          "family": "eligible_response",
+          "basis": "existing_contract",
+          "expected": "approve",
+          "description": "Quarantine confidence exactly at configured threshold.",
+          "input_sha256": "905a94c4367bcdeb4e70032a8f703c5563d52894759721d65ad5b1ba50e73fcb",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "quarantine_workload",
+          "scope": "single_workload",
+          "policy": "CYBER-EA-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": null,
+          "unauthorized_receipt": null
+        },
+        "repaired": {
+          "id": "V08",
+          "kind": "valid",
+          "family": "eligible_response",
+          "basis": "existing_contract",
+          "expected": "approve",
+          "description": "Quarantine confidence exactly at configured threshold.",
+          "input_sha256": "905a94c4367bcdeb4e70032a8f703c5563d52894759721d65ad5b1ba50e73fcb",
+          "token_valid": true,
+          "simulated_receipts": 1,
+          "exact_binding": true,
+          "outcome": "approve",
+          "reason": "policy requirements satisfied",
+          "action": "quarantine_workload",
+          "scope": "single_workload",
+          "policy": "CYBER-EA-001",
+          "expected_met": true,
+          "measurement_valid": true,
+          "unauthorized_approval": null,
+          "unauthorized_receipt": null
+        }
+      }
+    }
+  ]
+}

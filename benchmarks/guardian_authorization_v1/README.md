@@ -4,6 +4,8 @@ This diagnostic measures whether explicit unsafe requests receive usable signed 
 
 The 59 cases and their expected outcomes are fixed in `cases.json`. The oracle does not call Guardian or derive expected answers from its loaded policies. It is project-authored, uses knowledge of known weaknesses, and has not received independent review. There is no held-out-test claim.
 
+For the complete inputs behind the comparison, open the [reviewer evidence packet](../../results/guardian_authorization_v1/reviewer_packet/README.md). It expands all 33 unsafe requests and 8 eligible controls, preserves external test facts, and provides one-command replay with an exact comparison to the recorded observations.
+
 ## Scope and denominators
 
 | Population | Cases | Measurement |
