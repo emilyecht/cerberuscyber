@@ -6,6 +6,16 @@ The 59 cases and their expected outcomes are fixed in `cases.json`. The oracle d
 
 For the complete inputs behind the comparison, open the [reviewer evidence packet](../../results/guardian_authorization_v1/reviewer_packet/README.md). It expands all 33 unsafe requests and 8 eligible controls, preserves external test facts, and provides one-command replay with an exact comparison to the recorded observations.
 
+The current result is **partial hardening with significant local improvement**. The three additional freshness/authenticity families still fail all 11 selected cases in both versions. See the [case-generation provenance, coverage audit, and next evaluation plan](EVALUATION_PLAN.md) for the evidence behind that judgment and the proposed acceptance gates. Those gates are planned, not implemented or executed by this documentation revision.
+
+## Case-generation provenance
+
+`cases.json` is an explicitly authored diagnostic corpus. Each request case selects one of four profiles (ransomware, identity, exfiltration, or embedded) and applies listed JSON-path patches in `run.py::make_payload`. The generator uses the fixed clock `2026-09-07T12:00:00Z`, deterministic identifiers and synthetic evidence digests. Cases deliberately target known weaknesses and nearby input boundaries; they are not random samples of operational traffic or an independently authored holdout.
+
+Expected rules are fixture data and do not consult Guardian for their answers. That separation is implementation independence of the oracle, not independent authorship or validation. Authenticity expectations may depend on external test facts: H04 uses an approval for another request and E03 assumes fabricated observations/origins, with no case-specific JSON patches. The JSON alone cannot establish those facts. Positive controls assume trusted upstream identities that the harness does not authenticate.
+
+Normal request cases start with a fresh Guardian/signer. The dedicated probes contain limited ordered reuse steps: modified-token submission, expiry, same-instance reuse, a new gateway, a new Guardian, and one actual fresh Python subprocess. These cover specific lifecycle transitions; the runner does not perform concurrent, sustained, or feedback-driven adaptive campaigns. Repeating this static batch would remain a regression run, not an adaptive evaluation.
+
 ## Scope and denominators
 
 | Population | Cases | Measurement |

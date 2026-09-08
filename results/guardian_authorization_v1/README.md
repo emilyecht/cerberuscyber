@@ -2,7 +2,9 @@
 
 Inspect the [complete reviewer evidence packet](reviewer_packet/README.md): all 33 unsafe requests and 8 eligible controls, fully expanded JSON, before/after observations, and reproduction commands. The [replay verification record](reviewer-verification.json) reproduces all 41 requests on each pinned version.
 
-**The hardening branch closes the exercised action, scope, and input failures while preserving eligible responses. Authenticity, evidence-age, and durable-state gaps remain.**
+**Assessment: significant local improvement; the authorization boundary is only partially hardened.** The hardening branch closes the exercised action, scope, and input failures while preserving eligible responses. Freshness, authenticity, and durable-state gaps remain. Controlled refusal on these selected cases does not establish broader adversarial resistance or a completed operational defensive posture.
+
+Assessment wording and the [next evaluation plan](../../benchmarks/guardian_authorization_v1/EVALUATION_PLAN.md) were revised on 8 September 2026. The measurements below remain the frozen 7 September comparison; no new hardening or evaluation results are claimed by that revision.
 
 Targets: baseline `ac22a922fae1475cbfa9921534222df96cbdf2b5`; repaired PR #8 head `651bd4a465661c7c54d58d3c60c279338b727c4f`. At assessment, PR #8 is open and unmerged. Both were evaluated with the same corpus, runner, policy bytes, and clock. All 59 cases completed without measurement errors on each target.
 
@@ -27,6 +29,14 @@ The 15 fewer unsafe authorizations are failures removed from this selected corpu
 
 The starred families specify additional assurance requirements at the raw-envelope boundary. Evidence age is evaluated against a proposed 60-second maximum and 5-second forward-skew allowance. Claimed identities/source labels are not authenticated by the prototype; positive controls assume trusted upstream origins.
 
+| Unresolved assurance family | Baseline failures | Repaired failures |
+|---|---:|---:|
+| Evidence freshness | 4/4 (100%) | 4/4 (100%) |
+| Approval authenticity | 4/4 (100%) | 4/4 (100%) |
+| Evidence authenticity | 3/3 (100%) | 3/3 (100%) |
+
+These are 11 selected unmet assurance expectations, not estimated field failure probabilities. They are credible next areas for adversarial probing because the boundary currently accepts claims it does not authenticate or age-check. This prioritization is an engineering judgment; it is not evidence of observed attacker activity. The authenticity cases do not establish a bypass of an authenticated deployed integration.
+
 ## Graph 2: useful behavior versus unsafe authority
 
 ![Eligible-response success versus unsafe authorization fraction](utility-vs-unsafe-authorization.svg)
@@ -39,7 +49,7 @@ The improvement does not come from denying every request: all eight eligible con
 2. **Authenticity and independence:** H01–H04 and E01–E03 all receive authority. Establish a trusted verification boundary for approvers, request-bound approvals, evidence bodies/attestations, and distinct source/principal identities.
 3. **Durable replay state:** G07, G08, and L02 produce an additional simulated action. Share atomic replay and idempotency state across instances and recover it across restart.
 
-Real containment, actual unauthorized execution, rollback, latency under load, concurrent races, and independent red-team resistance remain **unmeasured**. The findings support a bounded authorization claim only.
+The [evaluation plan](../../benchmarks/guardian_authorization_v1/EVALUATION_PLAN.md) records how the cases were generated, distinguishes the limited timing/replay sequences already exercised from untested behavior, and defines acceptance criteria for the next cycle. Continuous mixed traffic, feedback-driven adaptive probing, full multi-step attack chains, concurrent races, and independent held-out evaluation are **not yet measured**. Real containment, actual unauthorized execution, rollback, and latency under load also remain unmeasured. The findings support a bounded authorization claim only.
 
 ## Evidence
 
