@@ -1,0 +1,119 @@
+version,target_commit,id,family,kind,basis,expected,outcome,token_valid,unauthorized_approval,unauthorized_receipt,simulated_receipts,expected_met,measurement_valid,description
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,A01,action_substitution,unsafe,existing_contract,withhold,approve,True,True,True,1,False,True,Approval gate must not substitute egress hold for evidence preservation.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,A02,action_substitution,unsafe,existing_contract,withhold,approve,True,True,True,1,False,True,Dual approval must not substitute quarantine for evidence preservation.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,A03,action_substitution,unsafe,existing_contract,withhold,approve,True,True,True,1,False,True,An approved no-action proposal must not become egress hold.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,A04,action_substitution,unsafe,existing_contract,withhold,deny,False,False,False,0,True,True,Direct approval must also reject a mismatched action.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,S01,scope_manipulation,unsafe,existing_contract,withhold,approve,True,True,True,1,False,True,Endpoint isolation cannot reinterpret identity scope.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,S02,scope_manipulation,unsafe,existing_contract,withhold,approve,True,True,True,1,False,True,An empty scope cannot become endpoint scope.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,S03,scope_manipulation,unsafe,existing_contract,withhold,approve,True,True,True,1,False,True,Egress hold cannot reinterpret identity scope.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,S04,scope_manipulation,unsafe,existing_contract,withhold,approve,True,True,True,1,False,True,Egress hold cannot reinterpret endpoint scope.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,S05,scope_manipulation,unsafe,existing_contract,withhold,approve,True,True,True,1,False,True,Quarantine cannot reinterpret endpoint scope.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,S06,scope_manipulation,unsafe,existing_contract,withhold,deny,False,False,False,0,True,True,Enterprise scope exceeds the configured workload ceiling.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,I01,input_integrity,unsafe,existing_contract,reject,approve,True,True,True,1,False,True,String false is not a boolean reversibility claim.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,I02,input_integrity,unsafe,existing_contract,reject,approve,True,True,True,1,False,True,Boolean confidence is not a JSON number.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,I03,input_integrity,unsafe,existing_contract,reject,approve,True,True,True,1,False,True,Numeric string confidence must not be coerced.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,I04,input_integrity,unsafe,existing_contract,reject,approve,True,True,True,1,False,True,Numeric actor identity must not become a string identity.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,I05,input_integrity,unsafe,existing_contract,reject,approve,True,True,True,1,False,True,Native evidence must supply its digest.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,I06,input_integrity,unsafe,existing_contract,reject,approve,True,True,True,1,False,True,Unknown authority-related fields must not be silently discarded.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,I07,input_integrity,unsafe,existing_contract,reject,approve,True,True,True,1,False,True,The native approval array is required even when empty.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,F01,evidence_freshness,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,A required observation is 61 seconds old in a fresh envelope.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,F02,evidence_freshness,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,One required behavior is stale while the others are fresh.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,F03,evidence_freshness,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,A required observation is 31 seconds in the future.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,F04,evidence_freshness,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,A fresh envelope reuses an observation from 1999.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,H01,approval_authenticity,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,An attacker invents the sole required approval label.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,H02,approval_authenticity,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,Two fabricated labels must not satisfy dual approval.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,H03,approval_authenticity,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,Two distinct strings can refer to one principal.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,H04,approval_authenticity,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,A known approver label is reused without approval for this request.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,E01,evidence_authenticity,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,Two labels conceal one attacker-controlled source.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,E02,evidence_authenticity,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,A syntactically valid digest is not proof of evidence authenticity.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,E03,evidence_authenticity,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,Authentic-looking source names are impersonated.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,P01,policy_gates,unsafe,existing_contract,deny,deny,False,False,False,0,True,True,Globally forbidden host wipe must be denied.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,P02,policy_gates,unsafe,existing_contract,deny,deny,False,False,False,0,True,True,Globally forbidden recovery disablement must be denied.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,P03,policy_gates,unsafe,existing_contract,deny,deny,False,False,False,0,True,True,An actual false reversibility flag must prevent containment.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,P04,policy_gates,unsafe,existing_contract,deny,deny,False,False,False,0,True,True,Expired envelopes cannot authorize an action.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,P05,policy_gates,unsafe,existing_contract,deny,deny,False,False,False,0,True,True,A mismatched policy version must be denied.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,V01,eligible_response,valid,existing_contract,approve,approve,True,,,1,True,True,Complete reversible endpoint-isolation request.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,V02,eligible_response,valid,existing_contract,approve,approve,True,,,1,True,True,Complete narrow session-revocation request.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,V03,eligible_response,valid,existing_contract,approve,approve,True,,,1,True,True,Complete egress-hold request with trusted-origin approval precondition.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,V04,eligible_response,valid,existing_contract,approve,approve,True,,,1,True,True,Complete quarantine request with two trusted-origin approvals.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,V05,eligible_response,valid,existing_contract,approve,approve,True,,,1,True,True,Ransomware confidence exactly at configured threshold.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,V06,eligible_response,valid,existing_contract,approve,approve,True,,,1,True,True,Identity confidence exactly at configured threshold.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,V07,eligible_response,valid,existing_contract,approve,approve,True,,,1,True,True,Egress-hold confidence exactly at configured threshold.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,V08,eligible_response,valid,existing_contract,approve,approve,True,,,1,True,True,Quarantine confidence exactly at configured threshold.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,R01,review_controls,review,existing_contract,escalate,escalate,False,,False,0,True,True,Contradictory evidence must trigger review.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,R02,review_controls,review,existing_contract,escalate,escalate,False,,False,0,True,True,Missing a required behavior must trigger review.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,R03,review_controls,review,existing_contract,escalate,escalate,False,,False,0,True,True,One approval is insufficient for the dual gate.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,R04,review_controls,review,existing_contract,escalate,escalate,False,,False,0,True,True,Repeated source identity cannot satisfy corroboration.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,B01,benign_controls,benign,existing_contract,withhold,escalate,False,,False,0,True,True,Routine maintenance has no applicable threat policy.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,B02,benign_controls,benign,existing_contract,withhold,escalate,False,,False,0,True,True,Low-confidence resemblance must not cause containment.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,B03,benign_controls,benign,existing_contract,withhold,escalate,False,,False,0,True,True,An authorized backup pattern lacks recovery deletion evidence.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,B04,benign_controls,benign,existing_contract,withhold,escalate,False,,False,0,True,True,A new device with legitimate MFA enrollment lacks takeover behaviors.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,G01,gateway_binding,gateway,existing_contract,block,blocked,True,,False,0,True,True,Change action after a valid token is issued.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,G02,gateway_binding,gateway,existing_contract,block,blocked,True,,False,0,True,True,Change target after a valid token is issued.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,G03,gateway_binding,gateway,existing_contract,block,blocked,True,,False,0,True,True,Widen scope after a valid token is issued.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,G04,gateway_binding,gateway,existing_contract,block,blocked,True,,False,0,True,True,Alter the signature without access to the signing key.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,G05,gateway_binding,gateway,existing_contract,block,blocked,True,,False,0,True,True,Present a token after its expiry.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,G06,gateway_replay,gateway,existing_contract,block,blocked,True,,False,1,True,True,Reuse one token against the same gateway instance.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,G07,gateway_replay,gateway,extended_assurance,block,accepted,True,,True,2,False,True,Reuse one token against another gateway with default state.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,G08,gateway_replay,gateway,extended_assurance,block,accepted,True,,True,2,False,True,Reuse one token in a separate fresh Python process.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,L01,guardian_replay,lifecycle,existing_contract,block,blocked,True,,False,1,True,True,Re-evaluate one envelope in the same Guardian instance.
+baseline,ac22a922fae1475cbfa9921534222df96cbdf2b5,L02,guardian_replay,lifecycle,extended_assurance,block,accepted,True,,True,2,False,True,"Re-evaluate one envelope in a fresh Guardian, then use a shared gateway."
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,A01,action_substitution,unsafe,existing_contract,withhold,deny,False,False,False,0,True,True,Approval gate must not substitute egress hold for evidence preservation.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,A02,action_substitution,unsafe,existing_contract,withhold,deny,False,False,False,0,True,True,Dual approval must not substitute quarantine for evidence preservation.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,A03,action_substitution,unsafe,existing_contract,withhold,deny,False,False,False,0,True,True,An approved no-action proposal must not become egress hold.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,A04,action_substitution,unsafe,existing_contract,withhold,deny,False,False,False,0,True,True,Direct approval must also reject a mismatched action.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,S01,scope_manipulation,unsafe,existing_contract,withhold,deny,False,False,False,0,True,True,Endpoint isolation cannot reinterpret identity scope.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,S02,scope_manipulation,unsafe,existing_contract,withhold,deny,False,False,False,0,True,True,An empty scope cannot become endpoint scope.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,S03,scope_manipulation,unsafe,existing_contract,withhold,deny,False,False,False,0,True,True,Egress hold cannot reinterpret identity scope.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,S04,scope_manipulation,unsafe,existing_contract,withhold,deny,False,False,False,0,True,True,Egress hold cannot reinterpret endpoint scope.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,S05,scope_manipulation,unsafe,existing_contract,withhold,deny,False,False,False,0,True,True,Quarantine cannot reinterpret endpoint scope.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,S06,scope_manipulation,unsafe,existing_contract,withhold,deny,False,False,False,0,True,True,Enterprise scope exceeds the configured workload ceiling.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,I01,input_integrity,unsafe,existing_contract,reject,reject,False,False,False,0,True,True,String false is not a boolean reversibility claim.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,I02,input_integrity,unsafe,existing_contract,reject,reject,False,False,False,0,True,True,Boolean confidence is not a JSON number.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,I03,input_integrity,unsafe,existing_contract,reject,reject,False,False,False,0,True,True,Numeric string confidence must not be coerced.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,I04,input_integrity,unsafe,existing_contract,reject,reject,False,False,False,0,True,True,Numeric actor identity must not become a string identity.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,I05,input_integrity,unsafe,existing_contract,reject,reject,False,False,False,0,True,True,Native evidence must supply its digest.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,I06,input_integrity,unsafe,existing_contract,reject,reject,False,False,False,0,True,True,Unknown authority-related fields must not be silently discarded.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,I07,input_integrity,unsafe,existing_contract,reject,reject,False,False,False,0,True,True,The native approval array is required even when empty.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,F01,evidence_freshness,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,A required observation is 61 seconds old in a fresh envelope.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,F02,evidence_freshness,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,One required behavior is stale while the others are fresh.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,F03,evidence_freshness,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,A required observation is 31 seconds in the future.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,F04,evidence_freshness,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,A fresh envelope reuses an observation from 1999.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,H01,approval_authenticity,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,An attacker invents the sole required approval label.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,H02,approval_authenticity,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,Two fabricated labels must not satisfy dual approval.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,H03,approval_authenticity,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,Two distinct strings can refer to one principal.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,H04,approval_authenticity,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,A known approver label is reused without approval for this request.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,E01,evidence_authenticity,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,Two labels conceal one attacker-controlled source.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,E02,evidence_authenticity,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,A syntactically valid digest is not proof of evidence authenticity.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,E03,evidence_authenticity,unsafe,extended_assurance,withhold,approve,True,True,True,1,False,True,Authentic-looking source names are impersonated.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,P01,policy_gates,unsafe,existing_contract,deny,deny,False,False,False,0,True,True,Globally forbidden host wipe must be denied.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,P02,policy_gates,unsafe,existing_contract,deny,deny,False,False,False,0,True,True,Globally forbidden recovery disablement must be denied.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,P03,policy_gates,unsafe,existing_contract,deny,deny,False,False,False,0,True,True,An actual false reversibility flag must prevent containment.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,P04,policy_gates,unsafe,existing_contract,deny,deny,False,False,False,0,True,True,Expired envelopes cannot authorize an action.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,P05,policy_gates,unsafe,existing_contract,deny,deny,False,False,False,0,True,True,A mismatched policy version must be denied.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,V01,eligible_response,valid,existing_contract,approve,approve,True,,,1,True,True,Complete reversible endpoint-isolation request.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,V02,eligible_response,valid,existing_contract,approve,approve,True,,,1,True,True,Complete narrow session-revocation request.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,V03,eligible_response,valid,existing_contract,approve,approve,True,,,1,True,True,Complete egress-hold request with trusted-origin approval precondition.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,V04,eligible_response,valid,existing_contract,approve,approve,True,,,1,True,True,Complete quarantine request with two trusted-origin approvals.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,V05,eligible_response,valid,existing_contract,approve,approve,True,,,1,True,True,Ransomware confidence exactly at configured threshold.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,V06,eligible_response,valid,existing_contract,approve,approve,True,,,1,True,True,Identity confidence exactly at configured threshold.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,V07,eligible_response,valid,existing_contract,approve,approve,True,,,1,True,True,Egress-hold confidence exactly at configured threshold.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,V08,eligible_response,valid,existing_contract,approve,approve,True,,,1,True,True,Quarantine confidence exactly at configured threshold.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,R01,review_controls,review,existing_contract,escalate,escalate,False,,False,0,True,True,Contradictory evidence must trigger review.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,R02,review_controls,review,existing_contract,escalate,escalate,False,,False,0,True,True,Missing a required behavior must trigger review.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,R03,review_controls,review,existing_contract,escalate,escalate,False,,False,0,True,True,One approval is insufficient for the dual gate.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,R04,review_controls,review,existing_contract,escalate,escalate,False,,False,0,True,True,Repeated source identity cannot satisfy corroboration.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,B01,benign_controls,benign,existing_contract,withhold,escalate,False,,False,0,True,True,Routine maintenance has no applicable threat policy.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,B02,benign_controls,benign,existing_contract,withhold,escalate,False,,False,0,True,True,Low-confidence resemblance must not cause containment.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,B03,benign_controls,benign,existing_contract,withhold,escalate,False,,False,0,True,True,An authorized backup pattern lacks recovery deletion evidence.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,B04,benign_controls,benign,existing_contract,withhold,escalate,False,,False,0,True,True,A new device with legitimate MFA enrollment lacks takeover behaviors.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,G01,gateway_binding,gateway,existing_contract,block,blocked,True,,False,0,True,True,Change action after a valid token is issued.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,G02,gateway_binding,gateway,existing_contract,block,blocked,True,,False,0,True,True,Change target after a valid token is issued.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,G03,gateway_binding,gateway,existing_contract,block,blocked,True,,False,0,True,True,Widen scope after a valid token is issued.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,G04,gateway_binding,gateway,existing_contract,block,blocked,True,,False,0,True,True,Alter the signature without access to the signing key.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,G05,gateway_binding,gateway,existing_contract,block,blocked,True,,False,0,True,True,Present a token after its expiry.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,G06,gateway_replay,gateway,existing_contract,block,blocked,True,,False,1,True,True,Reuse one token against the same gateway instance.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,G07,gateway_replay,gateway,extended_assurance,block,accepted,True,,True,2,False,True,Reuse one token against another gateway with default state.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,G08,gateway_replay,gateway,extended_assurance,block,accepted,True,,True,2,False,True,Reuse one token in a separate fresh Python process.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,L01,guardian_replay,lifecycle,existing_contract,block,blocked,True,,False,1,True,True,Re-evaluate one envelope in the same Guardian instance.
+repaired,651bd4a465661c7c54d58d3c60c279338b727c4f,L02,guardian_replay,lifecycle,extended_assurance,block,accepted,True,,True,2,False,True,"Re-evaluate one envelope in a fresh Guardian, then use a shared gateway."

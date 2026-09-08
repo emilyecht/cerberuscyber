@@ -1,0 +1,38 @@
+{
+  "threat": "data_exfiltration",
+  "action": "none",
+  "scope": "single_workload",
+  "confidence": 0.99,
+  "required_approval_mode": "single",
+  "human_approvals": [
+    "incident-commander"
+  ],
+  "schema_version": "1.0.0",
+  "envelope_id": "benchmark:A03",
+  "incident_id": "BENCH-A03",
+  "actor": "sentinel:benchmark-sandbox",
+  "target": "sandbox:exfiltration:A03",
+  "evidence_refs": [
+    {
+      "signal": "large_outbound_transfer",
+      "source_id": "trusted-observer:0",
+      "observed_at": "2026-09-07T11:59:55Z",
+      "digest": "0c8df5160968976135841d14e795afce2be7bb4f9a2d8bd14717d8ddca33d8e2"
+    },
+    {
+      "signal": "new_destination",
+      "source_id": "trusted-observer:1",
+      "observed_at": "2026-09-07T11:59:55Z",
+      "digest": "77e3bfafd50b0d2d1c47ee277371db4bfa7c995f6a5b35ce472b82a51b739857"
+    }
+  ],
+  "freshness": {
+    "timestamp": "2026-09-07T11:59:59Z",
+    "expires_at": "2026-09-07T12:02:00Z",
+    "nonce": "6d9145c86bba9558be49abf9bcf942b4"
+  },
+  "idempotency_key": "f8a4f76f-abe0-567c-8e0f-5da5df7a0316",
+  "reversibility_flag": true,
+  "policy_version": "0.5.0",
+  "mission_impact": "low"
+}

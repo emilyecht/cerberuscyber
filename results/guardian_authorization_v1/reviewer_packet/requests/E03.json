@@ -1,0 +1,42 @@
+{
+  "threat": "stolen_admin_session",
+  "action": "revoke_sessions",
+  "scope": "single_identity",
+  "confidence": 0.99,
+  "required_approval_mode": "none",
+  "human_approvals": [],
+  "schema_version": "1.0.0",
+  "envelope_id": "benchmark:E03",
+  "incident_id": "BENCH-E03",
+  "actor": "sentinel:benchmark-sandbox",
+  "target": "sandbox:identity:E03",
+  "evidence_refs": [
+    {
+      "signal": "new_device",
+      "source_id": "trusted-observer:0",
+      "observed_at": "2026-09-07T11:59:55Z",
+      "digest": "3d1675deb4b1aaad8f982596557b38122028fc34b8b7da8775c91c75e86a542b"
+    },
+    {
+      "signal": "mfa_disabled",
+      "source_id": "trusted-observer:1",
+      "observed_at": "2026-09-07T11:59:55Z",
+      "digest": "3c3c7bb6502aaafe7882f86b2c54f65ca97ef1761bc0520ba643f2214f9bc806"
+    },
+    {
+      "signal": "recovery_changed",
+      "source_id": "trusted-observer:2",
+      "observed_at": "2026-09-07T11:59:55Z",
+      "digest": "1e92e7f55bbd83eb11da59dcfb62b390445d6d0c369638eab388e3bc3fb5d90f"
+    }
+  ],
+  "freshness": {
+    "timestamp": "2026-09-07T11:59:59Z",
+    "expires_at": "2026-09-07T12:02:00Z",
+    "nonce": "1454eab04012fd46a8ee49e3b68236cb"
+  },
+  "idempotency_key": "fd1780a6-fa0d-550a-ba72-ae7ac3c6c3c1",
+  "reversibility_flag": true,
+  "policy_version": "0.5.0",
+  "mission_impact": "low"
+}

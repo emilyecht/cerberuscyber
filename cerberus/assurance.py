@@ -30,7 +30,8 @@ def _canonical(value: dict) -> bytes:
 
 def evidence_message(envelope: ActionEnvelope, item: Evidence, key_id: str) -> bytes:
     return _canonical({
-        "purpose": "cerberus.evidence.v1", "key_id": key_id,
+        "purpose": "cerberus.evidence.v2", "key_id": key_id,
+        "envelope_digest": envelope.digest(),
         "target": envelope.target, "evidence": item.to_canonical_dict(),
     })
 

@@ -58,8 +58,15 @@ CERBERUS Cyber is a **TRL 2–3 research prototype**, not a production defensive
 The repository performs no real containment by default.
 
 See [assurance boundary and migration](docs/ASSURANCE_BOUNDARY.md) and the
-[v2 configured-boundary benchmark](benchmarks/assurance_boundaries_v2/README.md).
+[v3 request-bound benchmark](benchmarks/assurance_boundaries_v3/README.md).
 These controls are prototype mechanisms, not operational or independent validation.
+
+The [post-merge v1 measurement](results/guardian_authorization_v1/main-after-pr8.json)
+pins `main` at `d9e58ecc2443e237c685e8510f864a343913723e` after #9 and #8 merged:
+59 cases, zero measurement errors, 0/22 existing-contract failures, 11/11 extended
+assurance failures, and 8/8 eligible responses. It preserves the original historical
+packet and non-claims. Subsequent attestation changes use v3; these two instruments
+must not be treated as the same security measurement.
 
 ## Core Research Question
 
@@ -191,6 +198,8 @@ These are fixture assertions, not operational performance claims.
 See [Adversarial AI Persistence Scenario](docs/EMBEDDED_AGENT_SCENARIO.md).
 
 ## Quick Start
+
+For measured authorization outcomes, see the [Guardian authorization benchmark](benchmarks/guardian_authorization_v1/README.md) and its [pinned baseline-versus-repair results](results/guardian_authorization_v1/README.md). The results distinguish existing-contract repairs from additional freshness, authenticity, and durable-state requirements; they do not assign an overall security score.
 
 Requires Python 3.10 or newer.
 

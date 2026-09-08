@@ -29,7 +29,7 @@ positionally with the canonical envelope's evidence and approval labels. Evidenc
 proofs contain `key_id` and lowercase hex `signature`; approval proofs additionally
 contain `expires_at`. `AssuranceBundle.from_dict` rejects malformed structures.
 
-Evidence signatures bind the domain `cerberus.evidence.v1`, key ID, target and
+Evidence signatures bind the domain `cerberus.evidence.v2`, key ID, full canonical envelope digest, target and
 complete evidence record, including observation time and digest. Approval signatures
 bind `cerberus.approval.v1`, key ID, approval label, complete canonical envelope
 digest and approval expiry. Use `evidence_message` and `approval_message` from
@@ -65,7 +65,11 @@ The gateway requires an explicit store choice.
 
 ## Migration and test fixtures
 
-DecisionToken 1.2.0 adds a signed assurance digest; old 1.1.0 tokens are rejected.
+Evidence v2 supersedes the observation-only v1 proof profile; obtain new evidence
+attestations for each complete request. There is no legacy-signature fallback.
+Issuers must verify observations and request context before signing; they must not
+blindly sign requester-supplied data. These are request attestations, distinct from
+reusable raw sensor reports. Token 1.2.0 adds a signed assurance digest; old 1.1.0 tokens are rejected.
 Deploy compatible signer/verifier together and obtain fresh authority. Keep PR #8's
 exact action/scope constraints; integration with the separate policy-bundle work in
 PR #7 must preserve both sets of checks.

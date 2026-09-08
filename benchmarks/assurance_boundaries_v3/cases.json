@@ -1,0 +1,2740 @@
+{
+  "version": "assurance-boundaries-v2",
+  "now": "2026-09-07T12:00:00Z",
+  "source_commit": "ac81c0e3ac3acf3b5f022cecc350de58f5b04e65",
+  "source_path": "results/guardian_authorization_v1/reviewer_packet/packet.json",
+  "source_corpus_sha256": "f57512606b7fee24085ed1ff5be4f4a998a5b04a7bfcac50b1913ef162345e65",
+  "selection": "All 11 v1 freshness/authenticity requests and all 8 eligible controls, byte-equivalent canonical JSON values. Added cryptographic fixtures and explicit state configuration are new v2 inputs.",
+  "case_authorship": "Project-authored diagnostic with public test keys; not independent or held out.",
+  "attestation_profile": "cerberus.evidence.v2: full request binding; cerberus.approval.v1",
+  "freshness_rule": "Evidence age <60 seconds; future skew <=5 seconds; all authority deadlines exclusive.",
+  "cases": [
+    {
+      "definition": {
+        "id": "F01",
+        "family": "evidence_freshness",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "A required observation is 61 seconds old in a fresh envelope.",
+        "patches": [
+          {
+            "path": [
+              "evidence_refs",
+              0,
+              "observed_at"
+            ],
+            "value": "2026-09-07T11:58:59Z"
+          }
+        ]
+      },
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:F01",
+        "incident_id": "BENCH-F01",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:F01",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:58:59Z",
+            "digest": "2d6525cdbbc6e52f92da882c8093b7b8bb8d3d2b7e2e3b1479945eb45c3d0b8a"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "549b74a31603b2226525a77ec3952afdfb0779b72621d0a4c6674843f1bdca62"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "f47c886e1e7e1f6cd0fa0c1db2ed5ca5"
+        },
+        "idempotency_key": "023bbe71-85ac-565f-bc27-21058f11c4d8",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "7f2cbd448621d9a3e44862b212cbea28df0f0cb8c0a3b7b2f5816a0d14e8aa3d",
+      "trust_configuration": {
+        "evidence_authorities": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "public_key": "446aca7f1fd010d75f161f43f2a157af40db803489daaad88c0a9424d9d83018",
+            "source_ids": [
+              "trusted-observer:0"
+            ],
+            "signals": [
+              "rapid_file_rewrite"
+            ],
+            "targets": [
+              "sandbox:ransomware:F01"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:0"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "public_key": "69d0a4739229bc62f97a240e0342b6d88acd62bc15a52ae6f9b303489a1cb18f",
+            "source_ids": [
+              "trusted-observer:1"
+            ],
+            "signals": [
+              "recovery_deletion_attempt"
+            ],
+            "targets": [
+              "sandbox:ransomware:F01"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:1"
+          }
+        ],
+        "approval_authorities": [],
+        "revoked_key_ids": []
+      },
+      "assurance": {
+        "evidence": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "signature": "ebfb3b67b8430b670b7055e77cb35ad41bfe63ae7ca962192dcf00006b9aa6d7930419b51fd931cffec04c2a5eb2bdf1dbcd0a0d02ec3380050b72d8eb1cac0e"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "signature": "b7e3421b7ddcd36e786a89313c93f1f537628ad4c1cb2adb26373f02b1881b69689ee344f43099ae6c3cbc82735fc1c1167ca098b7db51a8956182b270f2700f"
+          }
+        ],
+        "approvals": []
+      },
+      "proof_construction": "genuine configured attestations for the exact supplied observations and request"
+    },
+    {
+      "definition": {
+        "id": "F02",
+        "family": "evidence_freshness",
+        "kind": "unsafe",
+        "profile": "embedded",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "One required behavior is stale while the others are fresh.",
+        "patches": [
+          {
+            "path": [
+              "evidence_refs",
+              4,
+              "observed_at"
+            ],
+            "value": "2026-09-07T11:58:00Z"
+          }
+        ]
+      },
+      "request": {
+        "threat": "embedded_ai_agent",
+        "action": "quarantine_workload",
+        "scope": "single_workload",
+        "confidence": 0.99,
+        "required_approval_mode": "dual",
+        "human_approvals": [
+          "incident-commander",
+          "cyber-duty-officer"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:F02",
+        "incident_id": "BENCH-F02",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:embedded:F02",
+        "evidence_refs": [
+          {
+            "signal": "anomalous_process_behavior",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "ed9b9705f28a9f16ed2fbceba7e317b964ede51425f8b551f5697ba2e936f663"
+          },
+          {
+            "signal": "hidden_persistence",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "3a01bbeef9279208a13d01115664d1ccb2fb3619055adfb682dad5daa8317fb6"
+          },
+          {
+            "signal": "credential_misuse",
+            "source_id": "trusted-observer:2",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "4c5bd249eef41f1d6cfe9d9bbb7a3e398fc33b6ed453a82abb565af69ba89075"
+          },
+          {
+            "signal": "model_driven_deception",
+            "source_id": "trusted-observer:3",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "feee5ddfa09c5be09f7434e4c3511504fff63c1efd183133a16c7407624e32d7"
+          },
+          {
+            "signal": "log_tampering",
+            "source_id": "trusted-observer:4",
+            "observed_at": "2026-09-07T11:58:00Z",
+            "digest": "d1c6267913273686c99917ad5a0986a7f7b6f08ed7462f860c13d5f16f353e53"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "ee6415f5fbbe51a00d769f2f92474321"
+        },
+        "idempotency_key": "dce1f997-7f3d-576e-8b3f-d1c2a1389f51",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "9aa32414d19df85fb72408e7644960b7ec2c397f1d64f2d3cad0a8672d90da7b",
+      "trust_configuration": {
+        "evidence_authorities": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "public_key": "446aca7f1fd010d75f161f43f2a157af40db803489daaad88c0a9424d9d83018",
+            "source_ids": [
+              "trusted-observer:0"
+            ],
+            "signals": [
+              "anomalous_process_behavior"
+            ],
+            "targets": [
+              "sandbox:embedded:F02"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:0"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "public_key": "69d0a4739229bc62f97a240e0342b6d88acd62bc15a52ae6f9b303489a1cb18f",
+            "source_ids": [
+              "trusted-observer:1"
+            ],
+            "signals": [
+              "hidden_persistence"
+            ],
+            "targets": [
+              "sandbox:embedded:F02"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:1"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:2",
+            "public_key": "c4e34c5ce3b1df3a45d8871280eec84e885d0989c7143c9f91183e4bab8f81a0",
+            "source_ids": [
+              "trusted-observer:2"
+            ],
+            "signals": [
+              "credential_misuse"
+            ],
+            "targets": [
+              "sandbox:embedded:F02"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:2"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:3",
+            "public_key": "763590c4ceb9c89468e5fdd3c05169652bb95de8e41cc85a7658284f0eaf470b",
+            "source_ids": [
+              "trusted-observer:3"
+            ],
+            "signals": [
+              "model_driven_deception"
+            ],
+            "targets": [
+              "sandbox:embedded:F02"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:3"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:4",
+            "public_key": "e38925758d7fabd70295be9cf0900dd54e3e1df4da5bf8fc7ce5d0123cf7c9c3",
+            "source_ids": [
+              "trusted-observer:4"
+            ],
+            "signals": [
+              "log_tampering"
+            ],
+            "targets": [
+              "sandbox:embedded:F02"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:4"
+          }
+        ],
+        "approval_authorities": [
+          {
+            "key_id": "fixture-approval:incident-commander",
+            "public_key": "b85fe187e9eb93d3dff4cf1655117c9e1a16a5d05ee11a6c4dab65cfc14539f7",
+            "principal_id": "fixture-principal:incident-commander",
+            "approval_labels": [
+              "incident-commander"
+            ],
+            "actions": [
+              "quarantine_workload"
+            ],
+            "targets": [
+              "sandbox:embedded:F02"
+            ]
+          },
+          {
+            "key_id": "fixture-approval:cyber-duty-officer",
+            "public_key": "98623ca36d9ab8080f3942d965b3cd1293188c6c70e9e549b4603c286699e2aa",
+            "principal_id": "fixture-principal:cyber-duty-officer",
+            "approval_labels": [
+              "cyber-duty-officer"
+            ],
+            "actions": [
+              "quarantine_workload"
+            ],
+            "targets": [
+              "sandbox:embedded:F02"
+            ]
+          }
+        ],
+        "revoked_key_ids": []
+      },
+      "assurance": {
+        "evidence": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "signature": "9a9da57c6a793f1a08bb8eeb32f580aca158198fdf846d32b2a4e435dd1d08c6b954334ecbc9bbb3f2583cae2f01ce269edd6369e62893cf07b1eb41ec9e4c05"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "signature": "32663d3268355adcb41c571f7143cf387479734939f788c0be60659c3a7dda28cb4c310f7bec80ba40e270bf8eb540fe4414b9f08bb959cfe54e7d6c48ef1a05"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:2",
+            "signature": "ec8e5734071496ea3aa5bedce81a60b8a7916daece0e1f7874029f1f0b8a27ab05cce332ef5ddda5aad752182557baf4a5df9c284afddf2b9ed477484b710807"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:3",
+            "signature": "f80927473ecce3449bc7095848512866d56024824baacb6f15246567c6313afcafedbaafd49d5690e6c57f1cd56991b506998f990734d87bc3f813296e78c502"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:4",
+            "signature": "196f5aa09a5026e6954246d1eb76c6ff85598c417bfe68182ad74f0f0dd9b29267d200060b2fdfb065d63bb64d301808cae979b407f54adbe2667d6bb90aeb03"
+          }
+        ],
+        "approvals": [
+          {
+            "key_id": "fixture-approval:incident-commander",
+            "expires_at": "2026-09-07T12:02:00Z",
+            "signature": "8eca267ed83b9f5ad56514559c5c31f5df0513cc566b39535e84a5f432b08ab114e8f929f2693d119db4de9350a44549a339f27440e97c2c9b43e9b9c1843b0f"
+          },
+          {
+            "key_id": "fixture-approval:cyber-duty-officer",
+            "expires_at": "2026-09-07T12:02:00Z",
+            "signature": "b46503faef29a98b6d44d69921af2a4c0d740813e61f1c9a36a5c64e2be2fe292d6f11839bca655d99fe615d1374ad59ccc338b2019bef9db76e0eb6e7782903"
+          }
+        ]
+      },
+      "proof_construction": "genuine configured attestations for the exact supplied observations and request"
+    },
+    {
+      "definition": {
+        "id": "F03",
+        "family": "evidence_freshness",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "A required observation is 31 seconds in the future.",
+        "patches": [
+          {
+            "path": [
+              "evidence_refs",
+              0,
+              "observed_at"
+            ],
+            "value": "2026-09-07T12:00:31Z"
+          }
+        ]
+      },
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:F03",
+        "incident_id": "BENCH-F03",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:F03",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T12:00:31Z",
+            "digest": "8d45c44d919918fb0f92bf1c7110fbc2284fdf3888c22aa31321ec956c02d95b"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "36c37e334c21553fafb5a88bf78a48901dc0462dbb959da78c70255d4ba33cdb"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "267bc1cb90ca0a590ee4305dee151abd"
+        },
+        "idempotency_key": "d8411e80-299a-583c-b1e5-292ddfd457f2",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "773a482ad17712016ff6eff0dfb7d7f6722891bb78ed99eca0d08d6012feb852",
+      "trust_configuration": {
+        "evidence_authorities": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "public_key": "446aca7f1fd010d75f161f43f2a157af40db803489daaad88c0a9424d9d83018",
+            "source_ids": [
+              "trusted-observer:0"
+            ],
+            "signals": [
+              "rapid_file_rewrite"
+            ],
+            "targets": [
+              "sandbox:ransomware:F03"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:0"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "public_key": "69d0a4739229bc62f97a240e0342b6d88acd62bc15a52ae6f9b303489a1cb18f",
+            "source_ids": [
+              "trusted-observer:1"
+            ],
+            "signals": [
+              "recovery_deletion_attempt"
+            ],
+            "targets": [
+              "sandbox:ransomware:F03"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:1"
+          }
+        ],
+        "approval_authorities": [],
+        "revoked_key_ids": []
+      },
+      "assurance": {
+        "evidence": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "signature": "223210b2e731355a8686cbda73a0c314abbce3231f2c03b63d90add9508906e890f9a33be6d6408471b9730f0c8fcd39b87e9248a512633cce2580f9478cdb0a"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "signature": "520648825892b4add7f717a951692b3d856f1ef0b2da5675c07cd5193ffe017665fe7252dc25cfa48852837e2bbeab2c0050fef5847f6b7f733c9f2f88cb310b"
+          }
+        ],
+        "approvals": []
+      },
+      "proof_construction": "genuine configured attestations for the exact supplied observations and request"
+    },
+    {
+      "definition": {
+        "id": "F04",
+        "family": "evidence_freshness",
+        "kind": "unsafe",
+        "profile": "exfiltration",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "A fresh envelope reuses an observation from 1999.",
+        "patches": [
+          {
+            "path": [
+              "evidence_refs",
+              0,
+              "observed_at"
+            ],
+            "value": "1999-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "request": {
+        "threat": "data_exfiltration",
+        "action": "temporary_egress_hold",
+        "scope": "single_workload",
+        "confidence": 0.99,
+        "required_approval_mode": "single",
+        "human_approvals": [
+          "incident-commander"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:F04",
+        "incident_id": "BENCH-F04",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:exfiltration:F04",
+        "evidence_refs": [
+          {
+            "signal": "large_outbound_transfer",
+            "source_id": "trusted-observer:0",
+            "observed_at": "1999-01-01T00:00:00Z",
+            "digest": "afd3ea357f773acdfa5857629b79a91fa093f65c267d06d46c45367b162f6bb9"
+          },
+          {
+            "signal": "new_destination",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "471d36f630edf27e4089f7a9939bdf8c15a922cd35f5413667cad7027fa52312"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "d91c209026795b8053af226ef4e420d1"
+        },
+        "idempotency_key": "4153c021-7701-5824-8d5d-235fb9d9dda3",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "fc41097402bfae27789d777351ed55af9110798e2584a20404f491ab24cfb041",
+      "trust_configuration": {
+        "evidence_authorities": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "public_key": "446aca7f1fd010d75f161f43f2a157af40db803489daaad88c0a9424d9d83018",
+            "source_ids": [
+              "trusted-observer:0"
+            ],
+            "signals": [
+              "large_outbound_transfer"
+            ],
+            "targets": [
+              "sandbox:exfiltration:F04"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:0"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "public_key": "69d0a4739229bc62f97a240e0342b6d88acd62bc15a52ae6f9b303489a1cb18f",
+            "source_ids": [
+              "trusted-observer:1"
+            ],
+            "signals": [
+              "new_destination"
+            ],
+            "targets": [
+              "sandbox:exfiltration:F04"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:1"
+          }
+        ],
+        "approval_authorities": [
+          {
+            "key_id": "fixture-approval:incident-commander",
+            "public_key": "b85fe187e9eb93d3dff4cf1655117c9e1a16a5d05ee11a6c4dab65cfc14539f7",
+            "principal_id": "fixture-principal:incident-commander",
+            "approval_labels": [
+              "incident-commander"
+            ],
+            "actions": [
+              "temporary_egress_hold"
+            ],
+            "targets": [
+              "sandbox:exfiltration:F04"
+            ]
+          }
+        ],
+        "revoked_key_ids": []
+      },
+      "assurance": {
+        "evidence": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "signature": "2280a27252c741da9b2e425d2c85171238124c4ca25d98e699160e8a9a9ebb083bd42ce43e27747883f983f716dab579df55caad03f1ff9a05d184b8f27e9205"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "signature": "4c01207d573b26655e2fff1095cca5aff5b2e38c343077f9be2d30e58a32e68a85930f501a34ef1717e4e6b7c8757225f6b0c2d4a0c9ddea68d152e59970da00"
+          }
+        ],
+        "approvals": [
+          {
+            "key_id": "fixture-approval:incident-commander",
+            "expires_at": "2026-09-07T12:02:00Z",
+            "signature": "637120733644efd4964da64f346ab266f872151ee6cfeeac60f7c20145cd18f58156fbe6a27139c60dfb6b8139dc3c5b7a4e96c848007beff32fd69043b45b00"
+          }
+        ]
+      },
+      "proof_construction": "genuine configured attestations for the exact supplied observations and request"
+    },
+    {
+      "definition": {
+        "id": "H01",
+        "family": "approval_authenticity",
+        "kind": "unsafe",
+        "profile": "exfiltration",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "An attacker invents the sole required approval label.",
+        "external_fact": "No authorized human approved this request.",
+        "patches": [
+          {
+            "path": [
+              "human_approvals"
+            ],
+            "value": [
+              "attacker:claimed-commander"
+            ]
+          }
+        ]
+      },
+      "request": {
+        "threat": "data_exfiltration",
+        "action": "temporary_egress_hold",
+        "scope": "single_workload",
+        "confidence": 0.99,
+        "required_approval_mode": "single",
+        "human_approvals": [
+          "attacker:claimed-commander"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:H01",
+        "incident_id": "BENCH-H01",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:exfiltration:H01",
+        "evidence_refs": [
+          {
+            "signal": "large_outbound_transfer",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "b1b14079505c0849b66b1f29cd1cced77435d3a541814bec606cbad61c0679f0"
+          },
+          {
+            "signal": "new_destination",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "512f46363d0ed1787e917c713294e58af1339d7ffebd50d638b568beed1fc312"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "1462acfd3f7301c9b686e161b7cc0426"
+        },
+        "idempotency_key": "5cba09a9-1567-5f43-94f5-58858d2c388d",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "68824c7c6c1ddacde4be2c5498b8ed0bf5de8f5da53d6a1d31d5c27c1f1d4432",
+      "trust_configuration": {
+        "evidence_authorities": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "public_key": "446aca7f1fd010d75f161f43f2a157af40db803489daaad88c0a9424d9d83018",
+            "source_ids": [
+              "trusted-observer:0"
+            ],
+            "signals": [
+              "large_outbound_transfer"
+            ],
+            "targets": [
+              "sandbox:exfiltration:H01"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:0"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "public_key": "69d0a4739229bc62f97a240e0342b6d88acd62bc15a52ae6f9b303489a1cb18f",
+            "source_ids": [
+              "trusted-observer:1"
+            ],
+            "signals": [
+              "new_destination"
+            ],
+            "targets": [
+              "sandbox:exfiltration:H01"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:1"
+          }
+        ],
+        "approval_authorities": [
+          {
+            "key_id": "fixture-approval:incident-commander",
+            "public_key": "b85fe187e9eb93d3dff4cf1655117c9e1a16a5d05ee11a6c4dab65cfc14539f7",
+            "principal_id": "fixture-principal:incident-commander",
+            "approval_labels": [
+              "incident-commander"
+            ],
+            "actions": [
+              "temporary_egress_hold"
+            ],
+            "targets": [
+              "sandbox:exfiltration:H01"
+            ]
+          }
+        ],
+        "revoked_key_ids": []
+      },
+      "assurance": {
+        "evidence": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "signature": "0e4e1cdcb43969efe3ebb4bf26e6596d9cef3c4f1bcf50893ef7e53eaed44e1b02cc3eb02af9859479163774c7562f25e4f5105e31665e29ce79ff44c8ffee08"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "signature": "1764202dbf4e6f66be3502c8fe63275d70a8e00841376e43dd73e6bbbe107dcb87ebb79b81c2fbfe7c810187dff6bde88649e9c070423ef77ac2173debaa7405"
+          }
+        ],
+        "approvals": [
+          {
+            "key_id": "fixture-approval:attacker:claimed-commander",
+            "expires_at": "2026-09-07T12:02:00Z",
+            "signature": "5f59d6667a8f06ec435bfc6d816fcbc70c7a468bf77cdf3ef6b8471a4606abd6183decd9a939cdf04065f1bc2477d8398c77cf6f9ceeb3c38a3caf4de9809e03"
+          }
+        ]
+      },
+      "proof_construction": "approval proofs use untrusted keys for the fabricated labels; evidence remains genuine"
+    },
+    {
+      "definition": {
+        "id": "H02",
+        "family": "approval_authenticity",
+        "kind": "unsafe",
+        "profile": "embedded",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "Two fabricated labels must not satisfy dual approval.",
+        "external_fact": "Both labels originate from the attacker.",
+        "patches": [
+          {
+            "path": [
+              "human_approvals"
+            ],
+            "value": [
+              "forged-reviewer-a",
+              "forged-reviewer-b"
+            ]
+          }
+        ]
+      },
+      "request": {
+        "threat": "embedded_ai_agent",
+        "action": "quarantine_workload",
+        "scope": "single_workload",
+        "confidence": 0.99,
+        "required_approval_mode": "dual",
+        "human_approvals": [
+          "forged-reviewer-a",
+          "forged-reviewer-b"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:H02",
+        "incident_id": "BENCH-H02",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:embedded:H02",
+        "evidence_refs": [
+          {
+            "signal": "anomalous_process_behavior",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "1e260929e9bbb30b40bef5d188ffea07ad9db78fc7e443fe837fd6307269fd56"
+          },
+          {
+            "signal": "hidden_persistence",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "d00a298d8d012b46b318e837facd4b148576ceb54eddb65de5bc0fe3260e2356"
+          },
+          {
+            "signal": "credential_misuse",
+            "source_id": "trusted-observer:2",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "984d9902511826d5921b19a2be2500a62e46a349a7e77225e2c29bc697ee619c"
+          },
+          {
+            "signal": "model_driven_deception",
+            "source_id": "trusted-observer:3",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "e857290b3e4640587536853d90a933a485b715a7ad0326829550423403e96dff"
+          },
+          {
+            "signal": "log_tampering",
+            "source_id": "trusted-observer:4",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "06b28b1bb9b395c1ea040774afe206e96cc02a48fb1fbb8e5305650e364b4ccc"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "7a16e8cdbd5c7098ed340d0a876fd8cd"
+        },
+        "idempotency_key": "dbf18b77-0dc0-53c0-bdf4-25c8bdb08fb7",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "ad018739aeaa21b50d536c2ce550967698d790154b51f4f34215f1f0f742f320",
+      "trust_configuration": {
+        "evidence_authorities": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "public_key": "446aca7f1fd010d75f161f43f2a157af40db803489daaad88c0a9424d9d83018",
+            "source_ids": [
+              "trusted-observer:0"
+            ],
+            "signals": [
+              "anomalous_process_behavior"
+            ],
+            "targets": [
+              "sandbox:embedded:H02"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:0"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "public_key": "69d0a4739229bc62f97a240e0342b6d88acd62bc15a52ae6f9b303489a1cb18f",
+            "source_ids": [
+              "trusted-observer:1"
+            ],
+            "signals": [
+              "hidden_persistence"
+            ],
+            "targets": [
+              "sandbox:embedded:H02"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:1"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:2",
+            "public_key": "c4e34c5ce3b1df3a45d8871280eec84e885d0989c7143c9f91183e4bab8f81a0",
+            "source_ids": [
+              "trusted-observer:2"
+            ],
+            "signals": [
+              "credential_misuse"
+            ],
+            "targets": [
+              "sandbox:embedded:H02"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:2"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:3",
+            "public_key": "763590c4ceb9c89468e5fdd3c05169652bb95de8e41cc85a7658284f0eaf470b",
+            "source_ids": [
+              "trusted-observer:3"
+            ],
+            "signals": [
+              "model_driven_deception"
+            ],
+            "targets": [
+              "sandbox:embedded:H02"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:3"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:4",
+            "public_key": "e38925758d7fabd70295be9cf0900dd54e3e1df4da5bf8fc7ce5d0123cf7c9c3",
+            "source_ids": [
+              "trusted-observer:4"
+            ],
+            "signals": [
+              "log_tampering"
+            ],
+            "targets": [
+              "sandbox:embedded:H02"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:4"
+          }
+        ],
+        "approval_authorities": [
+          {
+            "key_id": "fixture-approval:incident-commander",
+            "public_key": "b85fe187e9eb93d3dff4cf1655117c9e1a16a5d05ee11a6c4dab65cfc14539f7",
+            "principal_id": "fixture-principal:incident-commander",
+            "approval_labels": [
+              "incident-commander"
+            ],
+            "actions": [
+              "quarantine_workload"
+            ],
+            "targets": [
+              "sandbox:embedded:H02"
+            ]
+          },
+          {
+            "key_id": "fixture-approval:cyber-duty-officer",
+            "public_key": "98623ca36d9ab8080f3942d965b3cd1293188c6c70e9e549b4603c286699e2aa",
+            "principal_id": "fixture-principal:cyber-duty-officer",
+            "approval_labels": [
+              "cyber-duty-officer"
+            ],
+            "actions": [
+              "quarantine_workload"
+            ],
+            "targets": [
+              "sandbox:embedded:H02"
+            ]
+          }
+        ],
+        "revoked_key_ids": []
+      },
+      "assurance": {
+        "evidence": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "signature": "09e420c42015da5d7ce8b0e23f33075f3ec820b06b7cdbc1b51af4693952983041e2c8a9854e7f968d0494cff0637c16635ec199a87522c667bf244abeab8203"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "signature": "05045b8c5341d70da0f56c8c028e0dc9c590cd53d40adf54b93bbde5ce136629cc43c70191617f685fd4d6f4992fbbaf9e8c39cde81f0990fddfee9f0caf4c0a"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:2",
+            "signature": "1c0b49d26141ba29e4221f9343a79b763327d0718a500f06eee13462f8bab27e305ea7548c42d86e8af6aeec8e00132cb93352bbbae859267694d7d9e275b60e"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:3",
+            "signature": "0e12b8e92020fd7471b44638a6d19ab060a70f106988a76e2adce70acd2530cbf94f45e09e11689e8e3b30f39cfcb3621ad00634001d0a6a719a8d8ea39be30c"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:4",
+            "signature": "660fbd169e905465bd30b399fcef431d160b07b69dd31a508509a7fd93fef28710051ce9937f1a7c42ff1d718d87e8d6d8b75f191af45efbdc2519f0b3127c0a"
+          }
+        ],
+        "approvals": [
+          {
+            "key_id": "fixture-approval:forged-reviewer-a",
+            "expires_at": "2026-09-07T12:02:00Z",
+            "signature": "185e1bce3e5bdda0824ea9a4e8b5e98a1ff86ed561da83de8f96fec6f617206fd18c9d8c8f28663f3d65ae9d79146b28053175966b25a41ac41e3288b062e008"
+          },
+          {
+            "key_id": "fixture-approval:forged-reviewer-b",
+            "expires_at": "2026-09-07T12:02:00Z",
+            "signature": "f7af1ca407eb5b934b49251bf15eee0065094a70845903fe11021cef0922cbad5a500f978e1976f2a61fa5b6e6ee76f21c28fb3566999dde822f129dde940305"
+          }
+        ]
+      },
+      "proof_construction": "approval proofs use untrusted keys for the fabricated labels; evidence remains genuine"
+    },
+    {
+      "definition": {
+        "id": "H03",
+        "family": "approval_authenticity",
+        "kind": "unsafe",
+        "profile": "embedded",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "Two distinct strings can refer to one principal.",
+        "external_fact": "The labels are aliases for the same approving person.",
+        "patches": [
+          {
+            "path": [
+              "human_approvals"
+            ],
+            "value": [
+              "cyber-duty-officer",
+              "cyber-duty-officer:alias"
+            ]
+          }
+        ]
+      },
+      "request": {
+        "threat": "embedded_ai_agent",
+        "action": "quarantine_workload",
+        "scope": "single_workload",
+        "confidence": 0.99,
+        "required_approval_mode": "dual",
+        "human_approvals": [
+          "cyber-duty-officer",
+          "cyber-duty-officer:alias"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:H03",
+        "incident_id": "BENCH-H03",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:embedded:H03",
+        "evidence_refs": [
+          {
+            "signal": "anomalous_process_behavior",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "9350725e71a6d9750e6906dbf7e598db8d1da282b9527aa9db79852ee30de760"
+          },
+          {
+            "signal": "hidden_persistence",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "c953ce538ca1318d6eb0f1fdbeb202faee822a962c6ae0c7286061d7dc26d374"
+          },
+          {
+            "signal": "credential_misuse",
+            "source_id": "trusted-observer:2",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "cc86af1106dcec8fbad31d6f19e5ad1e7dfdfa179d00ec9fb0073e556e2e4aac"
+          },
+          {
+            "signal": "model_driven_deception",
+            "source_id": "trusted-observer:3",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "245c00a73a00297c81d52eb5302578128c6c03c10ed1b943515856eb6ea6d262"
+          },
+          {
+            "signal": "log_tampering",
+            "source_id": "trusted-observer:4",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "af322dbb8322818404982208499c1fd9a26af7255148d73b56b5ac2a0757ccf6"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "9926b4b686fcbb9008218a64694e00c8"
+        },
+        "idempotency_key": "515c9938-c35a-5cea-85f6-82118be1bc39",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "8aab93adb376a302dbba7b5dcae59ed3552fdc1f3c7810f7dbd80d2b9ae90bf0",
+      "trust_configuration": {
+        "evidence_authorities": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "public_key": "446aca7f1fd010d75f161f43f2a157af40db803489daaad88c0a9424d9d83018",
+            "source_ids": [
+              "trusted-observer:0"
+            ],
+            "signals": [
+              "anomalous_process_behavior"
+            ],
+            "targets": [
+              "sandbox:embedded:H03"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:0"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "public_key": "69d0a4739229bc62f97a240e0342b6d88acd62bc15a52ae6f9b303489a1cb18f",
+            "source_ids": [
+              "trusted-observer:1"
+            ],
+            "signals": [
+              "hidden_persistence"
+            ],
+            "targets": [
+              "sandbox:embedded:H03"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:1"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:2",
+            "public_key": "c4e34c5ce3b1df3a45d8871280eec84e885d0989c7143c9f91183e4bab8f81a0",
+            "source_ids": [
+              "trusted-observer:2"
+            ],
+            "signals": [
+              "credential_misuse"
+            ],
+            "targets": [
+              "sandbox:embedded:H03"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:2"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:3",
+            "public_key": "763590c4ceb9c89468e5fdd3c05169652bb95de8e41cc85a7658284f0eaf470b",
+            "source_ids": [
+              "trusted-observer:3"
+            ],
+            "signals": [
+              "model_driven_deception"
+            ],
+            "targets": [
+              "sandbox:embedded:H03"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:3"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:4",
+            "public_key": "e38925758d7fabd70295be9cf0900dd54e3e1df4da5bf8fc7ce5d0123cf7c9c3",
+            "source_ids": [
+              "trusted-observer:4"
+            ],
+            "signals": [
+              "log_tampering"
+            ],
+            "targets": [
+              "sandbox:embedded:H03"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:4"
+          }
+        ],
+        "approval_authorities": [
+          {
+            "key_id": "fixture-approval:cyber-duty-officer",
+            "public_key": "98623ca36d9ab8080f3942d965b3cd1293188c6c70e9e549b4603c286699e2aa",
+            "principal_id": "one-person-with-two-credentials",
+            "approval_labels": [
+              "cyber-duty-officer"
+            ],
+            "actions": [
+              "quarantine_workload"
+            ],
+            "targets": [
+              "sandbox:embedded:H03"
+            ]
+          },
+          {
+            "key_id": "fixture-approval:cyber-duty-officer:alias",
+            "public_key": "e678f674d335be00e1dae52bfcfff56a71a22fda878dfa6f684a0af0aabe6433",
+            "principal_id": "one-person-with-two-credentials",
+            "approval_labels": [
+              "cyber-duty-officer:alias"
+            ],
+            "actions": [
+              "quarantine_workload"
+            ],
+            "targets": [
+              "sandbox:embedded:H03"
+            ]
+          }
+        ],
+        "revoked_key_ids": []
+      },
+      "assurance": {
+        "evidence": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "signature": "bbfe8acbbb90852ce258126ea6b5dab50cd74a21b59398b8d7e0a71859a26f5b9da8544fd500cd2ce1a4728a1434b5d4aeeef1d27967512453b2f356e26ddf01"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "signature": "52a030c470ae7d34ed52d61d014884c52459d8c49d2061573c9f02920acdab96c0642c0c93368a7fdbe58aec2e4127b26e4029637830e8584a0ae246439d0e00"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:2",
+            "signature": "89e8f6325f4299a2d9b6a6e46c60c586b60555bc06da33c548389ca47ea7804a7e1fda9be701a9cfcd6551454ae3ff24f11bb62ba3d68fedc7d9ab6e1cf8ba02"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:3",
+            "signature": "022de7fd9fb844b20950466e80c70432ca9191315d9708f3890a0b85d719a61f607003fcbae04c1ac82b8ddbd1fb821da702080d5573caf40c4288b623d35206"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:4",
+            "signature": "2e5be50f1cc65f2031e3f4a22d97ad5d9902c4f3608821c8abbec840deca7dcd987fa959aea9780c0b73a8687c64256f9a29bb61b86afe8732e658c0235caf0b"
+          }
+        ],
+        "approvals": [
+          {
+            "key_id": "fixture-approval:cyber-duty-officer",
+            "expires_at": "2026-09-07T12:02:00Z",
+            "signature": "e94ac3d44d4762e9dfb89239a68abf377f9ff3e16f1f02eaeb44a83296c74284d81c495b5c8f6ac9275495263ef74b56b78dabee60153a5c71b9e13ccc3c910b"
+          },
+          {
+            "key_id": "fixture-approval:cyber-duty-officer:alias",
+            "expires_at": "2026-09-07T12:02:00Z",
+            "signature": "806c7322ba96026b01ecb4ad233d81d33981294f805b1af1bcc29ccdd46b40845f6a009e4a6a03ae5def07accc43b1225b2797bf56b394f5812719526d28270c"
+          }
+        ]
+      },
+      "proof_construction": "two valid signing credentials resolve to one approving principal"
+    },
+    {
+      "definition": {
+        "id": "H04",
+        "family": "approval_authenticity",
+        "kind": "unsafe",
+        "profile": "exfiltration",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "A known approver label is reused without approval for this request.",
+        "external_fact": "The approval belongs to a different action and target.",
+        "patches": []
+      },
+      "request": {
+        "threat": "data_exfiltration",
+        "action": "temporary_egress_hold",
+        "scope": "single_workload",
+        "confidence": 0.99,
+        "required_approval_mode": "single",
+        "human_approvals": [
+          "incident-commander"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:H04",
+        "incident_id": "BENCH-H04",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:exfiltration:H04",
+        "evidence_refs": [
+          {
+            "signal": "large_outbound_transfer",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "895f405f1dcf692adb3cf443968f4808e2bbb17514acb20150d72d73435a8214"
+          },
+          {
+            "signal": "new_destination",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "088562bd945f9a1a1057a76e43d6272bdf1ca0eb1d4453afdfbf33b95dc6da48"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "97cecd61de506b491a163f2e98680ebf"
+        },
+        "idempotency_key": "f633dfec-c2ac-53d7-aadd-c11b0fc25153",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "0c02f7f3664aded859b69d3c55dbaae5edaaacc83b8b915c5229e9b3a3017823",
+      "trust_configuration": {
+        "evidence_authorities": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "public_key": "446aca7f1fd010d75f161f43f2a157af40db803489daaad88c0a9424d9d83018",
+            "source_ids": [
+              "trusted-observer:0"
+            ],
+            "signals": [
+              "large_outbound_transfer"
+            ],
+            "targets": [
+              "sandbox:exfiltration:H04"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:0"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "public_key": "69d0a4739229bc62f97a240e0342b6d88acd62bc15a52ae6f9b303489a1cb18f",
+            "source_ids": [
+              "trusted-observer:1"
+            ],
+            "signals": [
+              "new_destination"
+            ],
+            "targets": [
+              "sandbox:exfiltration:H04"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:1"
+          }
+        ],
+        "approval_authorities": [
+          {
+            "key_id": "fixture-approval:incident-commander",
+            "public_key": "b85fe187e9eb93d3dff4cf1655117c9e1a16a5d05ee11a6c4dab65cfc14539f7",
+            "principal_id": "fixture-principal:incident-commander",
+            "approval_labels": [
+              "incident-commander"
+            ],
+            "actions": [
+              "temporary_egress_hold"
+            ],
+            "targets": [
+              "sandbox:exfiltration:H04"
+            ]
+          }
+        ],
+        "revoked_key_ids": []
+      },
+      "assurance": {
+        "evidence": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "signature": "6f5f3859ab5f135d77851bad93259fb115b06edfd8f0aeb59e9806777779deade713d977c2da5fbb1ed0bf6d28ad07c9adac52d312788c7803227e1f9e422601"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "signature": "790eff6cffc489f29c290d8b015049297e735cdf298862c54a7c1bc1aa60b765fbc51671926f18d4958257900025b1a3dd601381f2ee1266ff32c1115aaa8c0a"
+          }
+        ],
+        "approvals": [
+          {
+            "key_id": "fixture-approval:incident-commander",
+            "expires_at": "2026-09-07T12:02:00Z",
+            "signature": "d33742c6c66dd1ac1c61466abc760a045a6d231e0d409e2d8b030d24b44a93b657846ba12d9c4e9bef7ae8719989db7fef18227f16e867d312db70434457eb06"
+          }
+        ]
+      },
+      "proof_construction": "genuine approver signature binds a different action and target, never the tested request"
+    },
+    {
+      "definition": {
+        "id": "E01",
+        "family": "evidence_authenticity",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "Two labels conceal one attacker-controlled source.",
+        "external_fact": "Both required observations originate from one compromised sensor.",
+        "patches": [
+          {
+            "path": [
+              "evidence_refs",
+              0,
+              "source_id"
+            ],
+            "value": "claimed-edr"
+          },
+          {
+            "path": [
+              "evidence_refs",
+              1,
+              "source_id"
+            ],
+            "value": "claimed-backup"
+          }
+        ]
+      },
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:E01",
+        "incident_id": "BENCH-E01",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:E01",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "claimed-edr",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "3811c74098d1d3712ede435a367e6cd55eea8543026c0589b89f879d8932e1c3"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "claimed-backup",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "02901254bf3e75fcf269965448fc4e92ea45ff50ac0512e4fa006d3f177b06a6"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "e7e7dd241b31082d328fe29439a320da"
+        },
+        "idempotency_key": "16765387-a72c-5a42-979d-bae875f92958",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "d07469f8a577024092bf9acb01ef41f05f63a5d176ebf32a57d9f213609bae92",
+      "trust_configuration": {
+        "evidence_authorities": [
+          {
+            "key_id": "fixture-evidence:claimed-backup",
+            "public_key": "2abef7c2bdf40383657ecb5d10452e6487cf9cdfa31844fcaeb989546e7f9726",
+            "source_ids": [
+              "claimed-backup"
+            ],
+            "signals": [
+              "recovery_deletion_attempt"
+            ],
+            "targets": [
+              "sandbox:ransomware:E01"
+            ],
+            "independence_domain": "one-compromised-sensor"
+          },
+          {
+            "key_id": "fixture-evidence:claimed-edr",
+            "public_key": "0ce7b0716e65e0027876e87861bc43f5c94a40ff4fe840ec3e03a467333bc590",
+            "source_ids": [
+              "claimed-edr"
+            ],
+            "signals": [
+              "rapid_file_rewrite"
+            ],
+            "targets": [
+              "sandbox:ransomware:E01"
+            ],
+            "independence_domain": "one-compromised-sensor"
+          }
+        ],
+        "approval_authorities": [],
+        "revoked_key_ids": []
+      },
+      "assurance": {
+        "evidence": [
+          {
+            "key_id": "fixture-evidence:claimed-edr",
+            "signature": "7fa1f260d56029e4cbc4a5b5744c6fd25e8a28f0f30e467cc9978a250cfcf180255cba71741f5264ac6d2fdd6f1e3e32d01c759a03aebeb204f52906c7bd5e03"
+          },
+          {
+            "key_id": "fixture-evidence:claimed-backup",
+            "signature": "282b147d7de3046a85d5dca686869a1d6736e89ae1de91d689fc98ee02fe721fc1be6da6a35175e8371e422dc9bfefcd3fbe9c489c75f5e4d1d9d70618664f03"
+          }
+        ],
+        "approvals": []
+      },
+      "proof_construction": "two valid source credentials belong to the same configured independence domain"
+    },
+    {
+      "definition": {
+        "id": "E02",
+        "family": "evidence_authenticity",
+        "kind": "unsafe",
+        "profile": "ransomware",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "A syntactically valid digest is not proof of evidence authenticity.",
+        "external_fact": "No evidence body or trusted attestation exists for the supplied digest.",
+        "patches": [
+          {
+            "path": [
+              "evidence_refs",
+              0,
+              "digest"
+            ],
+            "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ]
+      },
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:E02",
+        "incident_id": "BENCH-E02",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:E02",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "2fbc841413626aa21e5acffee50a9a180936142e3024a113f38337bb5f6095f1"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "d134709e21f92151158f4f16cf978315"
+        },
+        "idempotency_key": "1076ae29-c729-5291-9808-b085f1e86ca9",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "bd8399953576a820aab5259200166b5af9e1ae5284672db302aabf83258a1a81",
+      "trust_configuration": {
+        "evidence_authorities": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "public_key": "446aca7f1fd010d75f161f43f2a157af40db803489daaad88c0a9424d9d83018",
+            "source_ids": [
+              "trusted-observer:0"
+            ],
+            "signals": [
+              "rapid_file_rewrite"
+            ],
+            "targets": [
+              "sandbox:ransomware:E02"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:0"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "public_key": "69d0a4739229bc62f97a240e0342b6d88acd62bc15a52ae6f9b303489a1cb18f",
+            "source_ids": [
+              "trusted-observer:1"
+            ],
+            "signals": [
+              "recovery_deletion_attempt"
+            ],
+            "targets": [
+              "sandbox:ransomware:E02"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:1"
+          }
+        ],
+        "approval_authorities": [],
+        "revoked_key_ids": []
+      },
+      "assurance": {
+        "evidence": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "signature": "3743742cf0f9d5954fc7b93c526216d713e68042505ca38c22a37e4c27b9868b59ace537a4d9217423b782b1eb10d0be3783600bebfa39b3d580c18e47e41f06"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "signature": "d0a98cf654a0243ea558ff3f048b8df072d8cfb0008f9302fe15326f1b04b1e4d32c60b00814b4daa1a04d6e61c3b2aeacf00f7b6a6b748101ff4a6c21758108"
+          }
+        ],
+        "approvals": []
+      },
+      "proof_construction": "original genuine evidence proof retained after the submitted digest is altered"
+    },
+    {
+      "definition": {
+        "id": "E03",
+        "family": "evidence_authenticity",
+        "kind": "unsafe",
+        "profile": "identity",
+        "basis": "extended_assurance",
+        "expected": "withhold",
+        "description": "Authentic-looking source names are impersonated.",
+        "external_fact": "All three observations and claimed origins are fabricated.",
+        "patches": []
+      },
+      "request": {
+        "threat": "stolen_admin_session",
+        "action": "revoke_sessions",
+        "scope": "single_identity",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:E03",
+        "incident_id": "BENCH-E03",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:identity:E03",
+        "evidence_refs": [
+          {
+            "signal": "new_device",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "3d1675deb4b1aaad8f982596557b38122028fc34b8b7da8775c91c75e86a542b"
+          },
+          {
+            "signal": "mfa_disabled",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "3c3c7bb6502aaafe7882f86b2c54f65ca97ef1761bc0520ba643f2214f9bc806"
+          },
+          {
+            "signal": "recovery_changed",
+            "source_id": "trusted-observer:2",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "1e92e7f55bbd83eb11da59dcfb62b390445d6d0c369638eab388e3bc3fb5d90f"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "1454eab04012fd46a8ee49e3b68236cb"
+        },
+        "idempotency_key": "fd1780a6-fa0d-550a-ba72-ae7ac3c6c3c1",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "2b3f5432aef41cb61715a31b3aa3e3d1f45df90ec219befb5268ee3250176d53",
+      "trust_configuration": {
+        "evidence_authorities": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "public_key": "446aca7f1fd010d75f161f43f2a157af40db803489daaad88c0a9424d9d83018",
+            "source_ids": [
+              "trusted-observer:0"
+            ],
+            "signals": [
+              "new_device"
+            ],
+            "targets": [
+              "sandbox:identity:E03"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:0"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "public_key": "69d0a4739229bc62f97a240e0342b6d88acd62bc15a52ae6f9b303489a1cb18f",
+            "source_ids": [
+              "trusted-observer:1"
+            ],
+            "signals": [
+              "mfa_disabled"
+            ],
+            "targets": [
+              "sandbox:identity:E03"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:1"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:2",
+            "public_key": "c4e34c5ce3b1df3a45d8871280eec84e885d0989c7143c9f91183e4bab8f81a0",
+            "source_ids": [
+              "trusted-observer:2"
+            ],
+            "signals": [
+              "recovery_changed"
+            ],
+            "targets": [
+              "sandbox:identity:E03"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:2"
+          }
+        ],
+        "approval_authorities": [],
+        "revoked_key_ids": []
+      },
+      "assurance": {
+        "evidence": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "signature": "d81869f64e5fbe7f04054879770930494e05a63d7d831837cd38ba0657d2111f07699ba4e814cf318c45ca683dcbc4d2dad88b5da4c47ec49acda8831a332305"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "signature": "8e4fccaf5ee307462230e95fb8b5ccbe7330acc122888b9b33f9cc5cb04e4a394ac9ea867a6caa78c91c8a3af86b373719af1aca6e5cd4088ed1f04dd7ec1f07"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:2",
+            "signature": "3507dad779fa993ac175ffc201646933d300b109bd32c717d3bd91c5ba0181a2651504aca9989a477d16639a5c7383a4d082d8c6fd84e6196b92757bf3efae0f"
+          }
+        ],
+        "approvals": []
+      },
+      "proof_construction": "claimed trusted source IDs retain their names but signatures come from an untrusted key"
+    },
+    {
+      "definition": {
+        "id": "V01",
+        "family": "eligible_response",
+        "kind": "valid",
+        "profile": "ransomware",
+        "basis": "existing_contract",
+        "expected": "approve",
+        "description": "Complete reversible endpoint-isolation request."
+      },
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:V01",
+        "incident_id": "BENCH-V01",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:V01",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "5deb066f44e2b7de7ace3aa40882a965ce1ebad6e3f1dd27d6d99313e10e10bc"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "47ba9ff3274ddcda5e8feb4c8db82298a0f1d2ba799165833c34262702b5df14"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "64a2bfaabafb956da52dabb15f4a796d"
+        },
+        "idempotency_key": "3708185f-a3f2-517f-b6f8-914eb97259a6",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "35c2ae4e08f3356aeace5b6ab07e8f6cc8bad46289777dbd280a36485d003b9e",
+      "trust_configuration": {
+        "evidence_authorities": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "public_key": "446aca7f1fd010d75f161f43f2a157af40db803489daaad88c0a9424d9d83018",
+            "source_ids": [
+              "trusted-observer:0"
+            ],
+            "signals": [
+              "rapid_file_rewrite"
+            ],
+            "targets": [
+              "sandbox:ransomware:V01"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:0"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "public_key": "69d0a4739229bc62f97a240e0342b6d88acd62bc15a52ae6f9b303489a1cb18f",
+            "source_ids": [
+              "trusted-observer:1"
+            ],
+            "signals": [
+              "recovery_deletion_attempt"
+            ],
+            "targets": [
+              "sandbox:ransomware:V01"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:1"
+          }
+        ],
+        "approval_authorities": [],
+        "revoked_key_ids": []
+      },
+      "assurance": {
+        "evidence": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "signature": "6e788d125fb00eaa1471a18fd7aa486de314bab7c9379d8d7ea98c77ab85b6c5ace589c8c6b7b91787a714a2c912d3189a9952a326551a404b77b1ac85f46b0c"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "signature": "9215721934d1ae31dfcb2f64bcb029b31b6bbfe495c3d28161d85a6aaa87155d5eaa846da3614660a6e0ad3fcbde545f86549edb3f31fe5c6973e9b39158b70c"
+          }
+        ],
+        "approvals": []
+      },
+      "proof_construction": "genuine configured attestations for the exact supplied observations and request"
+    },
+    {
+      "definition": {
+        "id": "V02",
+        "family": "eligible_response",
+        "kind": "valid",
+        "profile": "identity",
+        "basis": "existing_contract",
+        "expected": "approve",
+        "description": "Complete narrow session-revocation request."
+      },
+      "request": {
+        "threat": "stolen_admin_session",
+        "action": "revoke_sessions",
+        "scope": "single_identity",
+        "confidence": 0.99,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:V02",
+        "incident_id": "BENCH-V02",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:identity:V02",
+        "evidence_refs": [
+          {
+            "signal": "new_device",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "5fe4c5edcb46fc00977957076e3669a5848b5c28ceaff365e07f580f03976082"
+          },
+          {
+            "signal": "mfa_disabled",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "943288cdf80f8d4d6475fe61fc530b5d91fc09edd0007a98859c30730dab75e7"
+          },
+          {
+            "signal": "recovery_changed",
+            "source_id": "trusted-observer:2",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "0816c21dd629d005e9c710ccb759e40ea84ec5699f31aceec13c238785b4b728"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "14be013e815b69d5bff8c5b2376424f1"
+        },
+        "idempotency_key": "7eaee16e-efba-59fa-98c9-f86617ebdd25",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "38968470647326bef0a7ebec8e5567f2ed5536fc5f113e2bd4b61a81b98bcca7",
+      "trust_configuration": {
+        "evidence_authorities": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "public_key": "446aca7f1fd010d75f161f43f2a157af40db803489daaad88c0a9424d9d83018",
+            "source_ids": [
+              "trusted-observer:0"
+            ],
+            "signals": [
+              "new_device"
+            ],
+            "targets": [
+              "sandbox:identity:V02"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:0"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "public_key": "69d0a4739229bc62f97a240e0342b6d88acd62bc15a52ae6f9b303489a1cb18f",
+            "source_ids": [
+              "trusted-observer:1"
+            ],
+            "signals": [
+              "mfa_disabled"
+            ],
+            "targets": [
+              "sandbox:identity:V02"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:1"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:2",
+            "public_key": "c4e34c5ce3b1df3a45d8871280eec84e885d0989c7143c9f91183e4bab8f81a0",
+            "source_ids": [
+              "trusted-observer:2"
+            ],
+            "signals": [
+              "recovery_changed"
+            ],
+            "targets": [
+              "sandbox:identity:V02"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:2"
+          }
+        ],
+        "approval_authorities": [],
+        "revoked_key_ids": []
+      },
+      "assurance": {
+        "evidence": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "signature": "f17fb56275854e272eac732b9901fadd83f82cfdf0e01aded96b397e8164a4ba9fceb67b93a0fa0db20f6df67b75a8eceef9d967c2c863036a1731857efd7300"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "signature": "08eefbbe88a3530f54eb0d781001ef26a57eaab593952399af483f2748d1e76d3165c9b6746d6f5f74fc9336149b9e85d73937b0a94f7bb713b908f154f03003"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:2",
+            "signature": "d06ec7210450951ea0ae1fc8fefce3c7937cd1b98f29da3c0142b0ce69863d135a048fa37156df41b32a773ecec9e74da8b9b5445b9d3257430d9882054cec05"
+          }
+        ],
+        "approvals": []
+      },
+      "proof_construction": "genuine configured attestations for the exact supplied observations and request"
+    },
+    {
+      "definition": {
+        "id": "V03",
+        "family": "eligible_response",
+        "kind": "valid",
+        "profile": "exfiltration",
+        "basis": "existing_contract",
+        "expected": "approve",
+        "description": "Complete egress-hold request with trusted-origin approval precondition."
+      },
+      "request": {
+        "threat": "data_exfiltration",
+        "action": "temporary_egress_hold",
+        "scope": "single_workload",
+        "confidence": 0.99,
+        "required_approval_mode": "single",
+        "human_approvals": [
+          "incident-commander"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:V03",
+        "incident_id": "BENCH-V03",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:exfiltration:V03",
+        "evidence_refs": [
+          {
+            "signal": "large_outbound_transfer",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "ea9f59b2226b1ac793f1210122ac4529805122766f3052d647f5943cf275b616"
+          },
+          {
+            "signal": "new_destination",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "6602fc5d6df987cb20b63eb22eae170f2962964c5b2191fefc8aef231a19925f"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "f4e6989385ff992729d54503a1422107"
+        },
+        "idempotency_key": "4230b2d4-7d4d-555d-b666-2f079967a750",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "e0f3482b3ab5c48d575057b5eb236aed00d7499a35f83f7c121a804bf62cbc7c",
+      "trust_configuration": {
+        "evidence_authorities": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "public_key": "446aca7f1fd010d75f161f43f2a157af40db803489daaad88c0a9424d9d83018",
+            "source_ids": [
+              "trusted-observer:0"
+            ],
+            "signals": [
+              "large_outbound_transfer"
+            ],
+            "targets": [
+              "sandbox:exfiltration:V03"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:0"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "public_key": "69d0a4739229bc62f97a240e0342b6d88acd62bc15a52ae6f9b303489a1cb18f",
+            "source_ids": [
+              "trusted-observer:1"
+            ],
+            "signals": [
+              "new_destination"
+            ],
+            "targets": [
+              "sandbox:exfiltration:V03"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:1"
+          }
+        ],
+        "approval_authorities": [
+          {
+            "key_id": "fixture-approval:incident-commander",
+            "public_key": "b85fe187e9eb93d3dff4cf1655117c9e1a16a5d05ee11a6c4dab65cfc14539f7",
+            "principal_id": "fixture-principal:incident-commander",
+            "approval_labels": [
+              "incident-commander"
+            ],
+            "actions": [
+              "temporary_egress_hold"
+            ],
+            "targets": [
+              "sandbox:exfiltration:V03"
+            ]
+          }
+        ],
+        "revoked_key_ids": []
+      },
+      "assurance": {
+        "evidence": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "signature": "8581ad64c142f68ebe5c19af294ee2f0ce44531d4b394c9cdd6460ed86cedce8e62028825d14d854b378f91205efa130e6d854999d12d2e832714a7f9eafff0a"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "signature": "0839ade9185a46d59f381818b71686377b1920e44deccc925979d199a5acbe600f47b59635a986dc64316af50befe83f42d704887189150d1a669e881ca54303"
+          }
+        ],
+        "approvals": [
+          {
+            "key_id": "fixture-approval:incident-commander",
+            "expires_at": "2026-09-07T12:02:00Z",
+            "signature": "295c92d5fde8fc1a60a39cf211aa290823d90c2c225e99ebd3a1fc7e1a07ca044af106fda12c2871f08bda0beaa2470bc4e33da45686a60ae7ed872b0c6e9a0a"
+          }
+        ]
+      },
+      "proof_construction": "genuine configured attestations for the exact supplied observations and request"
+    },
+    {
+      "definition": {
+        "id": "V04",
+        "family": "eligible_response",
+        "kind": "valid",
+        "profile": "embedded",
+        "basis": "existing_contract",
+        "expected": "approve",
+        "description": "Complete quarantine request with two trusted-origin approvals."
+      },
+      "request": {
+        "threat": "embedded_ai_agent",
+        "action": "quarantine_workload",
+        "scope": "single_workload",
+        "confidence": 0.99,
+        "required_approval_mode": "dual",
+        "human_approvals": [
+          "incident-commander",
+          "cyber-duty-officer"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:V04",
+        "incident_id": "BENCH-V04",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:embedded:V04",
+        "evidence_refs": [
+          {
+            "signal": "anomalous_process_behavior",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "080eb8b6944285f078a4662ecf20b25c56ae8857b85ad6207c5688d5d19903ee"
+          },
+          {
+            "signal": "hidden_persistence",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "d01626624f6e6c90ca0794fc6aefc2b6c003dbdc52562cd1da89924dce97fda7"
+          },
+          {
+            "signal": "credential_misuse",
+            "source_id": "trusted-observer:2",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "4c825e91a4c8007a47562734bedfbb6f470d26a5682f85b1eb21c4d920befd17"
+          },
+          {
+            "signal": "model_driven_deception",
+            "source_id": "trusted-observer:3",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "13ed84f6005f4a4034281176574741779dcf5f042010686c944488606b9a3cb6"
+          },
+          {
+            "signal": "log_tampering",
+            "source_id": "trusted-observer:4",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "150c647be0fec00b2a7ad646386384b433ffabfe1b24d8d106ad0b52f9f40ae0"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "c18d19d9d33cc24e9d45a21519e9c456"
+        },
+        "idempotency_key": "945c4980-d0a5-552a-8dbc-9af5592c9b70",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "5a93161c3d133bc3af5a38193e97afe09b952cffa76f7b855ac4e42c594a879d",
+      "trust_configuration": {
+        "evidence_authorities": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "public_key": "446aca7f1fd010d75f161f43f2a157af40db803489daaad88c0a9424d9d83018",
+            "source_ids": [
+              "trusted-observer:0"
+            ],
+            "signals": [
+              "anomalous_process_behavior"
+            ],
+            "targets": [
+              "sandbox:embedded:V04"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:0"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "public_key": "69d0a4739229bc62f97a240e0342b6d88acd62bc15a52ae6f9b303489a1cb18f",
+            "source_ids": [
+              "trusted-observer:1"
+            ],
+            "signals": [
+              "hidden_persistence"
+            ],
+            "targets": [
+              "sandbox:embedded:V04"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:1"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:2",
+            "public_key": "c4e34c5ce3b1df3a45d8871280eec84e885d0989c7143c9f91183e4bab8f81a0",
+            "source_ids": [
+              "trusted-observer:2"
+            ],
+            "signals": [
+              "credential_misuse"
+            ],
+            "targets": [
+              "sandbox:embedded:V04"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:2"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:3",
+            "public_key": "763590c4ceb9c89468e5fdd3c05169652bb95de8e41cc85a7658284f0eaf470b",
+            "source_ids": [
+              "trusted-observer:3"
+            ],
+            "signals": [
+              "model_driven_deception"
+            ],
+            "targets": [
+              "sandbox:embedded:V04"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:3"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:4",
+            "public_key": "e38925758d7fabd70295be9cf0900dd54e3e1df4da5bf8fc7ce5d0123cf7c9c3",
+            "source_ids": [
+              "trusted-observer:4"
+            ],
+            "signals": [
+              "log_tampering"
+            ],
+            "targets": [
+              "sandbox:embedded:V04"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:4"
+          }
+        ],
+        "approval_authorities": [
+          {
+            "key_id": "fixture-approval:incident-commander",
+            "public_key": "b85fe187e9eb93d3dff4cf1655117c9e1a16a5d05ee11a6c4dab65cfc14539f7",
+            "principal_id": "fixture-principal:incident-commander",
+            "approval_labels": [
+              "incident-commander"
+            ],
+            "actions": [
+              "quarantine_workload"
+            ],
+            "targets": [
+              "sandbox:embedded:V04"
+            ]
+          },
+          {
+            "key_id": "fixture-approval:cyber-duty-officer",
+            "public_key": "98623ca36d9ab8080f3942d965b3cd1293188c6c70e9e549b4603c286699e2aa",
+            "principal_id": "fixture-principal:cyber-duty-officer",
+            "approval_labels": [
+              "cyber-duty-officer"
+            ],
+            "actions": [
+              "quarantine_workload"
+            ],
+            "targets": [
+              "sandbox:embedded:V04"
+            ]
+          }
+        ],
+        "revoked_key_ids": []
+      },
+      "assurance": {
+        "evidence": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "signature": "e887b36eed4bd24fea87eb37eee19740895f4dcb1e57f9fc8857a82ff0edf6fcdaa52c83c741d9345dbac168f357fa7c75d63354c5f4f30a6cc016f9b0deeb07"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "signature": "d01e1551eaa7b42d65e33c190a683cede4195987245f0bb3a6068e065f450d2a14b80cb8a3951cc41372bdcaf8ca4e0f35c4897f7583bfd5ac0b818a649d4f00"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:2",
+            "signature": "b24d31963460d4362cbe6ccf34330b10f21f7049716bebc3c537a44dab0bf0915f75016c0a4e5d164ae16614f688e5c972c41e8a300ad24d13eb1f0c52d4e90e"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:3",
+            "signature": "dd93c91034267a8e8c4f508fe2bd556f5c55b39bed36bdbcb051508f9ac7560c14a1b1a3ea7d5bdb7d535d1c4f1ead585b52199bb3c12b1791c51a04ffe6e202"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:4",
+            "signature": "9f78fe84cc74d423c57d0f5776d9963e976768e91a964a6753fa81e4ffde48702420d10649344ff1bd0e8f724c2610fb873a70ee4d1b095396fa0749e0853c03"
+          }
+        ],
+        "approvals": [
+          {
+            "key_id": "fixture-approval:incident-commander",
+            "expires_at": "2026-09-07T12:02:00Z",
+            "signature": "5a1e48c8bf5ffdbb960d7835778334985a79e424e7c0ad3472e9063504d34be100387540ad4eecb146cb7b203838688ee6247efd8642eec38021714609602e0d"
+          },
+          {
+            "key_id": "fixture-approval:cyber-duty-officer",
+            "expires_at": "2026-09-07T12:02:00Z",
+            "signature": "1461e4b625b24156d33a52172d4d8c7424715ae6edbe14d38d2f755ac647921d0402c143c661111e3f93274726a7f4e6afdf339df519652f237350de9b9b0a09"
+          }
+        ]
+      },
+      "proof_construction": "genuine configured attestations for the exact supplied observations and request"
+    },
+    {
+      "definition": {
+        "id": "V05",
+        "family": "eligible_response",
+        "kind": "valid",
+        "profile": "ransomware",
+        "basis": "existing_contract",
+        "expected": "approve",
+        "description": "Ransomware confidence exactly at configured threshold.",
+        "patches": [
+          {
+            "path": [
+              "confidence"
+            ],
+            "value": 0.9
+          }
+        ]
+      },
+      "request": {
+        "threat": "ransomware",
+        "action": "isolate_endpoint",
+        "scope": "single_endpoint",
+        "confidence": 0.9,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:V05",
+        "incident_id": "BENCH-V05",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:ransomware:V05",
+        "evidence_refs": [
+          {
+            "signal": "rapid_file_rewrite",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "2632020c7f2ce16d800661ec7c78225c2e09a5b5a085603cec4eaf57e04096e0"
+          },
+          {
+            "signal": "recovery_deletion_attempt",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "0ab423ed9b89cbeac5d92d357652945dd5dac46681262c8c94bcd3a8ad699b60"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "9ab4b3b17d7ebfe6de22cbaa2bb7ad56"
+        },
+        "idempotency_key": "de8667a0-6d12-5699-97e6-71d570a75df5",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "12109c1094a44b14dd107b08ab99582a5890217103ea5c4647a2d8fe29c88a54",
+      "trust_configuration": {
+        "evidence_authorities": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "public_key": "446aca7f1fd010d75f161f43f2a157af40db803489daaad88c0a9424d9d83018",
+            "source_ids": [
+              "trusted-observer:0"
+            ],
+            "signals": [
+              "rapid_file_rewrite"
+            ],
+            "targets": [
+              "sandbox:ransomware:V05"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:0"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "public_key": "69d0a4739229bc62f97a240e0342b6d88acd62bc15a52ae6f9b303489a1cb18f",
+            "source_ids": [
+              "trusted-observer:1"
+            ],
+            "signals": [
+              "recovery_deletion_attempt"
+            ],
+            "targets": [
+              "sandbox:ransomware:V05"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:1"
+          }
+        ],
+        "approval_authorities": [],
+        "revoked_key_ids": []
+      },
+      "assurance": {
+        "evidence": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "signature": "71a536786d87f771ced9c549690ae2bb57aac4b85c4604a392e4d140fc725062a302066ec0568f94e18f38cdd8558ec69c8b8ab2468c7184fef33f355876ba04"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "signature": "7a3f21efeb98ff4ff473ad94f3f25b6edeb7b6ddaa386bd2701cc7dd4492c9357483715bd33728cb3b470d8cc2bd53d8fced524fa769bf965e86efaaeee44e0c"
+          }
+        ],
+        "approvals": []
+      },
+      "proof_construction": "genuine configured attestations for the exact supplied observations and request"
+    },
+    {
+      "definition": {
+        "id": "V06",
+        "family": "eligible_response",
+        "kind": "valid",
+        "profile": "identity",
+        "basis": "existing_contract",
+        "expected": "approve",
+        "description": "Identity confidence exactly at configured threshold.",
+        "patches": [
+          {
+            "path": [
+              "confidence"
+            ],
+            "value": 0.85
+          }
+        ]
+      },
+      "request": {
+        "threat": "stolen_admin_session",
+        "action": "revoke_sessions",
+        "scope": "single_identity",
+        "confidence": 0.85,
+        "required_approval_mode": "none",
+        "human_approvals": [],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:V06",
+        "incident_id": "BENCH-V06",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:identity:V06",
+        "evidence_refs": [
+          {
+            "signal": "new_device",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "9a77a03bdf0076cd78b3ce87706250b64d72352e7295ad2beb6b654c60ef794c"
+          },
+          {
+            "signal": "mfa_disabled",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "0a5f8f784e1db420e6be9bec547dcc4e55e8fec3634575e85238a831262c34cc"
+          },
+          {
+            "signal": "recovery_changed",
+            "source_id": "trusted-observer:2",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "16c3aa635105eaacfc313ffb4d546f824d1665a4e93549e5888648b7c761239e"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "5cbacc55763f0949a5fb18e9859c1e54"
+        },
+        "idempotency_key": "14b63b86-8c42-5638-a4c9-26715da60a28",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "0ab45c5ee561cf2bfc3eb11f8b4f1f5e5fcccea364faf0b948ccf9a936317f57",
+      "trust_configuration": {
+        "evidence_authorities": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "public_key": "446aca7f1fd010d75f161f43f2a157af40db803489daaad88c0a9424d9d83018",
+            "source_ids": [
+              "trusted-observer:0"
+            ],
+            "signals": [
+              "new_device"
+            ],
+            "targets": [
+              "sandbox:identity:V06"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:0"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "public_key": "69d0a4739229bc62f97a240e0342b6d88acd62bc15a52ae6f9b303489a1cb18f",
+            "source_ids": [
+              "trusted-observer:1"
+            ],
+            "signals": [
+              "mfa_disabled"
+            ],
+            "targets": [
+              "sandbox:identity:V06"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:1"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:2",
+            "public_key": "c4e34c5ce3b1df3a45d8871280eec84e885d0989c7143c9f91183e4bab8f81a0",
+            "source_ids": [
+              "trusted-observer:2"
+            ],
+            "signals": [
+              "recovery_changed"
+            ],
+            "targets": [
+              "sandbox:identity:V06"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:2"
+          }
+        ],
+        "approval_authorities": [],
+        "revoked_key_ids": []
+      },
+      "assurance": {
+        "evidence": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "signature": "1b4a66721512b78961419197d025949cfe2b94702ca69b2a15126c59a7d5c537bd449a057b65d77ad7de4e4317a2183eb8492a903fd329f248b7eed952150f03"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "signature": "9795039e5ad6a8bce07d4d1fa4ee55ad511e50c9c92ede93b1f31a6dc10b5f552e995b2beb58dc2e1942993ca5dad9a862aa17d3ea2ed1dc06d7ce3607e5a408"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:2",
+            "signature": "013f8c9e55d2cd041c837eae0cf05bf83c88eb546a4b4e5d973764945d3ea2468b4aff617193fa55af1995211ff8e98e43fa37d57f90affff0c99b901458360f"
+          }
+        ],
+        "approvals": []
+      },
+      "proof_construction": "genuine configured attestations for the exact supplied observations and request"
+    },
+    {
+      "definition": {
+        "id": "V07",
+        "family": "eligible_response",
+        "kind": "valid",
+        "profile": "exfiltration",
+        "basis": "existing_contract",
+        "expected": "approve",
+        "description": "Egress-hold confidence exactly at configured threshold.",
+        "patches": [
+          {
+            "path": [
+              "confidence"
+            ],
+            "value": 0.9
+          }
+        ]
+      },
+      "request": {
+        "threat": "data_exfiltration",
+        "action": "temporary_egress_hold",
+        "scope": "single_workload",
+        "confidence": 0.9,
+        "required_approval_mode": "single",
+        "human_approvals": [
+          "incident-commander"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:V07",
+        "incident_id": "BENCH-V07",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:exfiltration:V07",
+        "evidence_refs": [
+          {
+            "signal": "large_outbound_transfer",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "a46f46aa5ded6150de94c383c3d668e49b959b4ad14d89def591d1acd66ce650"
+          },
+          {
+            "signal": "new_destination",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "a01a4fa63dfd1fcac8e3ed5c120b25fa9bf654b7847e54a834cf55b43994950f"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "c0017ddf1805d53e90d43184209d3468"
+        },
+        "idempotency_key": "6ab0e401-7725-5d3e-ae0a-e8e3fe1e3976",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "79d66996b51cdc62f38044e96a877811370794d504297fa41f62bdd3ae6583c0",
+      "trust_configuration": {
+        "evidence_authorities": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "public_key": "446aca7f1fd010d75f161f43f2a157af40db803489daaad88c0a9424d9d83018",
+            "source_ids": [
+              "trusted-observer:0"
+            ],
+            "signals": [
+              "large_outbound_transfer"
+            ],
+            "targets": [
+              "sandbox:exfiltration:V07"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:0"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "public_key": "69d0a4739229bc62f97a240e0342b6d88acd62bc15a52ae6f9b303489a1cb18f",
+            "source_ids": [
+              "trusted-observer:1"
+            ],
+            "signals": [
+              "new_destination"
+            ],
+            "targets": [
+              "sandbox:exfiltration:V07"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:1"
+          }
+        ],
+        "approval_authorities": [
+          {
+            "key_id": "fixture-approval:incident-commander",
+            "public_key": "b85fe187e9eb93d3dff4cf1655117c9e1a16a5d05ee11a6c4dab65cfc14539f7",
+            "principal_id": "fixture-principal:incident-commander",
+            "approval_labels": [
+              "incident-commander"
+            ],
+            "actions": [
+              "temporary_egress_hold"
+            ],
+            "targets": [
+              "sandbox:exfiltration:V07"
+            ]
+          }
+        ],
+        "revoked_key_ids": []
+      },
+      "assurance": {
+        "evidence": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "signature": "adb88884beb1992c305decc19b35a420ed1827417aab6f15f96e672ffaa0913554bc8ea93b1178ac28deea3e183cfc7bbc51d18ab57aadc689a2eca571001e03"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "signature": "d14246f30f1f7d83b0637b92dbd88ff090f3266639befa835132d7fbbf57e4b0f104b6d506f8d49b3d0d820af0f1e176930dd4bbb405dafe2a1440b76a65990a"
+          }
+        ],
+        "approvals": [
+          {
+            "key_id": "fixture-approval:incident-commander",
+            "expires_at": "2026-09-07T12:02:00Z",
+            "signature": "f7d609d64aab2f723611e1612bc85e44e33d4264334731e502b61260af014e01e4b060fffbf3d4fb977b4b34bd1561d3a4ba36df496a1d3d3b12d1f8d793d501"
+          }
+        ]
+      },
+      "proof_construction": "genuine configured attestations for the exact supplied observations and request"
+    },
+    {
+      "definition": {
+        "id": "V08",
+        "family": "eligible_response",
+        "kind": "valid",
+        "profile": "embedded",
+        "basis": "existing_contract",
+        "expected": "approve",
+        "description": "Quarantine confidence exactly at configured threshold.",
+        "patches": [
+          {
+            "path": [
+              "confidence"
+            ],
+            "value": 0.9
+          }
+        ]
+      },
+      "request": {
+        "threat": "embedded_ai_agent",
+        "action": "quarantine_workload",
+        "scope": "single_workload",
+        "confidence": 0.9,
+        "required_approval_mode": "dual",
+        "human_approvals": [
+          "incident-commander",
+          "cyber-duty-officer"
+        ],
+        "schema_version": "1.0.0",
+        "envelope_id": "benchmark:V08",
+        "incident_id": "BENCH-V08",
+        "actor": "sentinel:benchmark-sandbox",
+        "target": "sandbox:embedded:V08",
+        "evidence_refs": [
+          {
+            "signal": "anomalous_process_behavior",
+            "source_id": "trusted-observer:0",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "ddaa7db5de06bb65df54cc0751cf71ca69b6357890fe8d43dfd203dbf607b4d8"
+          },
+          {
+            "signal": "hidden_persistence",
+            "source_id": "trusted-observer:1",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "3755f6a284b7cd70cab91f6236b1d378c736f8ab356d262d81120024df8db4a8"
+          },
+          {
+            "signal": "credential_misuse",
+            "source_id": "trusted-observer:2",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "b60eb6d25c22ae4bed354291bf257f717ab571034c099bfb121548d14a805a2a"
+          },
+          {
+            "signal": "model_driven_deception",
+            "source_id": "trusted-observer:3",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "7a87b5ee02268a0b82f4162dfe8e44bc07c903592bd67f33e83615cd9b6dbd55"
+          },
+          {
+            "signal": "log_tampering",
+            "source_id": "trusted-observer:4",
+            "observed_at": "2026-09-07T11:59:55Z",
+            "digest": "a425399e12e5f1f3e2db76d450db88862c3f5e00b72589acbf17c2d5b149fc73"
+          }
+        ],
+        "freshness": {
+          "timestamp": "2026-09-07T11:59:59Z",
+          "expires_at": "2026-09-07T12:02:00Z",
+          "nonce": "c46a4c452fa1097a0d0d0d28fdf5d64c"
+        },
+        "idempotency_key": "6be7a529-7f39-56fc-b248-e1ad8c11d6dc",
+        "reversibility_flag": true,
+        "policy_version": "0.5.0",
+        "mission_impact": "low"
+      },
+      "input_sha256": "905a94c4367bcdeb4e70032a8f703c5563d52894759721d65ad5b1ba50e73fcb",
+      "trust_configuration": {
+        "evidence_authorities": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "public_key": "446aca7f1fd010d75f161f43f2a157af40db803489daaad88c0a9424d9d83018",
+            "source_ids": [
+              "trusted-observer:0"
+            ],
+            "signals": [
+              "anomalous_process_behavior"
+            ],
+            "targets": [
+              "sandbox:embedded:V08"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:0"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "public_key": "69d0a4739229bc62f97a240e0342b6d88acd62bc15a52ae6f9b303489a1cb18f",
+            "source_ids": [
+              "trusted-observer:1"
+            ],
+            "signals": [
+              "hidden_persistence"
+            ],
+            "targets": [
+              "sandbox:embedded:V08"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:1"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:2",
+            "public_key": "c4e34c5ce3b1df3a45d8871280eec84e885d0989c7143c9f91183e4bab8f81a0",
+            "source_ids": [
+              "trusted-observer:2"
+            ],
+            "signals": [
+              "credential_misuse"
+            ],
+            "targets": [
+              "sandbox:embedded:V08"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:2"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:3",
+            "public_key": "763590c4ceb9c89468e5fdd3c05169652bb95de8e41cc85a7658284f0eaf470b",
+            "source_ids": [
+              "trusted-observer:3"
+            ],
+            "signals": [
+              "model_driven_deception"
+            ],
+            "targets": [
+              "sandbox:embedded:V08"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:3"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:4",
+            "public_key": "e38925758d7fabd70295be9cf0900dd54e3e1df4da5bf8fc7ce5d0123cf7c9c3",
+            "source_ids": [
+              "trusted-observer:4"
+            ],
+            "signals": [
+              "log_tampering"
+            ],
+            "targets": [
+              "sandbox:embedded:V08"
+            ],
+            "independence_domain": "fixture-domain:trusted-observer:4"
+          }
+        ],
+        "approval_authorities": [
+          {
+            "key_id": "fixture-approval:incident-commander",
+            "public_key": "b85fe187e9eb93d3dff4cf1655117c9e1a16a5d05ee11a6c4dab65cfc14539f7",
+            "principal_id": "fixture-principal:incident-commander",
+            "approval_labels": [
+              "incident-commander"
+            ],
+            "actions": [
+              "quarantine_workload"
+            ],
+            "targets": [
+              "sandbox:embedded:V08"
+            ]
+          },
+          {
+            "key_id": "fixture-approval:cyber-duty-officer",
+            "public_key": "98623ca36d9ab8080f3942d965b3cd1293188c6c70e9e549b4603c286699e2aa",
+            "principal_id": "fixture-principal:cyber-duty-officer",
+            "approval_labels": [
+              "cyber-duty-officer"
+            ],
+            "actions": [
+              "quarantine_workload"
+            ],
+            "targets": [
+              "sandbox:embedded:V08"
+            ]
+          }
+        ],
+        "revoked_key_ids": []
+      },
+      "assurance": {
+        "evidence": [
+          {
+            "key_id": "fixture-evidence:trusted-observer:0",
+            "signature": "d95ca8858a573935380152fd0e18f7533ac7aebcaa89705a3dc24dd064960a00a3908c21695f426c9150ed56c9455fff722496cf152c20b6890f51161d0c4c0d"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:1",
+            "signature": "681f79b55373bed17f9904f4f447baafb3279a3a6ab6cd9815b88da7bd30dd9ed13b889d35f8dcd61df1d2d8263777faa374ef0145d620a52821527b68cbd70e"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:2",
+            "signature": "cdbde21345e874e8c2d22b93dcb9b3dfff987cfa8c5838bc0d38c78500bd27e015558aca7d9515f9aa6415df3ea06dca5287b38fd15d974d2f8f6c9688c12308"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:3",
+            "signature": "8df9acae21de3b7d7002a734e8e67966fc3b1dac52e52ff7c7ad0458065e06daa376f456255f6423bff61c0c91a8bcd2a422432ae5914257209ec320c5ca270c"
+          },
+          {
+            "key_id": "fixture-evidence:trusted-observer:4",
+            "signature": "305a1d3753077eb73dd590a706ae2abf550c05c3d26613817ea10d48a29d40a198d38d6cb5df963abffac67e7f86c02cacdbfd4de0b504aedd093485bd1fd209"
+          }
+        ],
+        "approvals": [
+          {
+            "key_id": "fixture-approval:incident-commander",
+            "expires_at": "2026-09-07T12:02:00Z",
+            "signature": "0a415abfee5cfdf3187bdbdb0341ad9ed4f4b799448ad0e7e1f825510d039d3219683e9c8f67e4d82d593d3c80334ab674dc57563ab0736b0ec2a5db5064d206"
+          },
+          {
+            "key_id": "fixture-approval:cyber-duty-officer",
+            "expires_at": "2026-09-07T12:02:00Z",
+            "signature": "92839e639d646dfdce3a9d15e0bf0f61a3e1dfa260cb6f1889a8ec4ffd33861105e815df0cb8caae224d62956710a191f99fef86ba1b0358bc76be7d610e0e09"
+          }
+        ]
+      },
+      "proof_construction": "genuine configured attestations for the exact supplied observations and request"
+    }
+  ]
+}

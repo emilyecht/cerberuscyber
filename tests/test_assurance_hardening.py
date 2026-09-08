@@ -132,6 +132,37 @@ def test_evidence_edits_cannot_reuse_an_original_attestation(field, value):
     assert evaluate(envelope, verifier, bundle).guardian_decision == "approve"
 
 
+@pytest.mark.parametrize("field,value", [
+    ("nonce", "request-bound-nonce-0000001"),
+    ("actor", "another-proposer"),
+    ("incident_id", "another-incident"),
+    ("envelope_id", "another-envelope"),
+    ("idempotency_key", "342e7339-a32e-4378-b99f-1a61d6263002"),
+])
+def test_genuine_evidence_cannot_transfer_to_another_eligible_request(field, value):
+    envelope = request()
+    verifier, bundle = fixture_assurance(envelope)
+    changed = replace(envelope, **{field: value})
+    denied = evaluate(changed, verifier, bundle)
+    assert_withheld(denied)
+    assert denied.policy == "GLOBAL-ASSURANCE-INVARIANT"
+    # Demonstrate that the changed request itself is eligible with new proofs.
+    new_verifier, new_bundle = fixture_assurance(changed)
+    assert evaluate(changed, new_verifier, new_bundle).guardian_decision == "approve"
+
+
+def test_legacy_observation_only_signature_is_not_accepted():
+    envelope = request()
+    verifier, bundle = fixture_assurance(envelope)
+    proofs = []
+    for item, proof in zip(envelope.evidence, bundle.evidence):
+        message = json.dumps({"purpose": "cerberus.evidence.v1", "key_id": proof.key_id,
+                              "target": envelope.target, "evidence": item.to_canonical_dict()},
+                             sort_keys=True, separators=(",", ":")).encode()
+        proofs.append(replace(proof, signature=fixture_key(proof.key_id).sign(message).hex()))
+    assert_withheld(evaluate(envelope, verifier, replace(bundle, evidence=tuple(proofs))))
+
+
 @pytest.mark.parametrize("kind", ["evidence", "approval"])
 @pytest.mark.parametrize("attack", ["unknown_key", "wrong_signature", "malformed_signature", "revoked"])
 def test_forged_or_revoked_authority_never_counts(kind, attack):
