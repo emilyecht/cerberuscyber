@@ -53,6 +53,10 @@ CI exercises Python 3.10 and 3.12, builds an sdist and a wheel from it, then che
 the installed console command in a fresh environment outside the checkout.
 Checksums identify generated artifacts but are not publisher signatures.
 
+The [measured candidate packet](../results/release_candidate/README.md) records
+222 passing tests, clean installed-wheel verification, and the selected-corpus
+result pinned to the integration code commit. It is not a claim about current main.
+
 All v1/v2/v3 benchmark definitions and checked-in raw results remain historical
 evidence. The original reviewer packet and explicit non-claims are retained, as is
 the grant proposal. [The new runner](../benchmarks/release_candidate/README.md)

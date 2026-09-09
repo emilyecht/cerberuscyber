@@ -5,6 +5,9 @@ prepared [v3 corpus](../assurance_boundaries_v3/cases.json), including trust
 configuration and proofs frozen before adversarial changes. It does not replace
 or rewrite any v1, v2, or v3 evidence.
 
+The [candidate result and raw observations](../../results/release_candidate/README.md)
+are pinned to the published integration commit, not to current main.
+
 ## Run
 
 From a clean, committed candidate checkout with `requirements-dev.txt` installed:
