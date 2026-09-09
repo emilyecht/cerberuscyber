@@ -30,6 +30,7 @@ class GuardianDecision:
     reason: str
     policy: str | None
     policy_version: str
+    policy_digest: str
     proposed_action: str
     authorized_action: str
     target: str

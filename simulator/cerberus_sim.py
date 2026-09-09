@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from cerberus import ActionEnvelope, DecisionTokenSigner, EnforcementGateway, Guardian, ReplayCache
+from cerberus import ActionEnvelope, DecisionTokenSigner, EnforcementGateway, Guardian, ReplayCache, PolicyBundle
 from simulator.assurance_fixtures import fixture_assurance
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -27,21 +27,26 @@ def load_json(path: Path) -> dict[str, Any]:
 
 def evaluate(
     incident: dict[str, Any],
-    policy_set: dict[str, Any],
+    policy_set: PolicyBundle | dict[str, Any],
     *,
     signing_key: bytes | None = None,
     assume_trusted_fixture: bool = False,
 ) -> dict[str, Any]:
     """Backward-compatible simulator entry point backed by ActionEnvelope v1.0.0."""
 
+    bundle = (
+        policy_set
+        if isinstance(policy_set, PolicyBundle)
+        else PolicyBundle.from_dict(policy_set)
+    )
     envelope = ActionEnvelope.from_legacy_incident(
         incident,
-        policy_version=str(policy_set.get("version", "0.0.0-legacy")),
-        ttl_seconds=int(policy_set.get("decision_ttl_seconds", 120)),
+        policy_version=bundle.version,
+        ttl_seconds=int(bundle.to_dict()["decision_ttl_seconds"]),
     )
     signer = DecisionTokenSigner(signing_key) if signing_key is not None else None
-    verifier, bundle = fixture_assurance(envelope) if assume_trusted_fixture else (None, None)
-    result = Guardian(policy_set, signer=signer, assurance_verifier=verifier).evaluate(envelope, assurance=bundle)
+    verifier, proofs = fixture_assurance(envelope) if assume_trusted_fixture else (None, None)
+    result = Guardian(bundle, signer=signer, assurance_verifier=verifier).evaluate(envelope, assurance=proofs)
     output = result.to_dict()
     output["fixture_trust_assumption"] = assume_trusted_fixture
     return output
@@ -59,7 +64,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    policy_set = load_json(args.policies)
+    policy_set = PolicyBundle.load(args.policies)
     signing_key: bytes | None = None
     if args.simulate_enforcement:
         key_text = os.environ.get("CERBERUS_PROTOTYPE_SIGNING_KEY")

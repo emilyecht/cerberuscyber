@@ -109,7 +109,7 @@ def test_fresh_process_probe_and_positive_control_use_actual_target(tmp_path):
     result = json.loads(destination.read_text())
     rows = {case["id"]: case for case in result["cases"]}
     import cerberus.token
-    if cerberus.token.DecisionTokenSigner.TOKEN_VERSION == "1.2.0":
+    if cerberus.token.DecisionTokenSigner.TOKEN_VERSION in {"1.2.0", "1.3.0"}:
         # Frozen v1 supplies no authenticated sidecar. Its eligible setup is
         # intentionally no longer valid: never reinterpret this as replay defense.
         assert completed.returncode == 2, completed.stderr

@@ -69,10 +69,12 @@ Evidence v2 supersedes the observation-only v1 proof profile; obtain new evidenc
 attestations for each complete request. There is no legacy-signature fallback.
 Issuers must verify observations and request context before signing; they must not
 blindly sign requester-supplied data. These are request attestations, distinct from
-reusable raw sensor reports. Token 1.2.0 adds a signed assurance digest; old 1.1.0 tokens are rejected.
-Deploy compatible signer/verifier together and obtain fresh authority. Keep PR #8's
-exact action/scope constraints; integration with the separate policy-bundle work in
-PR #7 must preserve both sets of checks.
+reusable raw sensor reports. The combined release contract is Token **1.3.0**:
+it signs both the evaluated policy digest and verified assurance digest. Both
+earlier 1.2.0 branch profiles and old 1.1.0 tokens are rejected. Deploy compatible
+signer/verifier together and obtain fresh authority. The integration preserves
+PR #8's exact action/scope constraints and PR #7's strict PolicyBundle validation.
+See [release contract and migration](RELEASE_CANDIDATE.md).
 
 `simulator/assurance_fixtures.py` deliberately signs fabricated test claims with
 public deterministic test keys. It is **not an authentication service** and must
@@ -85,6 +87,9 @@ and proofs before adversarial mutation rather than re-signing altered claims.
 ## Residual risks and evidence limits
 
 - Signatures authenticate configured producers, not the truth of their observations.
+- Request attestations bind a policy version, not exact policy bytes. Trusted
+  administrators must change that version when rules change; the decision token
+  and receipt then record the exact evaluated policy digest.
 - Principal identity and organizational independence depend on correct provisioning.
 - Already-issued tokens are not online-rechecked for revocation; exposure is bounded
   by their short expiry, assuming trusted time and uncompromised decision keys.
@@ -96,6 +101,7 @@ and proofs before adversarial mutation rather than re-signing altered claims.
 - No real connector, continuous/adaptive campaign, independent red team, field
   false-positive estimate, availability guarantee or production readiness is claimed.
 
-The v2 benchmark records both forbidden requests and legitimate controls, plus
-restart/replay episodes. Its raw requests, fixtures, hashes and measured outcomes
+The frozen v2/v3 benchmarks and the separate combined-contract runner record both
+forbidden requests and legitimate controls, plus restart/replay episodes.
+Their raw requests, fixtures, hashes and measured outcomes
 are the evidence; percentages alone are not a defensive posture assessment.

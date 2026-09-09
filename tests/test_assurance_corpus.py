@@ -9,7 +9,7 @@ import pytest
 import cerberus
 
 from benchmarks.assurance_boundaries_v3.prepare import build
-from benchmarks.assurance_boundaries_v3.run import canonical, run_request
+from benchmarks.release_candidate.run import canonical, run_request
 
 ROOT = Path(__file__).resolve().parents[1]
 CORPUS = json.loads((ROOT / "benchmarks/assurance_boundaries_v3/cases.json").read_text())

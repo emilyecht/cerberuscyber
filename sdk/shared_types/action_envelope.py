@@ -15,7 +15,7 @@ import re
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, timezone
 from functools import lru_cache
-from pathlib import Path
+from importlib.resources import files
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -74,8 +74,7 @@ _FORMAT_CHECKER = FormatChecker()
 
 @lru_cache(maxsize=1)
 def _wire_validator() -> Draft202012Validator:
-    schema_path = Path(__file__).resolve().parents[2] / "schemas/action-envelope.schema.json"
-    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    schema = json.loads(files("cerberus").joinpath("data/schemas/action-envelope.schema.json").read_text(encoding="utf-8"))
     return Draft202012Validator(schema, format_checker=_FORMAT_CHECKER)
 
 

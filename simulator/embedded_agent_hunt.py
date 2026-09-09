@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from cerberus import DecisionTokenSigner, EnforcementGateway, Guardian, ReplayCache
+from cerberus import DecisionTokenSigner, EnforcementGateway, Guardian, ReplayCache, PolicyBundle
 from cerberus.models import parse_time
 from simulator.assurance_fixtures import fixture_assurance
 from cerberus.hunt import EmbeddedAgentHunter, TelemetryEvent
@@ -50,7 +50,7 @@ def main() -> None:
     now = parse_time(args.at) if args.at else None
 
     scenario = load_json(args.telemetry)
-    policies = load_json(args.policies)
+    policies = PolicyBundle.load(args.policies)
     events = tuple(TelemetryEvent.from_dict(item) for item in scenario.get("events", []))
     asset = str(scenario.get("asset", ""))
     incident_id = str(scenario.get("incident_id", "CRB-EMBEDDED-AGENT"))
@@ -76,7 +76,7 @@ def main() -> None:
         finding,
         incident_id=incident_id,
         human_approvals=args.approval,
-        policy_version=str(policies.get("version", "0.0.0-legacy")),
+        policy_version=policies.version,
         now=now,
     )
 

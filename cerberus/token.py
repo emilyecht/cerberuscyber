@@ -42,7 +42,7 @@ class DecisionTokenSigner:
     key rotation, and deployment-specific trust roots.
     """
 
-    TOKEN_VERSION = "1.2.0"
+    TOKEN_VERSION = "1.3.0"
 
     def __init__(self, key: bytes, *, key_id: str = "prototype-hmac-v1") -> None:
         if len(key) < 32:
@@ -68,6 +68,8 @@ class DecisionTokenSigner:
             raise ValueError("decision does not bind the supplied ActionEnvelope digest")
         if decision.idempotency_key != envelope.idempotency_key:
             raise ValueError("decision does not bind the supplied idempotency key")
+        if not isinstance(decision.policy_digest, str) or re.fullmatch(r"[0-9a-f]{64}", decision.policy_digest) is None:
+            raise ValueError("decision does not contain a valid policy digest")
         bindings = {
             "envelope_id": envelope.envelope_id,
             "incident_id": envelope.incident_id,
@@ -110,6 +112,7 @@ class DecisionTokenSigner:
             "scope": decision.scope,
             "policy_id": decision.policy,
             "policy_version": decision.policy_version,
+            "policy_digest": decision.policy_digest,
             "issued_at": format_time(issued),
             "expires_at": format_time(expires),
             "nonce": envelope.nonce,
@@ -153,6 +156,7 @@ class DecisionTokenSigner:
             "scope",
             "policy_id",
             "policy_version",
+            "policy_digest",
             "issued_at",
             "expires_at",
             "nonce",
@@ -165,10 +169,12 @@ class DecisionTokenSigner:
             raise TokenValidationError("unsupported token version")
         if payload["key_id"] != self.key_id:
             raise TokenValidationError("unexpected signing key id")
-        for field in ("envelope_digest", "assurance_digest"):
+        if set(payload) != required:
+            raise TokenValidationError("token has unknown fields")
+        for field in ("envelope_digest", "assurance_digest", "policy_digest"):
             if not isinstance(payload[field], str) or re.fullmatch(r"[0-9a-f]{64}", payload[field]) is None:
                 raise TokenValidationError(f"invalid {field}")
-        for field in required - {"reversible", "policy_id"}:
+        for field in required - {"reversible"}:
             if not isinstance(payload[field], str) or not payload[field]:
                 raise TokenValidationError(f"invalid token field: {field}")
         if type(payload["reversible"]) is not bool:
