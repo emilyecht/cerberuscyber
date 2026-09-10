@@ -4,6 +4,12 @@
 
 CERBERUS Cyber is a defensive cybersecurity research prototype investigating whether a separate deterministic authorization layer can reduce the authority gained from compromising, deceiving, or pressuring an intelligent defensive component.
 
+PR #11 is merged. The [post-merge evaluation](results/release_candidate/main-after-pr11.md)
+pins the code on main at `59c6a29ac40448fe8c897dc5249c3f32e3e716cb`:
+222 tests passed; the selected combined-contract benchmark recorded 0/11 unsafe
+authorizations, 8/8 eligible responses, and no duplicate receipts in three replay
+episodes, with zero measurement errors. All effects are simulated.
+
 > **Intelligence is not authority.** Sentinel may recommend. Guardian authorizes. Enforcement acts only on a valid decision.
 
 ## Architecture
