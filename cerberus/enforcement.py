@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from threading import Lock
 from typing import Any
 
 from .audit import AuditLedger
 from .token import DecisionTokenSigner, TokenValidationError
+from .state import ReplayDetected, SQLiteStateStore, StateUnavailable
 
 
 class EnforcementDenied(PermissionError):
@@ -18,11 +20,15 @@ class ReplayCache:
 
     def __init__(self) -> None:
         self._used: set[str] = set()
+        self._idempotency: set[str] = set()
+        self._lock = Lock()
 
-    def consume(self, token_id: str) -> None:
-        if token_id in self._used:
-            raise EnforcementDenied("decision token replay detected")
-        self._used.add(token_id)
+    def consume(self, token_id: str, idempotency_key: str, envelope_digest: str) -> None:
+        with self._lock:
+            if token_id in self._used or idempotency_key in self._idempotency:
+                raise ReplayDetected("decision token or idempotency replay detected")
+            self._used.add(token_id)
+            self._idempotency.add(idempotency_key)
 
 
 class EnforcementGateway:
@@ -36,11 +42,13 @@ class EnforcementGateway:
         self,
         signer: DecisionTokenSigner,
         *,
-        replay_cache: ReplayCache | None = None,
+        replay_cache: ReplayCache | SQLiteStateStore | None = None,
         ledger: AuditLedger | None = None,
     ) -> None:
         self.signer = signer
-        self.replay_cache = replay_cache or ReplayCache()
+        if replay_cache is None:
+            raise ValueError("supply durable SQLiteStateStore, or explicit ReplayCache for an isolated simulation")
+        self.replay_cache = replay_cache
         self.ledger = ledger or AuditLedger()
 
     def authorize_and_simulate(
@@ -66,7 +74,12 @@ class EnforcementGateway:
             if payload[field] != requested:
                 raise EnforcementDenied(f"{field} does not match signed authorization")
 
-        self.replay_cache.consume(str(payload["token_id"]))
+        try:
+            self.replay_cache.consume(
+                payload["token_id"], payload["idempotency_key"], payload["envelope_digest"]
+            )
+        except (ReplayDetected, StateUnavailable) as exc:
+            raise EnforcementDenied(str(exc)) from exc
         executed_at = (now or datetime.now(timezone.utc)).isoformat().replace("+00:00", "Z")
         receipt = {
             "status": "simulated",
@@ -77,6 +90,8 @@ class EnforcementGateway:
             "idempotency_key": payload["idempotency_key"],
             "actor": payload["actor"],
             "incident_id": payload["incident_id"],
+            "policy_version": payload["policy_version"],
+            "policy_digest": payload["policy_digest"],
             "action": action,
             "target": target,
             "scope": scope,

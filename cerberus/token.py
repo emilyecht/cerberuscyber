@@ -6,11 +6,13 @@ import base64
 import hashlib
 import hmac
 import json
+import re
 from datetime import datetime, timedelta, timezone
 from typing import Any
 from uuid import uuid4
 
 from .models import ActionEnvelope, GuardianDecision, format_time, parse_time
+from .freshness import evidence_deadline
 
 
 class TokenValidationError(ValueError):
@@ -40,7 +42,7 @@ class DecisionTokenSigner:
     key rotation, and deployment-specific trust roots.
     """
 
-    TOKEN_VERSION = "1.1.0"
+    TOKEN_VERSION = "1.3.0"
 
     def __init__(self, key: bytes, *, key_id: str = "prototype-hmac-v1") -> None:
         if len(key) < 32:
@@ -59,11 +61,15 @@ class DecisionTokenSigner:
         envelope.validate()
         if decision.guardian_decision != "approve":
             raise ValueError("tokens may only be issued for approved decisions")
+        if decision.assurance_verified is not True or not isinstance(decision.assurance_digest, str) or re.fullmatch(r"[0-9a-f]{64}", decision.assurance_digest) is None:
+            raise ValueError("tokens require verified evidence and approval assurance")
         envelope_digest = envelope.digest()
         if decision.envelope_digest != envelope_digest:
             raise ValueError("decision does not bind the supplied ActionEnvelope digest")
         if decision.idempotency_key != envelope.idempotency_key:
             raise ValueError("decision does not bind the supplied idempotency key")
+        if not isinstance(decision.policy_digest, str) or re.fullmatch(r"[0-9a-f]{64}", decision.policy_digest) is None:
+            raise ValueError("decision does not contain a valid policy digest")
         bindings = {
             "envelope_id": envelope.envelope_id,
             "incident_id": envelope.incident_id,
@@ -83,13 +89,21 @@ class DecisionTokenSigner:
             raise ValueError("cannot sign an unsupported action/scope combination")
 
         issued = now or datetime.now(timezone.utc)
-        expires = min(parse_time(envelope.expires_at), issued + timedelta(seconds=ttl_seconds))
+        if type(ttl_seconds) is not int or ttl_seconds <= 0:
+            raise ValueError("decision TTL must be a positive integer")
+        expires = min(
+            evidence_deadline(envelope, issued), issued + timedelta(seconds=ttl_seconds),
+            parse_time(decision.assurance_expires_at),
+        )
+        if expires <= issued:
+            raise ValueError("verified assurance expired before token issuance")
         payload = {
             "token_version": self.TOKEN_VERSION,
             "token_id": uuid4().hex,
             "key_id": self.key_id,
             "envelope_id": envelope.envelope_id,
             "envelope_digest": envelope_digest,
+            "assurance_digest": decision.assurance_digest,
             "idempotency_key": envelope.idempotency_key,
             "actor": envelope.actor,
             "incident_id": envelope.incident_id,
@@ -98,6 +112,7 @@ class DecisionTokenSigner:
             "scope": decision.scope,
             "policy_id": decision.policy,
             "policy_version": decision.policy_version,
+            "policy_digest": decision.policy_digest,
             "issued_at": format_time(issued),
             "expires_at": format_time(expires),
             "nonce": envelope.nonce,
@@ -110,6 +125,8 @@ class DecisionTokenSigner:
         return f"{encoded}.{signature}"
 
     def verify(self, token: str, *, now: datetime | None = None) -> dict[str, Any]:
+        if not isinstance(token, str) or not token.isascii() or len(token) > 16384:
+            raise TokenValidationError("token must be bounded ASCII text")
         try:
             encoded, signature = token.split(".", 1)
         except ValueError as exc:
@@ -122,12 +139,15 @@ class DecisionTokenSigner:
             payload = json.loads(_b64decode(encoded))
         except (json.JSONDecodeError, UnicodeDecodeError) as exc:
             raise TokenValidationError("invalid token payload") from exc
+        if not isinstance(payload, dict):
+            raise TokenValidationError("token payload must be an object")
         required = {
             "token_version",
             "token_id",
             "key_id",
             "envelope_id",
             "envelope_digest",
+            "assurance_digest",
             "idempotency_key",
             "actor",
             "incident_id",
@@ -136,6 +156,7 @@ class DecisionTokenSigner:
             "scope",
             "policy_id",
             "policy_version",
+            "policy_digest",
             "issued_at",
             "expires_at",
             "nonce",
@@ -148,11 +169,24 @@ class DecisionTokenSigner:
             raise TokenValidationError("unsupported token version")
         if payload["key_id"] != self.key_id:
             raise TokenValidationError("unexpected signing key id")
-        if not isinstance(payload["envelope_digest"], str) or len(payload["envelope_digest"]) != 64:
-            raise TokenValidationError("invalid envelope digest")
+        if set(payload) != required:
+            raise TokenValidationError("token has unknown fields")
+        for field in ("envelope_digest", "assurance_digest", "policy_digest"):
+            if not isinstance(payload[field], str) or re.fullmatch(r"[0-9a-f]{64}", payload[field]) is None:
+                raise TokenValidationError(f"invalid {field}")
+        for field in required - {"reversible"}:
+            if not isinstance(payload[field], str) or not payload[field]:
+                raise TokenValidationError(f"invalid token field: {field}")
+        if type(payload["reversible"]) is not bool:
+            raise TokenValidationError("invalid reversibility flag")
         current = now or datetime.now(timezone.utc)
-        if parse_time(payload["expires_at"]) <= current:
+        try:
+            expires = parse_time(payload["expires_at"])
+            issued = parse_time(payload["issued_at"])
+        except (ValueError, TypeError) as exc:
+            raise TokenValidationError("invalid token timestamps") from exc
+        if expires <= current or expires <= issued:
             raise TokenValidationError("decision token expired")
-        if parse_time(payload["issued_at"]) > current + timedelta(seconds=30):
+        if issued > current:
             raise TokenValidationError("decision token issued in the future")
         return payload

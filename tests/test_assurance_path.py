@@ -16,6 +16,9 @@ from cerberus import (
 )
 from cerberus.models import format_time
 
+from tests.assurance_support import FixtureGuardian
+from cerberus import ReplayCache
+
 ROOT = Path(__file__).resolve().parents[1]
 POLICIES = json.loads((ROOT / "policies" / "policies.json").read_text(encoding="utf-8"))
 TEST_KEY = b"cerberus-prototype-test-key-material-32-bytes-minimum"
@@ -51,14 +54,14 @@ class AssurancePathTests(unittest.TestCase):
         signer = DecisionTokenSigner(TEST_KEY)
         ledger = AuditLedger()
         envelope = self._ransomware_envelope()
-        decision = Guardian(POLICIES, signer=signer, ledger=ledger).evaluate(envelope)
+        decision = FixtureGuardian(POLICIES, signer=signer, ledger=ledger).evaluate(envelope)
 
         self.assertEqual(decision.guardian_decision, "approve")
         self.assertIsNotNone(decision.decision_token)
         self.assertEqual(decision.envelope_digest, envelope.digest())
         self.assertTrue(ledger.verify())
 
-        gateway = EnforcementGateway(signer)
+        gateway = EnforcementGateway(signer, replay_cache=ReplayCache())
         receipt = gateway.authorize_and_simulate(
             decision.decision_token or "",
             action=decision.authorized_action,
@@ -78,8 +81,8 @@ class AssurancePathTests(unittest.TestCase):
 
     def test_target_cannot_change_after_authorization(self):
         signer = DecisionTokenSigner(TEST_KEY)
-        decision = Guardian(POLICIES, signer=signer).evaluate(self._ransomware_envelope())
-        gateway = EnforcementGateway(signer)
+        decision = FixtureGuardian(POLICIES, signer=signer).evaluate(self._ransomware_envelope())
+        gateway = EnforcementGateway(signer, replay_cache=ReplayCache())
         with self.assertRaises(EnforcementDenied):
             gateway.authorize_and_simulate(
                 decision.decision_token or "",
@@ -95,7 +98,7 @@ class AssurancePathTests(unittest.TestCase):
             created_at=format_time(now - timedelta(minutes=5)),
             expires_at=format_time(now - timedelta(minutes=1)),
         )
-        decision = Guardian(POLICIES).evaluate(envelope, now=now)
+        decision = FixtureGuardian(POLICIES).evaluate(envelope, now=now)
         self.assertEqual(decision.guardian_decision, "deny")
         self.assertEqual(decision.policy, "GLOBAL-FRESHNESS-INVARIANT")
 
@@ -108,7 +111,7 @@ class AssurancePathTests(unittest.TestCase):
                 Evidence("recovery_deletion_attempt", "edr:shared", format_time(now)),
             ),
         )
-        decision = Guardian(POLICIES).evaluate(envelope)
+        decision = FixtureGuardian(POLICIES).evaluate(envelope)
         self.assertEqual(decision.guardian_decision, "escalate")
         self.assertIn("independent", decision.reason)
 

@@ -8,7 +8,7 @@ still pass through the deterministic Guardian and signed enforcement boundary.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Any, Iterable
 from uuid import NAMESPACE_URL, uuid5
 
@@ -193,10 +193,11 @@ class EmbeddedAgentHunter:
         policy_version: str = "0.5.0",
         actor: str = "sentinel:embedded-agent-hunter-1",
         ttl_seconds: int = 120,
+        now: datetime | None = None,
     ) -> ActionEnvelope:
         """Translate a finding into an untrusted ActionEnvelope v1.0.0 proposal."""
 
-        now = utc_now()
+        now = now or utc_now()
         evidence = tuple(
             Evidence(
                 signal=self.INDICATORS[event.event_type][0],

@@ -13,7 +13,9 @@ import os
 from pathlib import Path
 from typing import Any
 
-from cerberus import DecisionTokenSigner, EnforcementGateway, Guardian
+from cerberus import DecisionTokenSigner, EnforcementGateway, Guardian, ReplayCache, PolicyBundle
+from cerberus.models import parse_time
+from simulator.assurance_fixtures import fixture_assurance
 from cerberus.hunt import EmbeddedAgentHunter, TelemetryEvent
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,6 +33,8 @@ def main() -> None:
     )
     parser.add_argument("telemetry", type=Path, help="Synthetic telemetry JSON file")
     parser.add_argument("--policies", type=Path, default=DEFAULT_POLICIES)
+    parser.add_argument("--assume-trusted-fixture", action="store_true", help="synthesize test attestations; does not authenticate real evidence or people")
+    parser.add_argument("--at", help="explicit RFC3339 simulation clock for historical fixtures")
     parser.add_argument(
         "--approval",
         action="append",
@@ -43,9 +47,10 @@ def main() -> None:
         help="demonstrate signed, one-time, side-effect-free enforcement",
     )
     args = parser.parse_args()
+    now = parse_time(args.at) if args.at else None
 
     scenario = load_json(args.telemetry)
-    policies = load_json(args.policies)
+    policies = PolicyBundle.load(args.policies)
     events = tuple(TelemetryEvent.from_dict(item) for item in scenario.get("events", []))
     asset = str(scenario.get("asset", ""))
     incident_id = str(scenario.get("incident_id", "CRB-EMBEDDED-AGENT"))
@@ -71,7 +76,8 @@ def main() -> None:
         finding,
         incident_id=incident_id,
         human_approvals=args.approval,
-        policy_version=str(policies.get("version", "0.0.0-legacy")),
+        policy_version=policies.version,
+        now=now,
     )
 
     signing_key: bytes | None = None
@@ -85,20 +91,23 @@ def main() -> None:
         signing_key = key_text.encode("utf-8")
 
     signer = DecisionTokenSigner(signing_key) if signing_key is not None else None
-    decision = Guardian(policies, signer=signer).evaluate(envelope)
+    verifier, bundle = fixture_assurance(envelope) if args.assume_trusted_fixture else (None, None)
+    decision = Guardian(policies, signer=signer, assurance_verifier=verifier).evaluate(envelope, now=now, assurance=bundle)
     output: dict[str, Any] = {
         "sentinel": finding.to_dict(),
         "action_envelope": envelope.to_dict(),
         "guardian": decision.to_dict(),
+        "fixture_trust_assumption": args.assume_trusted_fixture,
     }
 
     if args.simulate_enforcement and decision.guardian_decision == "approve":
-        gateway = EnforcementGateway(DecisionTokenSigner(signing_key or b""))
+        gateway = EnforcementGateway(DecisionTokenSigner(signing_key or b""), replay_cache=ReplayCache())
         output["enforcement"] = gateway.authorize_and_simulate(
             decision.decision_token or "",
             action=decision.authorized_action,
             target=decision.target,
             scope=decision.scope,
+            now=now,
         )
 
     print(json.dumps(output, indent=2, sort_keys=True))

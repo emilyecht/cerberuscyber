@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cerberus-cyber-eval"
+version = "0.1.0rc1"
+description = "Simulation-only evaluation kit for bounded cybersecurity authorization"
+readme = "docs/EVALUATION_KIT.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+dependencies = ["jsonschema==4.23.0", "rfc3339-validator==0.1.4", "cryptography==50.0.1"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Security",
+]
+
+[project.scripts]
+cerberus-cyber = "cerberus.evaluation:main"
+
+[project.urls]
+Repository = "https://github.com/emilyecht/cerberuscyber"
+Issues = "https://github.com/emilyecht/cerberuscyber/issues"
+
+[tool.setuptools.packages.find]
+include = ["cerberus", "sdk", "sdk.shared_types"]
+namespaces = false
+
+[tool.setuptools.package-data]
+cerberus = ["data/*.json", "data/schemas/*.json"]

@@ -5,6 +5,12 @@ from pathlib import Path
 from cerberus import DecisionTokenSigner, EnforcementGateway, Guardian
 from cerberus.hunt import EmbeddedAgentHunter, TelemetryEvent
 
+from tests.assurance_support import FixtureGuardian
+from cerberus import ReplayCache
+
+from cerberus.models import parse_time
+SIMULATION_NOW = parse_time("2026-07-13T14:40:30Z")
+
 ROOT = Path(__file__).resolve().parents[1]
 POLICIES = json.loads((ROOT / "policies" / "policies.json").read_text(encoding="utf-8"))
 SCENARIO = json.loads(
@@ -54,10 +60,11 @@ class EmbeddedAgentHuntTests(unittest.TestCase):
         assert finding is not None
         envelope = self.hunter.build_action_envelope(
             finding,
+            now=SIMULATION_NOW,
             incident_id=SCENARIO["incident_id"],
             human_approvals=("incident-commander",),
         )
-        decision = Guardian(POLICIES).evaluate(envelope)
+        decision = FixtureGuardian(POLICIES).evaluate(envelope, now=SIMULATION_NOW)
         self.assertEqual(decision.guardian_decision, "escalate")
         self.assertEqual(decision.policy, "CYBER-EA-001")
         self.assertTrue(decision.human_approval_required)
@@ -71,10 +78,11 @@ class EmbeddedAgentHuntTests(unittest.TestCase):
         assert finding is not None
         envelope = self.hunter.build_action_envelope(
             finding,
+            now=SIMULATION_NOW,
             incident_id="CRB-2026-MISSING-CORE",
             human_approvals=("incident-commander", "cyber-duty-officer"),
         )
-        decision = Guardian(POLICIES).evaluate(envelope)
+        decision = FixtureGuardian(POLICIES).evaluate(envelope, now=SIMULATION_NOW)
         self.assertEqual(decision.guardian_decision, "escalate")
         self.assertIsNone(decision.policy)
 
@@ -83,21 +91,23 @@ class EmbeddedAgentHuntTests(unittest.TestCase):
         assert finding is not None
         envelope = self.hunter.build_action_envelope(
             finding,
+            now=SIMULATION_NOW,
             incident_id=SCENARIO["incident_id"],
             human_approvals=("incident-commander", "cyber-duty-officer"),
         )
         signer = DecisionTokenSigner(TEST_KEY)
-        decision = Guardian(POLICIES, signer=signer).evaluate(envelope)
+        decision = FixtureGuardian(POLICIES, signer=signer).evaluate(envelope, now=SIMULATION_NOW)
         self.assertEqual(decision.guardian_decision, "approve")
         self.assertEqual(decision.authorized_action, "quarantine_workload")
         self.assertEqual(decision.scope, "single_workload")
         self.assertIsNotNone(decision.decision_token)
 
-        receipt = EnforcementGateway(signer).authorize_and_simulate(
+        receipt = EnforcementGateway(signer, replay_cache=ReplayCache()).authorize_and_simulate(
             decision.decision_token or "",
             action="quarantine_workload",
             target=SCENARIO["asset"],
             scope="single_workload",
+            now=SIMULATION_NOW,
         )
         self.assertEqual(receipt["status"], "simulated")
         self.assertFalse(receipt["side_effects"])

@@ -11,13 +11,13 @@ POLICIES = json.loads((ROOT / "policies" / "policies.json").read_text(encoding="
 class GuardianPolicyTests(unittest.TestCase):
     def test_ransomware_isolation_is_approved(self):
         incident = json.loads((ROOT / "simulator" / "scenarios" / "ransomware.json").read_text(encoding="utf-8"))
-        result = evaluate(incident, POLICIES)
+        result = evaluate(incident, POLICIES, assume_trusted_fixture=True)
         self.assertEqual(result["guardian_decision"], "approve")
         self.assertEqual(result["authorized_action"], "isolate_endpoint")
 
     def test_prompt_injection_is_denied(self):
         incident = json.loads((ROOT / "simulator" / "scenarios" / "prompt_injection.json").read_text(encoding="utf-8"))
-        result = evaluate(incident, POLICIES)
+        result = evaluate(incident, POLICIES, assume_trusted_fixture=True)
         self.assertEqual(result["guardian_decision"], "deny")
 
     def test_forbidden_action_is_always_denied(self):
@@ -28,7 +28,7 @@ class GuardianPolicyTests(unittest.TestCase):
             "signals": ["rapid_file_rewrite", "recovery_deletion_attempt"],
             "proposed_action": "delete_backups",
         }
-        result = evaluate(incident, POLICIES)
+        result = evaluate(incident, POLICIES, assume_trusted_fixture=True)
         self.assertEqual(result["guardian_decision"], "deny")
         self.assertEqual(result["policy"], "GLOBAL-INVARIANT")
 
@@ -40,7 +40,7 @@ class GuardianPolicyTests(unittest.TestCase):
             "signals": ["rapid_file_rewrite", "recovery_deletion_attempt"],
             "proposed_action": "isolate_endpoint",
         }
-        result = evaluate(incident, POLICIES)
+        result = evaluate(incident, POLICIES, assume_trusted_fixture=True)
         self.assertEqual(result["guardian_decision"], "escalate")
 
     def test_scope_cannot_expand_beyond_policy(self):
@@ -52,7 +52,7 @@ class GuardianPolicyTests(unittest.TestCase):
             "proposed_action": "isolate_endpoint",
             "requested_scope": "enterprise",
         }
-        result = evaluate(incident, POLICIES)
+        result = evaluate(incident, POLICIES, assume_trusted_fixture=True)
         self.assertEqual(result["guardian_decision"], "deny")
         self.assertIn("scope", result["reason"])
 

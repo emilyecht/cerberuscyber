@@ -106,9 +106,19 @@ def test_fresh_process_probe_and_positive_control_use_actual_target(tmp_path):
         [sys.executable, str(SCRIPT), "--target", str(ROOT), "--output", str(destination),
          "--case", "V01", "--case", "G08"], text=True, capture_output=True, timeout=30,
     )
-    assert completed.returncode == 0, completed.stderr
     result = json.loads(destination.read_text())
     rows = {case["id"]: case for case in result["cases"]}
+    import cerberus.token
+    if cerberus.token.DecisionTokenSigner.TOKEN_VERSION in {"1.2.0", "1.3.0"}:
+        # Frozen v1 supplies no authenticated sidecar. Its eligible setup is
+        # intentionally no longer valid: never reinterpret this as replay defense.
+        assert completed.returncode == 2, completed.stderr
+        assert rows["V01"]["expected_met"] is False
+        assert rows["G08"]["measurement_valid"] is False
+        assert rows["G08"]["outcome"] == "error"
+        assert result["summary"]["measurement_errors"] > 0
+        return
+    assert completed.returncode == 0, completed.stderr
     assert result["summary"]["measurement_errors"] == 0
     assert result["complete_corpus"] is False
     assert rows["V01"]["expected_met"] is True

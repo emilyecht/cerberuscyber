@@ -1,0 +1,11 @@
+include README.md CONTRIBUTING.md SECURITY.md requirements*.txt
+recursive-include cerberus/data *.json
+recursive-include docs *.md
+recursive-include schemas *.json
+recursive-include policies *.json
+recursive-include simulator *.py *.json
+recursive-include benchmarks *.py *.json *.md *.txt
+recursive-include results *.json *.csv *.md *.svg
+recursive-include tests *.py
+recursive-include scripts *.py
+global-exclude __pycache__ *.py[cod] *.db *.db-wal *.db-shm

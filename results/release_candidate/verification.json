@@ -1,0 +1,30 @@
+{
+  "assessment_date_utc": "2026-09-09",
+  "code_commit": "64f08221a8f919cece4fa3554c000a3804ca9e64",
+  "code_tree": "4af6839d8f67058951c7e6b327635ef74bc68bd2",
+  "python": "3.12.14",
+  "unit_tests": {"passed": 222, "failed": 0, "deselected": 0},
+  "build": {
+    "workflow": "python -m build; wheel built from source distribution",
+    "distribution_version": "0.1.0rc1",
+    "local_verification_artifacts_sha256": {
+      "cerberus_cyber_eval-0.1.0rc1-py3-none-any.whl": "128d3188b4673a2829618c2bd81eaba079946d143062de7ab4d6bb751bceebc7",
+      "cerberus_cyber_eval-0.1.0rc1.tar.gz": "f3b135b9f7f3a1e80eea31271d532c77e8ed8b9764db0fbdac66b318321367b1"
+    },
+    "reviewer_packet_files_byte_equal_in_sdist": 85,
+    "registry_published": false,
+    "publisher_signature": false,
+    "byte_identical_rebuild_claimed": false
+  },
+  "installed_wheel": {
+    "fresh_virtual_environment": true,
+    "isolated_python_verifier": true,
+    "source_checkout_imported": false,
+    "console_demo_cases_passed": 4,
+    "dependency_check": "No broken requirements found.",
+    "side_effects": false
+  },
+  "code_ci_run": "https://github.com/emilyecht/cerberuscyber/actions/runs/34405533707",
+  "benchmark_result": "after.json",
+  "limits": "Local and CI evaluation of selected simulation fixtures. Not a measurement of current main, operational protection, independent/adaptive review, or a public release. Build hashes identify local verification artifacts, not signed distributables."
+}

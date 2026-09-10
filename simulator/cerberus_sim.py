@@ -13,7 +13,8 @@ import os
 from pathlib import Path
 from typing import Any
 
-from cerberus import ActionEnvelope, DecisionTokenSigner, EnforcementGateway, Guardian
+from cerberus import ActionEnvelope, DecisionTokenSigner, EnforcementGateway, Guardian, ReplayCache, PolicyBundle
+from simulator.assurance_fixtures import fixture_assurance
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_POLICIES = ROOT / "policies" / "policies.json"
@@ -26,26 +27,36 @@ def load_json(path: Path) -> dict[str, Any]:
 
 def evaluate(
     incident: dict[str, Any],
-    policy_set: dict[str, Any],
+    policy_set: PolicyBundle | dict[str, Any],
     *,
     signing_key: bytes | None = None,
+    assume_trusted_fixture: bool = False,
 ) -> dict[str, Any]:
     """Backward-compatible simulator entry point backed by ActionEnvelope v1.0.0."""
 
+    bundle = (
+        policy_set
+        if isinstance(policy_set, PolicyBundle)
+        else PolicyBundle.from_dict(policy_set)
+    )
     envelope = ActionEnvelope.from_legacy_incident(
         incident,
-        policy_version=str(policy_set.get("version", "0.0.0-legacy")),
-        ttl_seconds=int(policy_set.get("decision_ttl_seconds", 120)),
+        policy_version=bundle.version,
+        ttl_seconds=int(bundle.to_dict()["decision_ttl_seconds"]),
     )
     signer = DecisionTokenSigner(signing_key) if signing_key is not None else None
-    result = Guardian(policy_set, signer=signer).evaluate(envelope)
-    return result.to_dict()
+    verifier, proofs = fixture_assurance(envelope) if assume_trusted_fixture else (None, None)
+    result = Guardian(bundle, signer=signer, assurance_verifier=verifier).evaluate(envelope, assurance=proofs)
+    output = result.to_dict()
+    output["fixture_trust_assumption"] = assume_trusted_fixture
+    return output
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="CERBERUS Cyber policy simulator")
     parser.add_argument("scenario", type=Path, help="Path to a scenario JSON file")
     parser.add_argument("--policies", type=Path, default=DEFAULT_POLICIES)
+    parser.add_argument("--assume-trusted-fixture", action="store_true", help="synthesize test attestations for this offline fixture; does not verify real origins")
     parser.add_argument(
         "--simulate-enforcement",
         action="store_true",
@@ -53,7 +64,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    policy_set = load_json(args.policies)
+    policy_set = PolicyBundle.load(args.policies)
     signing_key: bytes | None = None
     if args.simulate_enforcement:
         key_text = os.environ.get("CERBERUS_PROTOTYPE_SIGNING_KEY")
@@ -64,12 +75,12 @@ def main() -> None:
             )
         signing_key = key_text.encode("utf-8")
 
-    result = evaluate(load_json(args.scenario), policy_set, signing_key=signing_key)
+    result = evaluate(load_json(args.scenario), policy_set, signing_key=signing_key, assume_trusted_fixture=args.assume_trusted_fixture)
     output: dict[str, Any] = {"guardian": result}
 
     if args.simulate_enforcement and result["guardian_decision"] == "approve":
         signer = DecisionTokenSigner(signing_key or b"")
-        gateway = EnforcementGateway(signer)
+        gateway = EnforcementGateway(signer, replay_cache=ReplayCache())
         output["enforcement"] = gateway.authorize_and_simulate(
             result["decision_token"],
             action=result["authorized_action"],

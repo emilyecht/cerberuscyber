@@ -28,7 +28,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install test dependencies
-        run: python -m pip install --disable-pip-version-check -r requirements-dev.txt
+        run: python -m pip install --disable-pip-version-check -r requirements-dev.txt -r requirements-build.txt
       - name: Compile Python sources
         run: python -m compileall -q cerberus sdk simulator tests benchmarks
       - name: Validate JSON artifacts
@@ -36,6 +36,23 @@ jobs:
           python -m json.tool policies/policies.json >/dev/null
           python -m json.tool schemas/action-envelope.schema.json >/dev/null
           python -m json.tool schemas/decision-token.schema.json >/dev/null
+          python -m json.tool benchmarks/assurance_boundaries_v2/cases.json >/dev/null
+          python -m json.tool benchmarks/assurance_boundaries_v2/source-requests.json >/dev/null
+          python -m json.tool benchmarks/assurance_boundaries_v3/cases.json >/dev/null
+          python -m json.tool benchmarks/assurance_boundaries_v3/source-requests.json >/dev/null
           python -m json.tool benchmarks/guardian_authorization_v1/cases.json >/dev/null
+          python -m json.tool schemas/policy-bundle.schema.json >/dev/null
       - name: Run unit, schema, and adversarial corpus tests
         run: python -m pytest -q
+      - name: Run combined-contract benchmark
+        run: python benchmarks/release_candidate/run.py --target . --output "$RUNNER_TEMP/release-candidate.json" --fail-on-violation
+      - name: Build source and wheel distributions
+        run: |
+          python -m build
+          python scripts/release_checksums.py
+      - name: Verify wheel in a separate installed environment
+        run: |
+          python -m venv "$RUNNER_TEMP/cerberus-installed"
+          "$RUNNER_TEMP/cerberus-installed/bin/python" -m pip install --disable-pip-version-check dist/cerberus_cyber_eval-0.1.0rc1-py3-none-any.whl
+          "$RUNNER_TEMP/cerberus-installed/bin/python" -m pip check
+          "$RUNNER_TEMP/cerberus-installed/bin/python" -I scripts/verify_installed.py --repo-root "$GITHUB_WORKSPACE"

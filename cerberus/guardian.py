@@ -3,16 +3,22 @@
 from __future__ import annotations
 
 from dataclasses import replace
-from datetime import datetime
+from datetime import datetime, timezone
+from threading import Lock
 from typing import Any
 
 from .audit import AuditLedger
 from .models import ActionEnvelope, GuardianDecision
+from .policy import PolicyBundle
 from .token import DecisionTokenSigner
+from .freshness import FreshnessError, evidence_deadline
+from .state import SQLiteStateStore, StateUnavailable
+from .assurance import AssuranceBundle, AssuranceError, AssuranceVerifier, VerifiedAssurance
+from .models import format_time
 
 
 class EnvelopeIdempotencyRegistry:
-    """In-memory exact-once registry for evaluated ActionEnvelope keys.
+    """In-memory atomic registry for evaluated ActionEnvelope keys.
 
     This is a prototype interface. A production Guardian must replace it with a
     durable, atomic store shared by all Guardian replicas.
@@ -20,12 +26,14 @@ class EnvelopeIdempotencyRegistry:
 
     def __init__(self) -> None:
         self._seen: dict[str, str] = {}
+        self._lock = Lock()
 
     def claim(self, idempotency_key: str, envelope_digest: str) -> bool:
-        if idempotency_key in self._seen:
-            return False
-        self._seen[idempotency_key] = envelope_digest
-        return True
+        with self._lock:
+            if idempotency_key in self._seen:
+                return False
+            self._seen[idempotency_key] = envelope_digest
+            return True
 
 
 class Guardian:
@@ -38,32 +46,44 @@ class Guardian:
 
     def __init__(
         self,
-        policy_set: dict[str, Any],
+        policy_set: PolicyBundle | dict[str, Any],
         *,
         signer: DecisionTokenSigner | None = None,
         ledger: AuditLedger | None = None,
-        idempotency_registry: EnvelopeIdempotencyRegistry | None = None,
+        idempotency_registry: EnvelopeIdempotencyRegistry | SQLiteStateStore | None = None,
+        assurance_verifier: AssuranceVerifier | None = None,
     ) -> None:
-        self.policy_set = policy_set
+        bundle = (
+            policy_set
+            if isinstance(policy_set, PolicyBundle)
+            else PolicyBundle.from_dict(policy_set)
+        )
+        self._policy_bundle = bundle
         self.signer = signer
+        self.assurance_verifier = assurance_verifier
         self.ledger = ledger or AuditLedger()
         self.idempotency_registry = idempotency_registry or EnvelopeIdempotencyRegistry()
-        self.policy_version = str(policy_set.get("version", "unknown"))
-        self.scope_order = list(
-            policy_set.get(
-                "scope_order",
-                [
-                    "none",
-                    "single_identity",
-                    "single_session",
-                    "single_endpoint",
-                    "single_host",
-                    "single_workload",
-                    "single_segment",
-                    "enterprise",
-                ],
-            )
-        )
+
+    @property
+    def policy_bundle(self) -> PolicyBundle:
+        return self._policy_bundle
+
+    @property
+    def policy_set(self) -> dict[str, Any]:
+        # No caller can mutate evaluated rules without changing their digest.
+        return self._policy_bundle.to_dict()
+
+    @property
+    def policy_version(self) -> str:
+        return self._policy_bundle.version
+
+    @property
+    def policy_digest(self) -> str:
+        return self._policy_bundle.digest
+
+    @property
+    def scope_order(self) -> tuple[str, ...]:
+        return tuple(self.policy_set["scope_order"])
 
     def _scope_within_limit(self, requested: str, maximum: str) -> bool:
         try:
@@ -83,6 +103,7 @@ class Guardian:
         reversible: bool = False,
         human_approval_required: bool = False,
         now: datetime | None = None,
+        assurance: VerifiedAssurance | None = None,
     ) -> GuardianDecision:
         envelope_digest = envelope.digest()
         result = GuardianDecision(
@@ -92,6 +113,7 @@ class Guardian:
             reason=reason,
             policy=policy_id,
             policy_version=self.policy_version,
+            policy_digest=self.policy_digest,
             proposed_action=envelope.proposed_action,
             authorized_action=authorized_action,
             target=envelope.target,
@@ -103,13 +125,18 @@ class Guardian:
             envelope_digest=envelope_digest,
             idempotency_key=envelope.idempotency_key,
             actor=envelope.actor,
+            assurance_verified=assurance is not None,
+            assurance_digest=assurance.digest if assurance else None,
+            assurance_expires_at=format_time(assurance.expires_at) if assurance else None,
+            authenticated_source_count=len(assurance.source_domains) if assurance else 0,
+            authenticated_approval_count=len(assurance.approval_principals) if assurance else 0,
         )
         token: str | None = None
         if decision == "approve" and self.signer is not None:
             token = self.signer.issue(
                 result,
                 envelope,
-                ttl_seconds=int(self.policy_set.get("decision_ttl_seconds", 120)),
+                ttl_seconds=int(self.policy_set["decision_ttl_seconds"]),
                 now=now,
             )
         record = self.ledger.append(
@@ -123,18 +150,27 @@ class Guardian:
                 "decision": result.guardian_decision,
                 "policy": result.policy,
                 "policy_version": result.policy_version,
+                "policy_digest": result.policy_digest,
                 "proposed_action": result.proposed_action,
                 "authorized_action": result.authorized_action,
                 "target": result.target,
                 "scope": result.scope,
                 "reason": result.reason,
                 "token_issued": token is not None,
+                "assurance_digest": result.assurance_digest,
+                "assurance_expires_at": result.assurance_expires_at,
+                "authenticated_source_count": result.authenticated_source_count,
+                "authenticated_approval_count": result.authenticated_approval_count,
             },
         )
         return replace(result, decision_token=token, audit_record_hash=record.record_hash)
 
-    def evaluate(self, envelope: ActionEnvelope, *, now: datetime | None = None) -> GuardianDecision:
+    def evaluate(
+        self, envelope: ActionEnvelope, *, now: datetime | None = None,
+        assurance: AssuranceBundle | None = None,
+    ) -> GuardianDecision:
         envelope.validate()
+        now = now or datetime.now(timezone.utc)
 
         if envelope.is_expired(now):
             return self._finalize(
@@ -143,6 +179,14 @@ class Guardian:
                 reason="action envelope expired",
                 policy_id="GLOBAL-FRESHNESS-INVARIANT",
                 now=now,
+            )
+
+        try:
+            evidence_deadline(envelope, now)
+        except FreshnessError as exc:
+            return self._finalize(
+                envelope, decision="deny", reason=str(exc),
+                policy_id="GLOBAL-EVIDENCE-FRESHNESS", now=now,
             )
 
         if envelope.policy_version != self.policy_version:
@@ -157,18 +201,6 @@ class Guardian:
                 now=now,
             )
 
-        envelope_digest = envelope.digest()
-        if not self.idempotency_registry.claim(
-            envelope.idempotency_key, envelope_digest
-        ):
-            return self._finalize(
-                envelope,
-                decision="deny",
-                reason="action envelope idempotency key was already evaluated",
-                policy_id="GLOBAL-IDEMPOTENCY-INVARIANT",
-                now=now,
-            )
-
         forbidden = set(self.policy_set.get("forbidden_actions", []))
         if envelope.proposed_action in forbidden:
             return self._finalize(
@@ -179,7 +211,7 @@ class Guardian:
                 now=now,
             )
 
-        escalation_signals = set(self.policy_set.get("escalation_signals", []))
+        escalation_signals = set(self.policy_set["escalation_signals"])
         present_escalation_signals = sorted(
             escalation_signals.intersection(envelope.evidence_signals)
         )
@@ -196,43 +228,36 @@ class Guardian:
                 now=now,
             )
 
-        for policy in self.policy_set.get("policies", []):
-            match = policy.get("match", {})
-            if envelope.threat != match.get("threat"):
+        for policy in self.policy_set["policies"]:
+            match = policy["match"]
+            if envelope.threat != match["threat"]:
                 continue
             # Confidence remains advisory and can never authorize by itself. A minimum
             # threshold may force escalation, but all required behavior and provenance
             # conditions must still be independently satisfied.
-            if envelope.confidence < float(match.get("min_confidence", 1.0)):
+            if envelope.confidence < float(match["min_confidence"]):
                 continue
-            required_signals = set(match.get("required_signals", []))
+            required_signals = set(match["required_signals"])
             if not required_signals.issubset(envelope.evidence_signals):
                 continue
 
-            required_sources = int(
-                match.get(
-                    "min_independent_sources",
-                    self.policy_set.get("min_independent_sources", 1),
-                )
-            )
+            required_sources = int(match["min_independent_sources"])
             if len(envelope.independent_sources) < required_sources:
                 return self._finalize(
                     envelope,
                     decision="escalate",
                     reason="insufficient independent evidence sources",
-                    policy_id=policy.get("id"),
+                    policy_id=policy["id"],
                     human_approval_required=True,
                     now=now,
                 )
 
-            policy_decision = str(policy.get("decision", "deny"))
-            allowed_action = str(policy.get("allowed_action", "none"))
-            max_scope = str(policy.get("max_scope", "none"))
-            reversible_required = bool(policy.get("reversible_required", False))
-            approval_required = bool(policy.get("human_approval_required", False))
-            approval_count = int(
-                policy.get("required_approval_count", 1 if approval_required else 0)
-            )
+            policy_decision = str(policy["decision"])
+            allowed_action = str(policy["allowed_action"])
+            max_scope = str(policy["max_scope"])
+            reversible_required = bool(policy["reversible_required"])
+            approval_required = bool(policy["human_approval_required"])
+            approval_count = int(policy["required_approval_count"])
             expected_approval_mode = (
                 "dual" if approval_count >= 2 else "single" if approval_count == 1 else "none"
             )
@@ -245,7 +270,7 @@ class Guardian:
                         "envelope approval mode does not match policy requirement: "
                         f"expected {expected_approval_mode}"
                     ),
-                    policy_id=policy.get("id"),
+                    policy_id=policy["id"],
                     human_approval_required=True,
                     now=now,
                 )
@@ -255,7 +280,7 @@ class Guardian:
                     envelope,
                     decision="deny",
                     reason="requested scope exceeds policy maximum",
-                    policy_id=policy.get("id"),
+                    policy_id=policy["id"],
                     now=now,
                 )
 
@@ -264,7 +289,7 @@ class Guardian:
                     envelope,
                     decision="deny",
                     reason="policy requires a reversible action",
-                    policy_id=policy.get("id"),
+                    policy_id=policy["id"],
                     now=now,
                 )
 
@@ -273,7 +298,7 @@ class Guardian:
                     envelope,
                     decision="escalate",
                     reason="required human approval not present",
-                    policy_id=policy.get("id"),
+                    policy_id=policy["id"],
                     scope=max_scope,
                     reversible=envelope.reversible,
                     human_approval_required=True,
@@ -281,10 +306,11 @@ class Guardian:
                 )
 
             if policy_decision == "escalate" and approval_required:
-                policy_decision = str(policy.get("decision_on_approval", "approve"))
+                policy_decision = str(policy["decision_on_approval"])
 
             # Check the final decision, including escalation-to-approval transitions.
             # Approval permits the submitted action; it never selects a replacement.
+            verified: VerifiedAssurance | None = None
             if policy_decision == "approve":
                 if envelope.proposed_action != allowed_action:
                     return self._finalize(
@@ -302,17 +328,56 @@ class Guardian:
                         policy_id=policy.get("id"),
                         now=now,
                     )
+                if self.assurance_verifier is None:
+                    return self._finalize(
+                        envelope, decision="deny", reason="trusted assurance verifier is not configured",
+                        policy_id="GLOBAL-ASSURANCE-INVARIANT", now=now,
+                    )
+                try:
+                    verified = self.assurance_verifier.verify(envelope, assurance, now=now)
+                except (AssuranceError, FreshnessError) as exc:
+                    return self._finalize(
+                        envelope, decision="deny", reason=str(exc),
+                        policy_id="GLOBAL-ASSURANCE-INVARIANT", now=now,
+                    )
+                if len(verified.source_domains) < required_sources:
+                    return self._finalize(
+                        envelope, decision="escalate", reason="insufficient authenticated independent source domains",
+                        policy_id="GLOBAL-SOURCE-INDEPENDENCE", human_approval_required=True,
+                        now=now, assurance=verified,
+                    )
+                if len(verified.approval_principals) < approval_count:
+                    return self._finalize(
+                        envelope, decision="escalate", reason="insufficient authenticated approval principals",
+                        policy_id="GLOBAL-APPROVAL-AUTHENTICITY", human_approval_required=True,
+                        now=now, assurance=verified,
+                    )
+                # Unauthenticated input must not reserve a legitimate request's
+                # idempotency key. Claim only after all approval gates pass.
+                try:
+                    claimed = self.idempotency_registry.claim(envelope.idempotency_key, envelope.digest())
+                except StateUnavailable:
+                    return self._finalize(
+                        envelope, decision="deny", reason="durable authority state unavailable",
+                        policy_id="GLOBAL-STATE-AVAILABILITY", now=now, assurance=verified,
+                    )
+                if not claimed:
+                    return self._finalize(
+                        envelope, decision="deny", reason="action envelope idempotency key was already evaluated",
+                        policy_id="GLOBAL-IDEMPOTENCY-INVARIANT", now=now, assurance=verified,
+                    )
 
             return self._finalize(
                 envelope,
                 decision=policy_decision,
                 reason="policy requirements satisfied",
-                policy_id=policy.get("id"),
+                policy_id=policy["id"],
                 authorized_action=allowed_action if policy_decision == "approve" else "none",
                 scope=envelope.requested_scope if policy_decision == "approve" else "none",
                 reversible=envelope.reversible,
                 human_approval_required=approval_required,
                 now=now,
+                assurance=verified,
             )
 
         return self._finalize(

@@ -11,6 +11,9 @@ import pytest
 
 from cerberus import ActionEnvelope, DecisionTokenSigner, Guardian, ValidationError
 
+from tests.assurance_support import FixtureGuardian
+from cerberus import ReplayCache
+
 ROOT = Path(__file__).resolve().parents[1]
 POLICIES = json.loads((ROOT / "policies/policies.json").read_text(encoding="utf-8"))
 TEST_KEY = b"cerberus-exact-action-contract-regression-key-32-bytes"
@@ -34,7 +37,7 @@ def test_approval_transition_cannot_substitute_another_action(approval_count: in
         human_approvals=tuple(f"reviewer-{i}" for i in range(approval_count)),
         required_approval_mode="single" if approval_count == 1 else "dual",
     )
-    decision = Guardian(policies, signer=DecisionTokenSigner(TEST_KEY)).evaluate(envelope)
+    decision = FixtureGuardian(policies, signer=DecisionTokenSigner(TEST_KEY)).evaluate(envelope)
 
     assert decision.guardian_decision == "deny"
     assert "action" in decision.reason
@@ -45,7 +48,7 @@ def test_approval_transition_cannot_substitute_another_action(approval_count: in
 @pytest.mark.parametrize("scope", ["single_identity", "none"])
 def test_scope_order_does_not_make_unrelated_action_scopes_compatible(scope: str) -> None:
     envelope = replace(_envelope(), requested_scope=scope)
-    decision = Guardian(POLICIES, signer=DecisionTokenSigner(TEST_KEY)).evaluate(envelope)
+    decision = FixtureGuardian(POLICIES, signer=DecisionTokenSigner(TEST_KEY)).evaluate(envelope)
     assert decision.guardian_decision == "deny"
     assert "scope" in decision.reason
     assert decision.decision_token is None
@@ -57,7 +60,7 @@ def test_broader_policy_ceiling_never_widens_the_approved_scope() -> None:
     policy["max_scope"] = "enterprise"
     envelope = _envelope()
     signer = DecisionTokenSigner(TEST_KEY)
-    decision = Guardian(policies, signer=signer).evaluate(envelope)
+    decision = FixtureGuardian(policies, signer=signer).evaluate(envelope)
 
     assert decision.guardian_decision == "approve"
     assert decision.scope == envelope.requested_scope == "single_endpoint"
@@ -84,7 +87,7 @@ def test_broader_policy_ceiling_never_widens_the_approved_scope() -> None:
 )
 def test_signer_rejects_divergent_decision_even_with_correct_digest(field, value) -> None:
     envelope = _envelope()
-    approved = Guardian(POLICIES).evaluate(envelope)
+    approved = FixtureGuardian(POLICIES).evaluate(envelope)
     assert approved.guardian_decision == "approve"
     changed = replace(approved, **{field: value})
     assert changed.envelope_digest == envelope.digest()
@@ -105,7 +108,7 @@ def test_boolean_false_survives_parsing_and_fails_reversibility_policy() -> None
     payload["reversibility_flag"] = False
     envelope = ActionEnvelope.from_dict(payload)
     assert envelope.reversible is False
-    decision = Guardian(POLICIES, signer=DecisionTokenSigner(TEST_KEY)).evaluate(envelope)
+    decision = FixtureGuardian(POLICIES, signer=DecisionTokenSigner(TEST_KEY)).evaluate(envelope)
     assert decision.guardian_decision == "deny"
     assert "reversible" in decision.reason
     assert decision.decision_token is None
@@ -169,7 +172,7 @@ def test_non_object_canonical_input_fails_with_validation_error(payload) -> None
 
 def test_signer_refuses_a_self_consistent_but_incompatible_action_scope() -> None:
     envelope = _envelope()
-    decision = Guardian(POLICIES).evaluate(envelope)
+    decision = FixtureGuardian(POLICIES).evaluate(envelope)
     incompatible = replace(envelope, requested_scope="single_identity")
     changed = replace(
         decision, scope=incompatible.scope, envelope_digest=incompatible.digest()
@@ -216,4 +219,4 @@ def test_canonical_round_trip_preserves_the_signed_proposal() -> None:
     parsed = ActionEnvelope.from_dict(json.loads(envelope.canonical_json()))
     assert parsed.to_dict() == envelope.to_dict()
     assert parsed.digest() == envelope.digest()
-    assert Guardian(POLICIES).evaluate(parsed).guardian_decision == "approve"
+    assert FixtureGuardian(POLICIES).evaluate(parsed).guardian_decision == "approve"

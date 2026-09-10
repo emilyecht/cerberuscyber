@@ -23,12 +23,15 @@ CERBERUS Cyber is a **TRL 2–3 research prototype**, not a production defensive
 ### Implemented
 
 - deterministic Python Guardian policy engine with deny-by-default behavior
-- versioned policy bundle (`0.5.0`)
+- validated PolicyBundle v1.0.0 contract, canonical policy digest, and versioned rules (`0.5.0`)
 - typed **ActionEnvelope v1.0.0** authority contract
 - JSON Schema Draft 2020-12 validation of original canonical inputs, without type coercion
 - canonical JSON serialization and SHA-256 envelope digests
 - actor identity, policy version, freshness, nonce, evidence references, UUID idempotency key, approval mode, and reversibility metadata
-- short-lived **DecisionToken v1.1.0** artifacts bound to the exact envelope digest, actor, action, target, scope, policy version, and idempotency key
+- short-lived **DecisionToken v1.3.0** artifacts bound to the exact envelope digest, evaluated policy digest, verified assurance digest, actor, action, target, scope, policy version, and idempotency key
+- Ed25519 evidence and approval verification against operator-configured public-key authorities; raw labels cannot grant authority
+- per-observation freshness and token expiry capped by evidence and approval deadlines
+- optional explicit shared SQLite state for atomic, durable authorization and execution claims on one host
 - final approval checks that preserve the requested action and scope, including after human approval gates
 - one-time token consumption and replay rejection
 - side-effect-free Enforcement Gateway receipts
@@ -38,12 +41,13 @@ CERBERUS Cyber is a **TRL 2–3 research prototype**, not a production defensive
 - nine-case adversarial authority-boundary corpus
 - automated unit, schema, replay, substitution, and adversarial tests
 - GitHub Actions validation on Python 3.10 and 3.12
+- installable **0.1.0rc1 evaluation kit** with a closed, simulation-only console demo
 
 ### Not Yet Implemented
 
 - production read or write connectors
 - operational validation against real infrastructure
-- durable atomic replay and idempotency state
+- distributed replay state, rollback-resistant storage, and real-connector crash reconciliation
 - hardware-backed asymmetric signing and key rotation
 - a formally adopted cross-language canonicalization profile such as RFC 8785
 - externalized OPA/Rego policy evaluation
@@ -53,6 +57,20 @@ CERBERUS Cyber is a **TRL 2–3 research prototype**, not a production defensive
 - accreditation for classified or mission deployment
 
 The repository performs no real containment by default.
+
+Start with the [evaluation kit](docs/EVALUATION_KIT.md),
+[combined release contract](docs/RELEASE_CANDIDATE.md), and
+[assurance boundary and migration](docs/ASSURANCE_BOUNDARY.md).
+The [release-candidate benchmark](benchmarks/release_candidate/README.md)
+reuses the frozen v3 request corpus without replacing its historical results.
+These controls are prototype mechanisms, not operational or independent validation.
+
+The [post-merge v1 measurement](results/guardian_authorization_v1/main-after-pr8.json)
+pins `main` at `d9e58ecc2443e237c685e8510f864a343913723e` after #9 and #8 merged:
+59 cases, zero measurement errors, 0/22 existing-contract failures, 11/11 extended
+assurance failures, and 8/8 eligible responses. It preserves the original historical
+packet and non-claims. Subsequent attestation changes use v3; these two instruments
+must not be treated as the same security measurement.
 
 ## Core Research Question
 
@@ -185,6 +203,21 @@ See [Adversarial AI Persistence Scenario](docs/EMBEDDED_AGENT_SCENARIO.md).
 
 ## Quick Start
 
+For the installable, simulation-only demo in a fresh environment:
+
+```bash
+python -m venv .venv
+. .venv/bin/activate
+python -m pip install .
+cerberus-cyber demo
+```
+
+Run these commands from this release-candidate checkout. On Windows, activate
+`.venv\Scripts\Activate.ps1` instead. The demo makes no external requests or real
+containment changes. See the [evaluation kit guide](docs/EVALUATION_KIT.md) for
+JSON output, clean-artifact verification, and limitations. No PyPI release is
+implied by these instructions.
+
 For measured authorization outcomes, see the [Guardian authorization benchmark](benchmarks/guardian_authorization_v1/README.md) and its [pinned baseline-versus-repair results](results/guardian_authorization_v1/README.md). The results distinguish existing-contract repairs from additional freshness, authenticity, and durable-state requirements; they do not assign an overall security score.
 
 Requires Python 3.10 or newer.
@@ -198,6 +231,10 @@ python -m pip install -r requirements-dev.txt
 For simulator use without pytest, install `requirements.txt` instead.
 
 Run the baseline simulator:
+
+The commands below use strict defaults: unsigned proposals cannot be approved.
+For historical policy-only demonstrations, explicitly add `--assume-trusted-fixture`.
+That flag manufactures public test attestations; it does not authenticate real telemetry.
 
 ```bash
 python simulator/cerberus_sim.py simulator/scenarios/ransomware.json
@@ -221,6 +258,8 @@ python simulator/embedded_agent_hunt.py \
   simulator/scenarios/embedded_ai_agent_telemetry.json \
   --approval incident-commander \
   --approval cyber-duty-officer \
+  --assume-trusted-fixture \
+  --at 2026-07-13T14:40:30Z \
   --simulate-enforcement
 ```
 
