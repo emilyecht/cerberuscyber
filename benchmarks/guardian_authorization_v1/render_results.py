@@ -1,6 +1,3 @@
-# Copyright 2026 Emily Echterhoff
-# SPDX-License-Identifier: Apache-2.0
-
 """Render the two benchmark graphs from saved measurements, plus a case-level CSV."""
 import argparse
 import csv

@@ -1,6 +1,3 @@
-# Copyright 2026 Emily Echterhoff
-# SPDX-License-Identifier: Apache-2.0
-
 """Run a trust-aware comparison in a clean target interpreter; simulated effects only."""
 
 import argparse

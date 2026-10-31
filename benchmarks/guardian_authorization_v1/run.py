@@ -1,6 +1,3 @@
-# Copyright 2026 Emily Echterhoff
-# SPDX-License-Identifier: Apache-2.0
-
 """Frozen-corpus authorization benchmark. No operational connectors or payloads.
 
 Run each target in a separate interpreter. Expected outcomes are explicit fixture
