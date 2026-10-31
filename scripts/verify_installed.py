@@ -30,6 +30,18 @@ with tempfile.TemporaryDirectory(prefix="cerberus-installed-") as directory:
     assert output["mode"] == "simulation-only" and output["cases_passed"] == 4
     assert output["receipt"]["side_effects"] is False
     assert output["token_version"] == "1.3.0"
+    local_lab_cases = None
+    if sys.platform == "linux":
+        # The packaged worker must function without importing the source checkout.
+        proc = subprocess.run([str(command), "enforcement-demo", "--json"], cwd=directory,
+                              text=True, capture_output=True, timeout=30, check=True)
+        local_lab = json.loads(proc.stdout)
+        assert local_lab["mode"] == "linux-local-enforcement-lab"
+        assert local_lab["cases_passed"] == 14
+        assert local_lab["unauthorized_resource_changes"] == 0
+        assert local_lab["authorized_marker_writes"] == 1
+        assert local_lab["temporary_directory_removed"] is True
+        local_lab_cases = local_lab["cases_passed"]
 for schema in ("action-envelope", "decision-token", "policy-bundle"):
     json.loads(resources.files("cerberus").joinpath(f"data/schemas/{schema}.schema.json").read_text())
 from jsonschema import Draft202012Validator, FormatChecker
@@ -38,4 +50,5 @@ Draft202012Validator(schema, format_checker=FormatChecker()).validate(output["re
 assert metadata.version("cerberus-cyber-eval") == "0.1.0rc1"
 print(json.dumps({"installed_artifact": "passed", "version": metadata.version("cerberus-cyber-eval"),
                   "cases_passed": output["cases_passed"], "source_checkout_imported": False,
+                  "local_enforcement_lab_cases": local_lab_cases,
                   "python": sys.version.split()[0]}, sort_keys=True))

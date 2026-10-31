@@ -44,6 +44,8 @@ jobs:
           python -m json.tool schemas/policy-bundle.schema.json >/dev/null
       - name: Run unit, schema, and adversarial corpus tests
         run: python -m pytest -q
+      - name: Require actual local-effect enforcement and kernel bypass tests
+        run: python -m cerberus.evaluation enforcement-demo --json
       - name: Run combined-contract benchmark
         run: python benchmarks/release_candidate/run.py --target . --output "$RUNNER_TEMP/release-candidate.json" --fail-on-violation
       - name: Build source and wheel distributions

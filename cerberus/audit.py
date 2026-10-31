@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from copy import deepcopy
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
@@ -55,7 +56,9 @@ class AuditLedger:
             "sequence": len(self._records) + 1,
             "occurred_at": occurred_at,
             "event_type": event_type,
-            "payload": payload,
+            # Freeze the caller's value at append time. A receipt may subsequently
+            # gain its audit_record_hash without rewriting the already-hashed event.
+            "payload": deepcopy(payload),
             "previous_hash": previous_hash,
         }
         record_hash = hashlib.sha256(_canonical(body)).hexdigest()
