@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Check the measuring instrument, including controls that prevent inflated scores."""
 import importlib.util
 import json

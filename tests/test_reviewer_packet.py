@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """The reviewer receives complete typed requests, ground truth, and honest replay status."""
 import importlib.util
 import json

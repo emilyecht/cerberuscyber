@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Run synthetic embedded-agent telemetry through all three CERBERUS layers.
 
 The program is defensive, read-only, and side-effect free. It does not contact a network,

@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Read-only Sentinel hunt logic for a simulated adversarial AI persistence threat.
 
 This module correlates synthetic telemetry only. It performs no scanning, attribution,

@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Versioned ActionEnvelope contract for the CERBERUS authority boundary.
 
 The public wire representation uses the canonical v1.0.0 field names from the

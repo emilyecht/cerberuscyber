@@ -375,8 +375,17 @@ CERBERUS Cyber is defensive-only.
 
 The project does not include exploit development, credential theft, destructive payloads, unauthorized scanning, automated retaliation, counterattack capability, or autonomous irreversible remediation.
 
-## License
+## Licensing, Authorship, and Citation
 
-Licensed under the Apache License 2.0. See [LICENSE](LICENSE).
+Copyright 2026 Emily Echterhoff.
 
-Copyright 2026 Emily Echt.
+CERBERUS Cyber code and documentation are licensed under the
+[Apache License 2.0](LICENSE), unless a file states otherwise. Redistributions
+must comply with the license, retain applicable notices, and identify modified
+files. See [NOTICE](NOTICE) for the repository's attribution notice and
+[AUTHORS.md](AUTHORS.md) for authorship information.
+
+Academic and research users should cite the project using [CITATION.cff](CITATION.cff).
+Public availability does not place the work in the public domain or imply
+endorsement, certification, operational readiness, or permission to use project
+names or marks beyond the Apache License's terms.

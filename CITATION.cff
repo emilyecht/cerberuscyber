@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use CERBERUS Cyber in research, please cite it using this metadata."
+title: "CERBERUS Cyber"
+type: software
+authors:
+  - family-names: "Echterhoff"
+    given-names: "Emily"
+version: "0.1.0-rc1"
+date-released: "2026-07-12"
+repository-code: "https://github.com/emilyecht/cerberuscyber"
+url: "https://github.com/emilyecht/cerberuscyber"
+license: "Apache-2.0"
+abstract: >-
+  A defensive cybersecurity research prototype investigating deterministic
+  authorization and least-privilege enforcement for AI-assisted defensive
+  systems.
+keywords:
+  - cybersecurity
+  - AI security
+  - runtime assurance
+  - deterministic authorization
+  - least privilege

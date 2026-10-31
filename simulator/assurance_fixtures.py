@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Artificial trust for explicitly selected, side-effect-free demonstrations.
 
 THIS IS NOT AN AUTHENTICATION SERVICE. It signs whatever fixture is supplied and

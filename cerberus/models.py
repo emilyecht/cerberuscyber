@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Typed data contracts for the CERBERUS authority boundary.
 
 The versioned ActionEnvelope implementation lives in ``sdk.shared_types`` so

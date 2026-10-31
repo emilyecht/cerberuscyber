@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Strict, side-effect-free enforcement gateway for the research prototype."""
 
 from __future__ import annotations

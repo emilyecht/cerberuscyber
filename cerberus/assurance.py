@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Public-key verification at the evidence and human-approval trust boundary.
 
 Trust configuration is supplied by the operator, never derived from a proposal.

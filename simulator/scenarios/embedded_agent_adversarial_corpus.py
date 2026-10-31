@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Fabricated adversarial corpus for the embedded-agent authority boundary.
 
 The corpus is deterministic, side-effect-free, and restricted to named sandbox workloads.

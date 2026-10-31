@@ -42,3 +42,14 @@ Keep changes small and explain:
 5. tests or evidence supporting the change
 
 By contributing, you agree that your contribution is licensed under Apache License 2.0.
+
+
+## Authorship and License Notices
+
+Contributions accepted into this repository are licensed under the Apache
+License 2.0 as described above. Do not remove applicable copyright, patent,
+trademark, attribution, or license notices. Modified files should identify
+material changes where required by the license.
+
+Repository authorship and project-maintainer information are recorded in
+[AUTHORS.md](AUTHORS.md). Contribution history remains available in Git.

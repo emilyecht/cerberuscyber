@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Fixed, fail-closed evidence lifetime for the assurance prototype."""
 
 from datetime import datetime, timedelta

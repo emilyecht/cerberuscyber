@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Trusted-upstream preconditions for the original policy regression tests.
 
 These tests exercise policy/action/schema behavior, not authenticity. The new
