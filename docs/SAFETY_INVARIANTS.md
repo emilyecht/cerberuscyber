@@ -1,45 +1,43 @@
-# CERBERUS Cyber Safety Invariants
+# CERBERUS Cyber Safety Invariants and Evidence Boundaries
 
-These invariants are non-negotiable constraints for the project.
+These are project requirements, **not a blanket implementation or formal-proof
+claim**. CERBERUS Cyber remains TRL 2–3. Evidence concerns named fixtures, the
+simulated gateway and the bounded temporary-file lab.
 
-## Authority
+## Non-overridable forbidden actions
 
-1. Layer 1 may recommend but never directly execute a security action.
-2. Layer 2 must authorize every action before Layer 3 can act.
-3. Enforcement credentials are never exposed to the reasoning model.
-4. Every authorization is time-limited, scoped, and bound to a specific incident.
+The global list includes `delete_backups`, `modify_backups`, `disable_recovery`,
+`wipe_host`, `retaliate`, `execute_exploit` and `harvest_credentials`.
+Guardian denies them before approval processing. **Human approval, confidence
+and emergency labels do not override this list.** Existing tokens grant no right
+to alter the evaluated policy.
 
-## Reversibility
+## Requirements and current evidence
 
-5. Automated actions should be reversible by default.
-6. Destructive or irreversible actions require explicit human approval.
-7. CERBERUS may never autonomously delete backups.
-8. CERBERUS may never autonomously wipe a host, account, or cloud environment.
+| Requirement | Implemented evidence | Not established |
+|---|---|---|
+| Intelligence never self-authorizes | Proposal/evaluator/gateway split; lab worker lacks keys | Full operational credential/path separation |
+| Exact bounded authority | Typed contracts; token binds envelope, policy/assurance, identity, action/target/scope, expiry/idempotency | Production identity lifecycle/key custody |
+| Deny forbidden/excessive requests | Policy tests and explicit Guardian scope denial | Universal correctness or completed assurance case |
+| Authenticate required evidence/approvals | Ed25519 verifier, configured principals/domains | Observation truth, organizational independence, operational issuer onboarding |
+| Bad evidence cannot increase authority | Freshness, invalid-assurance denial, conflict escalation fixtures | Continuous telemetry health and compromise detection |
+| Execution cannot expand intent | Exact simulated receipt; fixed marker broker rejects substitutions | Operational full mediation or real containment |
+| Reject replay | Shared SQLite plus restarted-gateway test | Distributed/rollback-resistant state or crash-atomic exactly-once effect |
+| Link decisions and effects | Snapshot-at-append in-memory hash chain, resource hashes | Durable independently anchored/immutable audit |
+| Fail safely without authority/isolation | Invalid-authority refusal; no Landlock fallback; required syscall errno evidence | General runtime fail-safety after trusted OS/broker compromise |
+| Reversibility before operational trust | Declared reversibility and policy checks | Tested connector rollback, restoration and recovery |
+| Human/governance oversight | Configured approval counts, request binding, policy version/digest, repository review | Full approval UI, publisher signatures or emergency service |
 
-## Defensive-only operation
+No implemented emergency rule replaces required corroboration. Non-forbidden
+actions still require configured evidence, exact scope and authenticated approval.
+Policy thresholds are not universal safety thresholds.
 
-9. CERBERUS may not retaliate against external systems.
-10. CERBERUS may not execute offensive exploits.
-11. CERBERUS may not harvest credentials or deploy persistence.
-12. CERBERUS may not scan systems without authorization.
+## Defensive-only and future readiness
 
-## Evidence and audit
+No exploit execution, retaliation, credential harvesting, destructive payloads
+or unauthorized scan belongs in a connector. Operational action requires separate
+reviewed capabilities, authenticated approvals, rollback and post-action checks.
+The file-marker lab does not satisfy operational deployment gates.
 
-13. Every action must record the evidence, policy, scope, and decision.
-14. High-impact containment requires at least two independent supporting signals unless a preauthorized emergency rule applies.
-15. Missing telemetry lowers confidence and authority.
-16. Audit records must be append-only and independently verifiable.
-
-## Human control
-
-17. Broad account revocation, network shutdown, or production-wide isolation requires human approval.
-18. Operators must be shown the raw evidence and uncertainty, not only an AI summary.
-19. Policy changes require review and version control.
-20. Emergency overrides must expire automatically and remain fully logged.
-
-## Safe failure
-
-21. If Guardian is unavailable, high-impact actions fail closed.
-22. If policy evaluation is ambiguous, CERBERUS escalates rather than improvises.
-23. If an action cannot be verified, CERBERUS stops escalation and requests review.
-24. Recovery must be tested before it is trusted.
+[Inventory](CAPABILITY_INVENTORY.md) · [Threat model](THREAT_MODEL.md) ·
+[Evaluation gates](EVALUATION_FRAMEWORK.md)

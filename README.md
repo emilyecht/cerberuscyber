@@ -16,9 +16,9 @@ episodes, with zero measurement errors. All effects are simulated.
 
 CERBERUS applies a three-layer runtime-assurance pattern:
 
-1. **Sentinel Intelligence** observes telemetry, correlates suspicious behavior, and produces an advisory finding.
+1. **Sentinel Intelligence** currently correlates fabricated telemetry into advisory findings; live telemetry and model-backed integrations remain proposed.
 2. **Guardian Policy Engine** deterministically approves, escalates, or denies a typed action proposal using explicit policy, evidence provenance, scope ceilings, reversibility requirements, freshness, and approval gates.
-3. **Enforcement & Recovery Kernel** validates a signed decision token and dispatches only the exact approved action, target, and scope.
+3. **Enforcement & Recovery Kernel** currently validates a signed decision token for the exact action, target and scope and returns a simulated receipt. A separate Linux marker lab tests actual bounded local-file effects; real containment and recovery connectors remain proposed.
 
 The intelligent layer does not hold enforcement authority. Model confidence is informational and cannot replace required evidence or policy approval.
 
@@ -163,7 +163,7 @@ Authorization may depend on:
 - globally forbidden actions
 - configured escalation signals
 
-Guardian returns one of:
+Guardian returns one of (for fixed inputs, policy, trust configuration, clock and authority state):
 
 - **approve**
 - **escalate**
@@ -340,8 +340,8 @@ See [Safety Invariants](docs/SAFETY_INVARIANTS.md) and [Guardian Formal Assuranc
 - **Foundation:** typed Guardian path, signed tokens, replay rejection, simulated Enforcement — implemented
 - **Workstream A:** adversarial authority-boundary corpus — implemented
 - **Workstream B:** ActionEnvelope v1.0.0 contract — implemented
-- **Workstream C:** externalized, auditable Guardian policy engine — next
-- **Workstream D:** capability-scoped Enforcement Gateway connectors — planned
+- **Workstream C:** JSON PolicyBundle validation/digest binding — implemented; OPA/Rego and policy publisher/update assurance — proposed
+- **Workstream D:** bounded local-file enforcement lab — implemented; operational containment/recovery connectors — planned
 - **Workstream E:** independent red-team engagement protocol — planned
 - **Workstream F:** sponsor evaluation package — planned
 
@@ -377,7 +377,8 @@ Potential future work, only under sponsorship and accreditation, may include loc
 - [Adversarial AI Persistence Scenario](docs/EMBEDDED_AGENT_SCENARIO.md)
 - [Threat Model](docs/THREAT_MODEL.md)
 - [Safety Invariants](docs/SAFETY_INVARIANTS.md)
-- [Architecture](docs/architecture.md)
+- [Architecture](#architecture)
+- [Canonical Capability Inventory](docs/CAPABILITY_INVENTORY.md)
 - [Gap-Closure Plan](docs/GAP_CLOSURE_PLAN.md)
 - [Integration Strategy](docs/INTEGRATION_STRATEGY.md)
 - [Evaluation Framework](docs/EVALUATION_FRAMEWORK.md)

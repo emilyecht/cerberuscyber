@@ -1,86 +1,69 @@
-# CERBERUS Cyber Threat Model
+# CERBERUS Cyber — Documented Threat Model
 
-## Purpose
+**TRL 2–3 research prototype; not a formal model or operational protection claim.**
+The project investigates whether separating interpretation from authorization
+limits authority gained through compromised analysis.
 
-CERBERUS Cyber protects users, identities, endpoints, cloud workloads, AI agents, and recovery systems by separating threat interpretation from action authority.
+## Assets and adversary-controlled inputs
 
-## Protected assets
+Identities, endpoints, workloads, credentials, sensitive data, backups, telemetry
+and AI tools are intended future protection targets, not systems currently
+defended by this code. Evaluations use synthetic proposals/receipts; the opt-in
+lab uses fresh temporary canary and marker files.
 
-- user and service identities
-- endpoint and cloud workloads
-- credentials, tokens, and API keys
-- sensitive files and databases
-- backups and recovery infrastructure
-- security telemetry and audit logs
-- AI-agent tools, connectors, and secrets
+An adversary may manipulate confidence, evidence, labels, approvals, timestamps,
+action/target/scope and tokens, or attempt direct/alternate execution paths.
+Stolen credentials, telemetry poisoning, prompt injection, malicious insiders and
+compromised agents motivate the research. Real detection, prevention, attribution
+and nation-state effectiveness are not demonstrated.
 
-## Trust boundaries
+## Current boundaries and residual assumptions
 
-1. **Telemetry boundary** — incoming events may be incomplete, spoofed, delayed, or poisoned.
-2. **Sentinel boundary** — Layer 1 may be wrong, manipulated, or compromised.
-3. **Guardian boundary** — Layer 2 must remain deterministic, testable, and independently auditable.
-4. **Enforcement boundary** — Layer 3 receives only narrowly scoped, time-limited authority.
-5. **Human boundary** — operators may make mistakes or act maliciously; sensitive actions require dual control where practical.
+| Boundary | Implemented control | Residual assumption/gap |
+|---|---|---|
+| Input → proposal | Strict ActionEnvelope 1.0.0; canonical validation | Python serialization, not cross-language canonicalization |
+| Sentinel → Guardian | Explicit approve/escalate/deny policy | Current Sentinel correlates fabricated telemetry; not a live model |
+| Evidence/approvals → authority | Request-bound Ed25519 signatures and configured domains/principals | Trusted provisioning; signed observations can be false; real independence unproven |
+| Policy → evaluation | PolicyBundle 1.0.0/rules 0.5.0 and exact digest | Digest is not publisher authentication; signed distribution and OPA/Rego proposed |
+| Guardian → gateway | HMAC DecisionToken 1.3.0; exact action/target/scope, expiry/replay | Trusted signer; no hardware custody/rotation or operational connector |
+| Replay state | Optional shared single-host SQLite claims | Trusted database/filesystem; no rollback resistance, distributed consensus or exactly-once real effects |
+| Audit | In-memory hash chain, snapshot-at-append | No durable independent anchoring or operational immutability |
+| Worker → lab files | Landlock-restricted worker, fixed broker, before/after hashes | Only documented Linux file/subprocess cases; OS/interpreter/controller/broker trusted |
 
-## Adversary assumptions
+Layer separation and configured domains do not establish failure-cause
+independence. Guardian, policy, verifier, key and state remain trusted parts;
+their compromise is a residual risk, not prevented by determinism.
 
-CERBERUS assumes an attacker may control one or more of the following:
+## Required failure behavior
 
-- a user account or active session
-- an endpoint process
-- a cloud workload
-- an AI prompt or retrieved document
-- a plugin, connector, or MCP-style tool source
-- a telemetry source
-- a Layer 1 model response
+- Deny globally forbidden actions regardless of confidence or approval labels.
+- Refuse excessive scope; a narrower proposal is a new authorization request.
+- Invalid assurance, expiry, changed action/target/scope and consumed authority
+  fail closed. State unavailability cannot create permission.
+- Missing required evidence prevents approval; configured conflict escalates.
+  A signature does not establish sensor truth.
+- The gateway remains side-effect-free. The separate marker broker accepts no
+  arbitrary path, program or credential. Without supported confinement its lab
+  cannot pass or execute an unrestricted fallback.
 
-CERBERUS does **not** assume that network location, valid credentials, or model confidence imply trust.
+## Proposed deployment requirements
 
-## Primary abuse cases
+Real connectors need separate least-privilege credentials, complete mediation,
+authenticated identity, tested revocation/rollback, publisher-signed policy,
+update governance, external audit and crash reconciliation. Human evidence-review
+interfaces and emergency workflows are not a complete implemented service.
+No generic override may bypass the forbidden list.
 
-- credential theft and session hijacking
-- ransomware and destructive file modification
-- privilege escalation
-- persistence and lateral movement
-- data exfiltration
-- cloud control-plane abuse
-- prompt injection and excessive AI-agent agency
-- policy bypass attempts
-- compromised security automation
+## Non-claims and exclusions
 
-## Required security properties
+No production readiness, operational superiority, formal verification, independent
+assessment, complete Zero Trust, classified accreditation, real containment or
+tested recovery. Root/kernel and trusted-broker compromise are outside the lab
+claim. Read/network/IPC isolation, resource-exhaustion protection, arbitrary-code
+sandboxing and exhaustive bypass resistance are not demonstrated.
 
-- Layer 1 cannot directly invoke enforcement credentials.
-- Every proposed action is evaluated by Layer 2.
-- High-impact actions require corroborating evidence.
-- Broad or irreversible actions require human approval.
-- Automated actions must be scoped, logged, and preferably reversible.
-- Missing or unhealthy telemetry reduces authority rather than increasing it.
-- Policy changes are versioned, signed, and auditable.
+Offensive exploitation, retaliation, harvesting credentials, destructive
+remediation and unauthorized third-party scanning remain excluded.
 
-## Failure handling
-
-### If Layer 1 is compromised
-
-Guardian rejects any proposal that violates policy, exceeds scope, lacks evidence, or requests a forbidden action.
-
-### If telemetry is poisoned
-
-CERBERUS requires independent evidence sources for high-confidence containment and marks sensor disagreement explicitly.
-
-### If Guardian is unavailable
-
-Enforcement fails closed for high-impact actions. Read-only monitoring may continue.
-
-### If enforcement is compromised
-
-Connectors use least privilege, short-lived credentials, action allowlists, and independent audit logging.
-
-## Out of scope
-
-- offensive exploitation
-- retaliation or hack-back
-- credential harvesting
-- destructive payloads
-- autonomous wiping or irreversible remediation
-- unauthorized scanning of third-party systems
+[Safety evidence](SAFETY_INVARIANTS.md) · [Lab assumptions](LOCAL_ENFORCEMENT_DEMO.md) ·
+[Capability inventory](CAPABILITY_INVENTORY.md)

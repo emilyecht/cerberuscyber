@@ -1,6 +1,6 @@
 # ADR 0006: PolicyBundle v1 and Exact Policy-Digest Binding
 
-- Status: Proposed
+- Status: JSON PolicyBundle validation/digest binding implemented; publisher signatures, lifecycle assurance and OPA/Rego remain proposed
 - Date: 2026-07-20
 - Workstream: C — externalized, auditable Guardian policy
 
