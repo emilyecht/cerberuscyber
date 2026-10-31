@@ -64,6 +64,13 @@ CERBERUS Cyber is a **TRL 2–3 research prototype**, not a production defensive
 
 The repository performs no real containment by default.
 
+An opt-in [local enforcement lab](docs/LOCAL_ENFORCEMENT_DEMO.md) exercises actual
+temporary-file effects with a separate Linux Landlock-restricted worker. It tests
+Guardian denial, token/target/scope substitution, direct file and subprocess
+bypasses, a real positive-control marker write, and durable replay rejection.
+This is a scripted fixture, not a live-model evaluation or real containment;
+the existing portable demo and historical benchmark measurements remain simulated.
+
 Start with the [evaluation kit](docs/EVALUATION_KIT.md),
 [combined release contract](docs/RELEASE_CANDIDATE.md), and
 [assurance boundary and migration](docs/ASSURANCE_BOUNDARY.md).
@@ -274,6 +281,19 @@ Run all tests:
 ```bash
 python -m pytest -q
 ```
+
+### Opt-in local-effect enforcement demonstration (Linux only)
+
+```bash
+python -m cerberus.evaluation enforcement-demo
+python -m cerberus.evaluation enforcement-demo --json
+```
+
+Requires Landlock ABI 3+ on Linux x86_64/aarch64. The command uses only a fresh
+temporary lab directory, accepts no external targets or operational keys, and
+fails closed when the kernel boundary is unavailable. The positive control writes
+one temporary marker; it does **not** enforce a real network hold. See the
+[threat model, acceptance criteria and limitations](docs/LOCAL_ENFORCEMENT_DEMO.md).
 
 ## Technical Differentiation
 

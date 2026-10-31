@@ -16,6 +16,7 @@ from importlib.resources import files
 import json
 from pathlib import Path
 import secrets
+import sys
 from tempfile import TemporaryDirectory
 
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
@@ -108,11 +109,35 @@ def run_demo() -> dict:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="CERBERUS Cyber evaluation kit — simulation only")
+    parser = argparse.ArgumentParser(description="CERBERUS Cyber evaluation kit — closed demonstrations only")
     sub = parser.add_subparsers(dest="command", required=True)
     demo = sub.add_parser("demo", help="run a closed local demonstration; no external side effects")
     demo.add_argument("--json", action="store_true", help="show inspectable request, decision and receipt metadata")
+    lab = sub.add_parser("enforcement-demo", help="opt-in Linux lab: real temporary-file effects only")
+    lab.add_argument("--json", action="store_true", help="show before/after resource hashes and audit records")
     args = parser.parse_args()
+    if args.command == "enforcement-demo":
+        # Lazy import keeps the existing portable, simulation-only demo unchanged.
+        from .lab_demo import DemonstrationFailed, SandboxUnavailable, run_lab_demo
+        try:
+            result = run_lab_demo()
+        except SandboxUnavailable as exc:
+            print(f"UNAVAILABLE (not a pass): {exc}", file=sys.stderr)
+            raise SystemExit(2)
+        except DemonstrationFailed as exc:
+            print(f"FAIL: {exc}", file=sys.stderr)
+            raise SystemExit(1)
+        if args.json:
+            print(json.dumps(result, indent=2, sort_keys=True))
+        else:
+            print("CERBERUS CYBER — LOCAL FILE-EFFECT LAB (NOT REAL CONTAINMENT)")
+            for case in result["cases"]:
+                print(f"PASS  {case['case']} -> {case['outcome']['status']}")
+            print(f"Observed: {result['unauthorized_resource_changes']} unauthorized resource changes; "
+                  f"{result['authorized_marker_writes']} authorized temporary marker write.")
+            print("Scripted agent, fabricated evidence, ephemeral keys; Linux supplies the file restriction.")
+            print("All temporary lab resources removed. Not production or independent validation.")
+        return
     result = run_demo()
     if args.json:
         print(json.dumps(result, indent=2, sort_keys=True))
