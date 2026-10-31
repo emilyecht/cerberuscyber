@@ -1,146 +1,53 @@
 # CERBERUS Cyber Gap-Closure Plan
 
-## Purpose
+**TRL 2–3 research prototype.** This refreshes the obsolete inventory claiming
+packaging and measured benchmarks did not exist; it does not rewrite old evidence
+or promote operational maturity.
 
-This plan turns the current deterministic simulator into a credible defensive research platform without overstating production readiness.
+## Current artifacts and genuine gaps
 
-## Current Gaps
+| Area | Implemented | Remaining gap |
+|---|---|---|
+| Evaluation kit | Installable 0.1.0rc1 source/wheel, portable demo, fresh-install CI | Signed distributions, wider platforms, production release; no PyPI claim |
+| Benchmarks | Frozen corpora, pinned project-authored measurements/reviewer packet | Representative live-model/benign data and independent matched evaluation |
+| Policy | JSON PolicyBundle 1.0.0/rules 0.5.0, validation/digest, deterministic evaluator | OPA/Rego, publisher signatures, update governance, policy-effort study |
+| Assurance | Request-bound Ed25519 evidence/approvals, freshness, HMAC tokens 1.3.0 | Operational issuers, evidence truth, production identities/hardware keys/rotation |
+| State/audit | Optional single-host SQLite; in-memory chain with snapshots | Distributed/rollback-resistant state, crash reconciliation, independent durable audit |
+| Execution | Simulated gateway and Linux temporary-file lab with kernel refusals | Real host/session/network connectors, rollback or field containment |
+| Intelligence/telemetry | Synthetic scenarios and fabricated-event correlation | Normalized replay adapters, real read-only feeds and live-model comparison |
 
-1. No operational telemetry integrations.
-2. Side-effect-free simulator only.
-3. Python prototype without deployment packaging.
-4. Limited scenario and policy coverage.
-5. No measured benchmark dataset or evaluation report.
-6. No browser-based demonstration.
+See [canonical inventory](CAPABILITY_INVENTORY.md). Each historical measurement
+retains its own source, oracle, denominators and non-claims.
 
-## Workstreams
+## Prioritized work
 
-### Workstream A — Telemetry Replay
+1. Maintain the local lab's no-fallback isolation checks, permission-denial plus
+   unchanged-resource evidence, and real positive control. Add paths only with a
+   documented threat-model change; no production targets or credentials.
+2. Strengthen policy/trust lifecycle. JSON validation/digest binding already
+   exists; OPA/Rego and publisher authentication are separate future milestones.
+   Evaluate conflicts, exceptions, expiry and revocation rather than inferring
+   truth from signatures.
+3. Build representative read-only studies: a normalized contract and synthetic
+   replay before operational connectors. Entra, cloud and endpoint/SIEM exports
+   are integration candidates, not existing capabilities.
+4. Develop one reversible real lab connector only after separate review:
+   exact capabilities, authenticated identity, outcome verification, rollback,
+   revocation, external audit and crash reconciliation. The marker experiment
+   is not that connector.
+5. Run matched comparisons and independent assessment with thresholds fixed
+   before testing and publication of negative results, benign disruption,
+   latency and policy effort. Budgets, schedules, range size, model access and
+   sponsor eligibility are provisional until the active solicitation is verified.
 
-Convert the simulator from hand-authored scenario evaluation into a replay engine for normalized security events.
+## Workstream and readiness reconciliation
 
-Deliverables:
+The older A–F labels were planning categories, not evidence that README
+workstreams completed. Current README foundation/A/B artifacts and JSON policy
+binding exist. OPA/Rego, operational connectors, independent review and sponsor
+transition remain proposed. Dashboards do not replace boundary validation.
 
-- versioned normalized event schema
-- JSONL replay adapter
-- synthetic Windows, identity, cloud, DNS, and AI-agent event packs
-- timestamp-aware correlation
-- evidence provenance and sensor-health fields
-
-Success criteria:
-
-- at least 100 replayable synthetic events
-- four end-to-end incident timelines
-- reproducible decisions from identical input
-- complete audit output for every decision
-
-### Workstream B — Read-Only Integrations
-
-Integrate with existing defensive systems rather than building a replacement EDR.
-
-Priority sequence:
-
-1. generic JSONL/syslog import
-2. Microsoft Entra ID sign-in logs
-3. AWS CloudTrail and GuardDuty findings
-4. Microsoft Defender or Elastic Security export
-5. Okta system logs
-
-Initial connectors remain read-only and operate on exported or replayed data.
-
-### Workstream C — Guardian Policy Language
-
-Move policy logic out of Python conditionals and into versioned policy artifacts.
-
-Required capabilities:
-
-- explicit evidence thresholds
-- asset criticality and mission-impact tags
-- scope limits
-- reversibility requirements
-- human approval gates
-- global safety invariants
-- deterministic decision outcomes
-
-### Workstream D — Evaluation
-
-Measure the platform instead of relying on architectural claims.
-
-Core metrics:
-
-- mean time to detect
-- mean time to authorize
-- mean time to contain in simulation
-- false-positive containment rate
-- unsafe-action rejection rate
-- rollback eligibility rate
-- evidence completeness
-- policy coverage by ATT&CK technique
-
-### Workstream E — Human-Approved Containment Harness
-
-Introduce a mock connector boundary before any real action integration.
-
-Every action request must include:
-
-- signed policy decision
-- action scope
-- expiration time
-- rollback plan
-- operator identity
-- immutable audit record
-
-The first live integrations should be reversible and narrowly scoped, such as revoking a test token or isolating a lab endpoint.
-
-### Workstream F — Demonstration Layer
-
-Build a browser-based dashboard that shows:
-
-- incoming telemetry
-- Sentinel recommendation
-- Guardian decision
-- applicable policy and safety invariant
-- approved scope
-- simulated enforcement result
-- audit timeline
-
-## Milestones
-
-### Milestone 1 — Replayable Observer
-
-- normalized event schema
-- JSONL adapter
-- synthetic event packs
-- deterministic replay tests
-
-### Milestone 2 — Policy Laboratory
-
-- externalized policy format
-- schema validation
-- policy unit tests
-- unsafe-proposal test corpus
-
-### Milestone 3 — Read-Only Connectors
-
-- one identity connector
-- one cloud connector
-- one endpoint or SIEM connector
-- connector health and provenance logging
-
-### Milestone 4 — Human-Approved Lab Action
-
-- approval workflow
-- mock enforcement connector
-- reversible test action
-- rollback verification
-
-### Milestone 5 — Bounded Automation Experiment
-
-- preauthorized low-impact actions
-- hard scope and time limits
-- operator override
-- post-action verification
-
-## Non-Goals
-
-CERBERUS Cyber will not pursue exploit development, retaliation, destructive payloads, credential theft, or autonomous irreversible remediation.
+No offensive exploitation, retaliation, credential theft, destructive payloads
+or autonomous irreversible remediation. No production readiness, formal
+verification, independent validation, operational superiority, field
+containment/recovery or classified accreditation is claimed.
