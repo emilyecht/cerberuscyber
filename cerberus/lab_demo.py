@@ -14,6 +14,7 @@ from contextlib import contextmanager
 from dataclasses import replace
 from datetime import datetime, timezone
 import hashlib
+import errno
 from importlib.resources import files
 import json
 import os
@@ -174,6 +175,11 @@ def run_lab_demo() -> dict:
             or (denial.guardian_decision, denial.reason, denial.policy, denial.envelope_digest)
             != (repeated.guardian_decision, repeated.reason, repeated.policy, repeated.envelope_digest)):
         raise DemonstrationFailed("forbidden proposal was not denied deterministically")
+    widened = replace(envelope, requested_scope="enterprise")
+    scope_denial = Guardian(policy, signer=signer, assurance_verifier=verifier).evaluate(widened, now=now)
+    if (scope_denial.guardian_decision != "deny" or scope_denial.decision_token is not None
+            or scope_denial.reason != "requested scope exceeds policy maximum"):
+        raise DemonstrationFailed("Guardian did not deny scope widening before token issuance")
     cases = []
     with TemporaryDirectory(prefix="cerberus-enforcement-lab-") as name:
         directory = Path(name)
@@ -218,6 +224,8 @@ def run_lab_demo() -> dict:
                               and (directory / "egress.marker").read_bytes() == HELD)
                 else:
                     passed = passed and outcome["status"] == "blocked" and before == after
+                    if instruction["op"] != "broker":
+                        passed = passed and outcome.get("errno") in (errno.EACCES, errno.EPERM)
                 if not passed:
                     raise DemonstrationFailed(f"{case}: wrong refusal or unexpected filesystem effect")
                 cases.append({"case": case, "passed": True, "before": before, "after": after,
@@ -230,9 +238,12 @@ def run_lab_demo() -> dict:
         "landlock_abi": ready["landlock_abi"], "same_uid_worker": True,
         "cases_passed": len(cases), "unauthorized_resource_changes": 0,
         "authorized_marker_writes": broker.writes, "temporary_directory_removed": not directory.exists(),
+        "kernel_refusals_observed": sum(case["outcome"].get("errno") in (errno.EACCES, errno.EPERM) for case in cases),
         "guardian_denial": {"decision": denial.guardian_decision, "reason": denial.reason,
                             "policy": denial.policy, "envelope_digest": denial.envelope_digest,
                             "token_issued": False, "repeated_decision_equal": True},
+        "guardian_scope_denial": {"decision": scope_denial.guardian_decision,
+                                  "reason": scope_denial.reason, "token_issued": False},
         "policy_digest": policy.digest, "request_digest": envelope.digest(),
         "cases": cases, "audit_records": [record.to_dict() for record in ledger.records],
         "limits": ["Real temporary-file marker only; no network hold or real containment.",

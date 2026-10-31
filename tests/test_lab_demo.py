@@ -130,6 +130,15 @@ def test_guardian_forbidden_action_has_no_bearer_authority(authorized_lab):
     assert all(d.decision_token is None for d in decisions)
 
 
+def test_guardian_itself_denies_scope_widening_before_token_issuance(authorized_lab):
+    _, _, envelope, guardian = authorized_lab
+    widened = replace(envelope, requested_scope="enterprise")
+    decision = guardian.evaluate(widened)
+    assert decision.guardian_decision == "deny"
+    assert decision.reason == "requested scope exceeds policy maximum"
+    assert decision.decision_token is None
+
+
 def test_unsupported_architecture_does_not_guess_syscalls(monkeypatch):
     monkeypatch.setattr(_lab_worker.platform, "machine", lambda: "not-a-supported-architecture")
     with pytest.raises(lab.SandboxUnavailable, match="requires Linux"):
@@ -171,10 +180,21 @@ def test_harness_requires_a_real_positive_control_not_a_receipt(monkeypatch):
                 for field, value in (("action", lab.ACTION), ("target", lab.TARGET), ("scope", lab.SCOPE))
             ) and instruction["command"]["token"] != "e30." + "A" * 43:
                 return {"status": "executed-local-marker"}  # Lie; no file was changed.
-        return {"status": "blocked"}
+        return {"status": "blocked", "errno": 13}
     monkeypatch.setattr(lab, "_worker", observed_only_worker)
     monkeypatch.setattr(lab, "_attempt", receipt_only)
     with pytest.raises(lab.DemonstrationFailed, match="authorized_positive_control"):
+        lab.run_lab_demo()
+
+
+def test_harness_requires_permission_denial_evidence_not_just_worker_status(monkeypatch):
+    def no_kernel_evidence(channel, broker, instruction):
+        if instruction["op"] == "broker":
+            return broker.execute(instruction["command"])
+        return {"status": "blocked"}  # No syscall refusal evidence.
+    monkeypatch.setattr(lab, "_worker", observed_only_worker)
+    monkeypatch.setattr(lab, "_attempt", no_kernel_evidence)
+    with pytest.raises(lab.DemonstrationFailed, match="direct_write"):
         lab.run_lab_demo()
 
 
@@ -200,6 +220,8 @@ def test_linux_kernel_blocks_bypasses_and_allows_only_the_broker_control():
     assert result["authorized_marker_writes"] == 1
     assert result["unauthorized_resource_changes"] == 0
     assert result["temporary_directory_removed"] is True
+    assert result["kernel_refusals_observed"] == 5
+    assert result["guardian_scope_denial"]["decision"] == "deny"
     for case in result["cases"]:
         assert case["observed_resource_change"] == (case["case"] == "authorized_positive_control")
     output = json.dumps(result)

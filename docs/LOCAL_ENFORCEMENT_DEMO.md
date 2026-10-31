@@ -103,6 +103,11 @@ authorization receipt identifiers, and the verified hash-chained audit records.
 It omits raw bearer tokens and private keys. Runtime UUIDs, ephemeral signatures,
 timestamps and temporary paths vary; exact output bytes are not reproducible.
 
+The controller also requires a real Guardian denial with no token for an
+enterprise-scope proposal. Each of the five direct worker bypass cases must
+return `EACCES` or `EPERM` from its attempted syscall; a worker status string or
+unchanged hashes alone cannot satisfy that kernel-refusal acceptance check.
+
 The audit ledger now copies input payloads before hashing. This prevents a
 caller's later receipt annotation from changing an already-recorded event. It
 remains an in-memory prototype ledger, not externally anchored, durable audit
