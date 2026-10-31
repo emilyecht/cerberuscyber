@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Run using the clean installed environment's Python with -I.
 
 Does not import the repository, install dependencies, or contact external targets.

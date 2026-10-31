@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """CERBERUS Cyber defensive policy simulator.
 
 The CLI remains side-effect free. It can optionally demonstrate the complete signed

@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Durable atomic replay/idempotency claims for a single-host SQLite store.
 
 All participating instances/processes must use the same trusted database and

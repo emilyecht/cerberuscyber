@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Short-lived signed decision tokens for the prototype enforcement boundary."""
 
 from __future__ import annotations

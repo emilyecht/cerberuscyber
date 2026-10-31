@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Adversarial checks against the real Guardian, with trust frozen before mutation."""
 
 from concurrent.futures import ThreadPoolExecutor

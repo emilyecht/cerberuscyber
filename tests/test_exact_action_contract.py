@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Regressions for proposal-to-authorization changes and input coercion."""
 
 from __future__ import annotations

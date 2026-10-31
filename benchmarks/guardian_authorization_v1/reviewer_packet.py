@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Expand and replay the frozen benchmark's 33 unsafe and 8 eligible requests.
 
 This packages recorded evidence. It does not change the oracle, policy, runner,

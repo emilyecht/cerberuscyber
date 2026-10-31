@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Versioned shared types used at CERBERUS trust boundaries."""
 
 from .action_envelope import (

@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Create SHA256SUMS for precisely this build's wheel and source distribution."""
 import hashlib
 from pathlib import Path

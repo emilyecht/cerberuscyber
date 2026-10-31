@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Strict, canonical policy-bundle loading for the Guardian trust boundary."""
 
 from __future__ import annotations

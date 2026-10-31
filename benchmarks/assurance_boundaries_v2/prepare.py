@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Build deterministic public test attestations from frozen v1 requests.
 
 The stated external facts determine credentials and trust relationships. The

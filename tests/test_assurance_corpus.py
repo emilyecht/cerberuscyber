@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Exercise every carried-forward assurance request using actual proof verification."""
 
 from datetime import datetime

@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """CERBERUS Cyber runtime-assurance prototype package."""
 
 from .audit import AuditLedger

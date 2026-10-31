@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Combined policy/assurance contract and installed-resource regression checks."""
 
 import base64

@@ -1,3 +1,6 @@
+# Copyright 2026 Emily Echterhoff
+# SPDX-License-Identifier: Apache-2.0
+
 """Append-only hash-chained audit records for prototype assurance evidence."""
 
 from __future__ import annotations

@@ -9,7 +9,7 @@ description = "Simulation-only evaluation kit for bounded cybersecurity authoriz
 readme = "docs/EVALUATION_KIT.md"
 requires-python = ">=3.10"
 license = "Apache-2.0"
-license-files = ["LICENSE"]
+license-files = ["LICENSE", "NOTICE"]
 dependencies = ["jsonschema==4.23.0", "rfc3339-validator==0.1.4", "cryptography==50.0.1"]
 classifiers = [
   "Development Status :: 3 - Alpha",
