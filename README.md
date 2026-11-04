@@ -22,6 +22,24 @@ CERBERUS applies a three-layer runtime-assurance pattern:
 
 The intelligent layer does not hold enforcement authority. Model confidence is informational and cannot replace required evidence or policy approval.
 
+### Five-class synthetic replay
+
+The [replay harness](benchmarks/replay_v1/README.md) evaluates 135 prelabelled
+requests across legitimate, malicious, ambiguous, expired-authority and
+scope-widening classes, against two fixed decision baselines. Reproduce it with
+runtime dependencies installed:
+
+```bash
+python benchmarks/replay_v1/run.py
+```
+
+See the [per-class results and every failure](results/replay_v1/report.md) and
+[machine-readable record](results/replay_v1/results.json). The current snapshot
+**fails its safety gate** on old-grant revocation/context-binding requirements;
+the report separates raw Guardian decisions from simulated Kernel acceptance.
+This is synthetic replay, not field validation, independent review or real
+containment. Production policy and historical measurements are unchanged.
+
 ## Current Maturity
 
 CERBERUS Cyber is a **TRL 2–3 research prototype**, not a production defensive platform.
