@@ -30,6 +30,7 @@ from ._lab_worker import SandboxUnavailable, landlock_abi, receive_message, send
 from .audit import AuditLedger
 from .evaluation import _demo_proofs
 from .token import TokenValidationError
+from .authority import TokenAuthorityRegistry
 
 TARGET = "workload:local-enforcement-lab-only"
 ACTION = "temporary_egress_hold"
@@ -52,9 +53,11 @@ class _LabBroker:
     """
 
     def __init__(self, directory: Path, signer: DecisionTokenSigner,
-                 policy: PolicyBundle, ledger: AuditLedger) -> None:
+                 policy: PolicyBundle, ledger: AuditLedger, *,
+                 expected_envelope: ActionEnvelope, authority_registry: TokenAuthorityRegistry) -> None:
         self.directory, self.signer, self.policy, self.ledger = directory, signer, policy, ledger
         self.writes = 0
+        self.expected_envelope, self.authority_registry = expected_envelope, authority_registry
 
     def execute(self, command: object) -> dict:
         try:
@@ -70,9 +73,10 @@ class _LabBroker:
                 raise EnforcementDenied("outside the fixed lab action/target/scope capability")
             receipt = EnforcementGateway(
                 self.signer, replay_cache=SQLiteStateStore(self.directory / "claims.db"),
-                ledger=self.ledger,
+                ledger=self.ledger, authority_registry=self.authority_registry,
             ).authorize_and_simulate(command["token"], action=command["action"],
-                                     target=command["target"], scope=command["scope"], now=now)
+                                     target=command["target"], scope=command["scope"],
+                                     expected_envelope=self.expected_envelope, now=now)
         except (EnforcementDenied, TokenValidationError) as exc:
             record = self.ledger.append("lab.denied", {"reason": str(exc)})
             return {"status": "blocked", "reason": str(exc), "audit_record_hash": record.record_hash}
@@ -191,7 +195,11 @@ def run_lab_demo() -> dict:
                             idempotency_registry=state).evaluate(envelope, assurance=proofs, now=now)
         if decision.guardian_decision != "approve" or not decision.decision_token:
             raise DemonstrationFailed("valid positive control received no authority")
-        broker = _LabBroker(directory, signer, policy, ledger)
+        authority = TokenAuthorityRegistry()
+        authority.register(decision.decision_token, signer,
+            authority_key_ids=frozenset(p.key_id for p in proofs.evidence + proofs.approvals), now=now)
+        broker = _LabBroker(directory, signer, policy, ledger,
+            expected_envelope=envelope, authority_registry=authority)
         command = {"token": decision.decision_token, "action": ACTION, "target": TARGET, "scope": SCOPE}
         mediated = [
             ("guardian_forbidden", {**command, "token": denial.decision_token or "", "action": "wipe_host"}),

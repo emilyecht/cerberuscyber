@@ -61,12 +61,20 @@ def decide(api, policies, case, now, state_path, *, create=False):
 
 def gateway(api, path):
     kwargs = {"replay_cache": api.SQLiteStateStore(path)} if assured(api) else {}
+    if hasattr(api, "TokenAuthorityRegistry"):
+        kwargs["authority_registry"] = api.TokenAuthorityRegistry()
     return api.EnforcementGateway(api.DecisionTokenSigner(TEST_KEY), **kwargs)
 
 
 def submit(api, instance, token, request, now):
     try:
-        receipt = instance.authorize_and_simulate(token, **{k: request[k] for k in ("action", "target", "scope")}, now=now)
+        kwargs = {}
+        if hasattr(api, "TokenAuthorityRegistry"):
+            # Trusted offline controller carries forward a genuinely issued grant;
+            # this is not a registration endpoint exposed to an action requester.
+            instance.authority_registry.register(token, instance.signer, now=now)
+            kwargs["expected_envelope"] = request
+        receipt = instance.authorize_and_simulate(token, **{k: request[k] for k in ("action", "target", "scope")}, now=now, **kwargs)
     except api.EnforcementDenied as exc:
         return {"outcome": "blocked", "reason": str(exc), "receipt": None}
     if receipt.get("status") != "simulated" or receipt.get("side_effects") is not False or any(receipt.get(k) != request[k] for k in ("action", "target", "scope")):
