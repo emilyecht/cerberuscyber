@@ -1,2 +1,4 @@
 # Generated replay observations; review the frozen oracle, runner and report.
 results/replay_v1/results.json linguist-generated=true
+results/replay_v2/results.json linguist-generated=true
+results/replay_v2/latency_samples.jsonl linguist-generated=true
