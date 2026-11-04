@@ -105,12 +105,14 @@ class EmbeddedAgentHuntTests(unittest.TestCase):
         self.assertEqual(decision.scope, "single_workload")
         self.assertIsNotNone(decision.decision_token)
 
-        receipt = EnforcementGateway(signer, replay_cache=ReplayCache()).authorize_and_simulate(
+        from tests.assurance_support import registered_gateway
+        receipt = registered_gateway(signer, decision.decision_token, now=SIMULATION_NOW, replay_cache=ReplayCache()).authorize_and_simulate(
             decision.decision_token or "",
             action="quarantine_workload",
             target=SCENARIO["asset"],
             scope="single_workload",
             now=SIMULATION_NOW,
+            expected_envelope=envelope,
         )
         self.assertEqual(receipt["status"], "simulated")
         self.assertFalse(receipt["side_effects"])

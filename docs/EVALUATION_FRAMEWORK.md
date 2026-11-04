@@ -13,7 +13,8 @@ superiority or real-world containment/recovery is claimed.
 | Guardian v1 historical benchmark | Original frozen 59-case contract/oracle | Preserve original results; not a security trend with later contracts |
 | Combined release contract | Exact action, policy, assurance, freshness and lifecycle fixtures | Historical `59c6a29`: 0/11 unsafe authorizations, 8/8 eligible simulated responses, three lifecycle episodes |
 | Local enforcement lab | Fixed broker, kernel-denied bypasses, actual temporary marker | Scripted agent, fabricated trust, Linux Landlock; no network hold |
-| Five-class replay v1 | 135 prelabelled requests / 125 setups, fixed seed and clock; real Guardian and simulated gateway versus two decision-only baselines | Public fixture trust, synthetic target/criticality labels; current old-grant revocation/context gaps fail the safety gate |
+| Five-class replay v1 | Historical 135-request / 125-setup comparison | Unmodified FAIL: 16 old-grant/context acceptances; its test target stays pinned to the original implementation |
+| Five-class replay v2 | Identical corpus, labels, scoring and Guardian; strict full-envelope and live-registry checks; fixed SOAR-style B2 comparator | Synthetic simulator state and same-host microtiming, not field validation or production revocation |
 | Unit/schema/adversarial tests | Named properties and regressions | Not formal proof, exhaustive coverage or independent review |
 
 See [inventory](CAPABILITY_INVENTORY.md), [historical record](../results/release_candidate/main-after-pr11.md)
@@ -44,17 +45,17 @@ The Linux lab additionally requires confinement setup, EACCES/EPERM evidence for
 direct write/truncate/unlink/symlink-write/subprocess paths and unchanged hashes.
 Unsupported isolation exits nonzero, never a simulated pass.
 
-## Reproduce the five-class synthetic replay
+## Reproduce the current five-class synthetic replay
 
 With the repository runtime dependencies already installed, run:
 
 ```bash
-python benchmarks/replay_v1/run.py
-python -m pytest -q tests/test_replay_v1.py
+python benchmarks/replay_v2/run.py
+python -m pytest -q tests/test_kernel_binding.py tests/test_replay_v2.py
 ```
 
-The runner writes [machine-readable observations](../results/replay_v1/results.json)
-and [per-class tables plus every failed case](../results/replay_v1/report.md).
+The v2 runner writes [machine-readable observations](../results/replay_v2/results.json)
+and [v1/v2 per-class tables plus every failed case](../results/replay_v2/report.md).
 It uses seed 20261104, 25 setups per class and five three-step widening sequences,
 giving 135 labelled requests. The [oracle](../benchmarks/replay_v1/oracle.json)
 and [scoring plan](../benchmarks/replay_v1/PLAN.md) were frozen before replay;
@@ -78,7 +79,7 @@ Allow-if-recommended and a frozen confidence >= 0.9 gate use the same cases and
 labels. They are decision-only controls, not operational security products;
 Kernel results are N/A for them. Every baseline failure is retained.
 
-The existing Kernel receives only token/action/target/scope. It cannot compare
+The **historical v1** Kernel receives only token/action/target/scope. It cannot compare
 an expected incident/envelope/impact/reversibility context or consult live
 revocation of an already-issued token. The broader task-level no-old-authority
 requirements are scored explicitly, with their limitations frozen before
@@ -90,13 +91,29 @@ preferences.
 Exit 2 means an invalid measurement; exit 1 means any CERBERUS disagreement or
 violation. The unwaived safety test fails on every nonzero CERBERUS invariant
 count; deliberately weak baseline failures do not gate CERBERUS. The current
-snapshot fails that gate. Do not change labels, omit cases or weaken policy to
+v1 snapshot fails that gate. Do not change labels, omit cases or weaken policy to
 turn it green.
+
+V2 adds expected-envelope verification and live token registration/revocation
+at enforcement, while inheriting the v1 corpus and scoring unchanged. Its
+[precommitted plan](../benchmarks/replay_v2/PLAN.md) fixes B2's allowlist/scalar
+scope/signature/expiry checks, and the 20-warmup/100-measured-pair timing protocol.
+V2 reports independent before/after in-memory resource-state changes, not real
+containment. Timing uses nearest-rank p50/p95/max for each request, class and
+overall, including paired overhead and matched legitimate-allow controls.
+Hardware and runtime conditions accompany every timing result.
+
+The unchanged historical v1 instrument tests execute against pinned tree
+`01ecf6493d4aec1f2a5bfb3963523e68d705a099`; their original failing gate stays
+visible. Current regression callers supply full context and explicit registry
+provisioning without changing their policy assertions. Current security tests
+require zero v2 violations and fail when binding or live-status checks are removed.
 
 No network, real telemetry, operational credential, live model or real action is
 used. Isolated in-memory replay caches do not measure SQLite/restart durability.
 Volatile token identifiers and audit hashes are validated in memory and omitted
-from stable output. Runtime latency is not measured. Structured injection and
+from stable output. Historical v1 did not measure runtime latency; v2 adds the
+bounded same-host timings described above. Structured injection and
 changed proofs do not establish detection of arbitrary injected language or
 signed false observations. **Synthetic replay is not field validation** and does
 not replace the separate native syscall-refusal lab or historical benchmarks.

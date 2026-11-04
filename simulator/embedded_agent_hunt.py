@@ -104,12 +104,16 @@ def main() -> None:
     }
 
     if args.simulate_enforcement and decision.guardian_decision == "approve":
-        gateway = EnforcementGateway(DecisionTokenSigner(signing_key or b""), replay_cache=ReplayCache())
+        from cerberus import TokenAuthorityRegistry
+        authority = TokenAuthorityRegistry()
+        authority.register(decision.decision_token, signer, now=now)
+        gateway = EnforcementGateway(signer, replay_cache=ReplayCache(), authority_registry=authority)
         output["enforcement"] = gateway.authorize_and_simulate(
             decision.decision_token or "",
             action=decision.authorized_action,
             target=decision.target,
             scope=decision.scope,
+            expected_envelope=envelope,
             now=now,
         )
 
