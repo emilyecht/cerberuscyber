@@ -10,7 +10,14 @@ namespace. This is not a distributed consensus store or an exactly-once connecto
 from __future__ import annotations
 
 import sqlite3
+import stat
 from pathlib import Path
+
+
+_CLAIMS_SCHEMA = (
+    "namespace TEXT NOT NULL, kind TEXT NOT NULL, claim_key TEXT NOT NULL, "
+    "digest TEXT NOT NULL, PRIMARY KEY(namespace, kind, claim_key)"
+)
 
 
 class StateUnavailable(PermissionError):
@@ -27,38 +34,63 @@ class SQLiteStateStore:
             raise ValueError("state namespace must be non-empty")
         if str(path) in ("", ":memory:"):
             raise ValueError("durable state requires an explicit filesystem path")
-        self.path = str(Path(path).resolve())
+        self.path = str(Path(path).absolute())
         self.namespace = namespace
         connection = None
         try:
             connection = self._connect(create=create)
             with connection:
-                connection.execute(
-                    "CREATE TABLE IF NOT EXISTS claims ("
-                    "namespace TEXT NOT NULL, kind TEXT NOT NULL, claim_key TEXT NOT NULL, "
-                    "digest TEXT NOT NULL, PRIMARY KEY(namespace, kind, claim_key))"
-                )
-        except sqlite3.Error as exc:
+                if create:
+                    connection.execute(f"CREATE TABLE IF NOT EXISTS claims ({_CLAIMS_SCHEMA})")
+                self._verify(connection)
+        except (sqlite3.Error, OSError) as exc:
             raise StateUnavailable("cannot initialize durable authority state") from exc
         finally:
             if connection is not None:
                 connection.close()
 
     def _connect(self, *, create: bool = False) -> sqlite3.Connection:
+        try:
+            mode = Path(self.path).lstat().st_mode
+        except FileNotFoundError:
+            if not create:
+                raise
+        else:
+            if not stat.S_ISREG(mode) or not mode & 0o222:
+                raise StateUnavailable("durable authority state must be a writable regular file")
         uri = Path(self.path).as_uri() + ("?mode=rwc" if create else "?mode=rw")
         connection = sqlite3.connect(uri, timeout=2.0, uri=True)
         try:
             connection.execute("PRAGMA synchronous=FULL")
+            connection.execute("BEGIN IMMEDIATE")
         except sqlite3.Error:
             connection.close()
             raise
         return connection
 
+    def _verify(self, connection: sqlite3.Connection) -> None:
+        # Verify the provisioned table, uniqueness constraint and absence of
+        # claim-altering triggers before startup or consumption can proceed.
+        schema = connection.execute(
+            "SELECT type, name, sql FROM sqlite_master WHERE tbl_name = 'claims' "
+            "ORDER BY type, name"
+        ).fetchall()
+        if schema != [
+            ("index", "sqlite_autoindex_claims_1", None),
+            ("table", "claims", f"CREATE TABLE claims ({_CLAIMS_SCHEMA})"),
+        ]:
+            raise StateUnavailable("durable authority state is not explicitly provisioned")
+        page_size = connection.execute("PRAGMA page_size").fetchone()[0]
+        if Path(self.path).stat().st_size % page_size:
+            raise StateUnavailable("durable authority state has a truncated page")
+        if connection.execute("PRAGMA quick_check").fetchall() != [("ok",)]:
+            raise StateUnavailable("durable authority state integrity cannot be verified")
+
     def _claim(self, rows: list[tuple[str, str, str]]) -> bool:
         connection = None
         try:
             connection = self._connect()
-            connection.execute("BEGIN IMMEDIATE")
+            self._verify(connection)
             for kind, key, digest in rows:
                 if not isinstance(key, str) or not key:
                     raise ValueError("state claim key must be a non-empty string")
@@ -72,7 +104,7 @@ class SQLiteStateStore:
             if connection is not None:
                 connection.rollback()
             return False
-        except sqlite3.Error as exc:
+        except (sqlite3.Error, OSError) as exc:
             if connection is not None:
                 connection.rollback()
             raise StateUnavailable("durable authority state unavailable") from exc
