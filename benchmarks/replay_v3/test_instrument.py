@@ -115,6 +115,11 @@ def test_committed_results_retain_original_labels_and_every_failure():
         or not row['systems']['cerberus']['measurement_valid'])]
     assert {row['id'] for row in failures} == {f['id'] for f in r['failures']}
     assert all(f['failing_layer'] and f['basis']['document'] for f in r['failures'])
-    assert r['oracle_defects'] == []
+    assert len(r['oracle_defects']) == 7
+    assert all(d['request_sha256'] == d['original_setup_sha256'] and d['frozen_expected'] == 'deny'
+        and d['retained_in_frozen_scores'] for d in r['oracle_defects'])
+    assert r['failure_counts']['failures_without_proven_oracle_defect'] == 2
+    assert all(o['systems']['cerberus']['decision'] == p['outcome'] for o, p in
+        zip(r['observations'], r['latency']['per_request']))
     assert r['latency']['warmup_per_attempt'] == 5
     assert r['latency']['repetitions_per_attempt'] == 20

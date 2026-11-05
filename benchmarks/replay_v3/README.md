@@ -1,5 +1,12 @@
 # replay_v3: frozen held-out challenge evaluation
 
+**Measured status: FAIL.** Two attempts accept original authority with an empty,
+unprovisioned SQLite replay file. Seven further frozen-oracle discrepancies are
+proven label-basis defects: single-field mutations restore the complete original
+approved request. The report gives matching hashes; no label or score is changed.
+All nine remain in the frozen gate, alongside eight excluded doc-ambiguous
+attempts. No production repair is included.
+
 From a Git checkout with history and runtime dependencies already installed:
 
 ```bash

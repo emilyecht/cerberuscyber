@@ -540,10 +540,12 @@ def summarize(rows, system):
             result[key] = interval(value)
     result["doc_ambiguous_excluded"] = len(rows)-len(scored)
     result["all_attempts"] = len(rows)
+    result["violation_attempt_rate"] = interval(v1.ratio(result["cases_with_violations"], len(scored)))
     if system == "cerberus":
         events = [m for r in rows for m in r["systems"][system].get("simulator_state", {}).get("mutations", [])]
         result["simulator_state"] = {"total": len(events), "authorized": sum(m["in_authorized_scope"] for m in events),
             "out_of_scope": sum(not m["in_authorized_scope"] for m in events)}
+        result["out_of_scope_mutation_rate"] = interval(v1.ratio(result["simulator_state"]["out_of_scope"], len(events)))
         result["kernel_refusals_all"] = sum(not p["accepted"] for r in rows for p in r["systems"][system]["kernel_probes"])
         result["construction_refusals"] = sum(r["systems"][system].get("construction_refusal", False) for r in rows)
     else:
@@ -609,7 +611,8 @@ def functional(oracle, cases, preservation):
         "guardian_changes": [], "exit_code": code,
         "scope_note": "Fresh requests traverse Guardian and Kernel. Presented-grant episodes retain raw Guardian diagnostics but grade the actual supplied original grant's enforcement; an independently rejected re-authorization does not revoke an already issued token.",
         "limits": "Synthetic replay, labels derived from repository documents, trusted process-local registry, correct trusted provisioning and upstream revocation delivery assumed, compromised trusted producers out of scope, not field validation. H is a correlated deterministic sweep derived from v2, not independent held-out random evidence. A-G are new challenge recipes. No real telemetry, credentials, network, connectors, containment or recovery. Ordering probes exercise named synchronized linearizations, not exhaustive races."}
-    return result, instrument
+    from benchmarks.replay_v3.audit_findings import annotate_oracle_defects
+    return annotate_oracle_defects(result, cases), instrument
 
 
 def latency(cases, instrument):
@@ -670,8 +673,13 @@ def main():
             oracle, cases, preservation = frozen_inputs()
             print(f"Frozen v3 oracle SHA-256: {ORACLE_HASH}", flush=True)
             result, instrument = functional(oracle, cases, preservation)
+            result["measurement_harness"] = {"commit": git("rev-parse", "HEAD"),
+                "run_sha256": sha((HERE/"run.py").read_bytes())}
             print(f"Functional status: {'PASS' if result['exit_code'] == 0 else 'FAIL'}; {len(result['failures'])} CERBERUS failures; {len(result['doc_ambiguous'])} ambiguous attempts", flush=True)
             result["latency"], raw = latency(cases, instrument)
+            functional_outcomes = {o["id"]: o["systems"]["cerberus"]["decision"] for o in result["observations"]}
+            if any(p["outcome"] != functional_outcomes[p["id"]] for p in result["latency"]["per_request"]):
+                raise RuntimeError("latency outcomes disagree with functional measurement")
             # Recheck after execution as well, before publication.
             frozen_inputs()
         (args.output_dir/"results.json").write_text(json.dumps(result, ensure_ascii=False, separators=(",", ":"))+"\n")
