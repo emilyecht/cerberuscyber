@@ -548,6 +548,11 @@ def summarize(rows, system):
         result["out_of_scope_mutation_rate"] = interval(v1.ratio(result["simulator_state"]["out_of_scope"], len(events)))
         result["kernel_refusals_all"] = sum(not p["accepted"] for r in rows for p in r["systems"][system]["kernel_probes"])
         result["construction_refusals"] = sum(r["systems"][system].get("construction_refusal", False) for r in rows)
+        called_rows = [r for r in rows if not r["systems"][system].get("construction_refusal", False)]
+        called_negative = [p for r in called_rows if r["expected"] != "doc-ambiguous"
+            for p in r["systems"][system]["kernel_probes"] if p["expected_block"]]
+        result["kernel_call_refusal"] = interval(v1.ratio(sum(not p["accepted"] for p in called_negative), len(called_negative)))
+        result["kernel_call_refusals_all"] = sum(not p["accepted"] for r in called_rows for p in r["systems"][system]["kernel_probes"])
     else:
         result["simulator_state"] = None
         result["kernel_refusals_all"] = None

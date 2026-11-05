@@ -83,6 +83,15 @@ def test_scoring_excludes_ambiguity_and_does_not_hide_unsafe_allow(episodes):
     assert result['cases_with_violations'] == 1
 
 
+def test_constructor_refusal_is_separate_from_kernel_call(episodes):
+    rows = exercise(next(c for c in episodes[1] if c['variant'] == 'sqlite_missing'))
+    result = v3.summarize(rows, 'cerberus')
+    assert result['construction_refusals'] == 1
+    assert result['kernel_call_refusal']['denominator'] == 0
+    assert result['kernel_call_refusals_all'] == 0
+    assert result['kernel_refusal']['numerator'] == 1  # inherited probe score retained
+
+
 def test_baselines_are_original_functions_and_no_shadow_policy(episodes):
     case = next(c for c in episodes[1] if c['class'] == 'A')
     row = exercise(case)[0]

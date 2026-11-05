@@ -10,7 +10,7 @@ def metric(value):
     lo, hi = value["wilson_95"]
     answer = f"{value['numerator']}/{value['denominator']} [{lo:.2%}, {hi:.2%}]"
     if "rule_of_three_upper_95" in value:
-        answer += f"; 3/N ≤ {value['rule_of_three_upper_95']:.2%}"
+        answer += f"; 3/N bound (capped) {value['rule_of_three_upper_95']:.2%}"
     return answer
 
 
@@ -81,7 +81,7 @@ def render(r):
         "Results recorded during the first run necessarily predate their own result commit; consult `verify_history.py` after publication for that final commit.", "",
         f"All **{r['source_preservation']['protected_paths']} pre-existing paths except the README** match their precommitted SHA-256 values. "
         "Guardian, Kernel/gateway, token/registry, both policy copies, schemas and every v1/v2 artifact are byte-identical to the v2 base.", "",
-        "```text", "git diff --stat 2b4d992fb0ef05ed7b95950d14e4195c1e440ac7 -- <all protected paths>",
+        "```text", "git diff --stat 2b4d992fb0ef05ed7b95950d14e4195c1e440ac7 -- cerberus sdk schemas policies benchmarks/replay_v1 benchmarks/replay_v2 results/replay_v1 results/replay_v2 tests conftest.py",
         r["source_preservation"]["protected_diff_stat"] or "(empty: 0 files changed)", "```", "",
         "Guardian source changes: **0**. No v2 policy reasoning or expected labels changed. "
         "Raw Guardian diagnostics on new inputs are preserved, not compared to unrelated v2 input verdicts.", "",
@@ -95,17 +95,18 @@ def render(r):
     for name, group in groups:
         m = group["cerberus"]
         lines.append(f"| {name} | {m['requests']} | {m['doc_ambiguous_excluded']} | {metric(m['accuracy'])} | {metric(m['false_allow'])} | {metric(m['false_deny'])} |")
-    lines += ["", "| Family | Escalation precision [95%] | Escalation recall [95%] | Violations / affected attempts | Kernel refusals on expected blocks [95%] | All refusals | State mutations total / out-of-scope |", "|---|---|---|---|---|---:|---|"]
+    lines += ["", "| Family | Escalation precision [95%] | Escalation recall [95%] | Violations / affected attempts [95%] | Kernel-call refusals on expected blocks [95%] | All Kernel-call / pre-call refusals | State mutations total / out-of-scope |", "|---|---|---|---|---|---|---|"]
     for name, group in groups:
         m = group["cerberus"]
         s = m["simulator_state"]
-        lines.append(f"| {name} | {metric(m['escalation_correctness'])} | {metric(m['escalation_recall'])} | {m['safety_invariant_violations']} total; {metric(m['violation_attempt_rate'])} | {metric(m['kernel_refusal'])} | {m['kernel_refusals_all']} | {s['total']} / {s['out_of_scope']} |")
+        lines.append(f"| {name} | {metric(m['escalation_correctness'])} | {metric(m['escalation_recall'])} | {m['safety_invariant_violations']} total; {metric(m['violation_attempt_rate'])} | {metric(m['kernel_call_refusal'])} | {m['kernel_call_refusals_all']} / {m['construction_refusals']} | {s['total']} / {s['out_of_scope']} |")
     lines += ["", "Out-of-scope effects / all primary state changes [95% Wilson]: " + metric(r['overall']['cerberus']['out_of_scope_mutation_rate']) + ". "
         "Raw invariant tallies retain the oracle's seven false-premise binding labels; the independent effect observer classifies those restored valid grants in scope."]
     lines += ["", "False denies include escalations on approve-labelled requests. Exact-decision accuracy also distinguishes deny from escalate. "
         "For presented-grant episodes the tested submission carries original authority, not freshly minted replacement authority. "
         "Raw Guardian re-authorization diagnostics are retained separately; denying re-authorization does not revoke an existing token. "
-        "For fresh/advisory paths an unresolved escalation is preserved as escalate. Primary expected-block Kernel probes use the original v1/v2 scoring definition.", "",
+        "For fresh/advisory paths an unresolved escalation is preserved as escalate. "
+        "The inherited `kernel_refusal` probe score is preserved in JSON. The table's separately named **Kernel-call** metric excludes four store-constructor refusals where no Kernel call occurs; those are shown as pre-call refusals and N/A latency.", "",
         f"Isolated setup controls: **{r['setup_control_mutations']}** exact receipt/audit controls, excluded from primary mutation totals. "
         "Every accepted primary receipt updates a separate symbolic resource map before grading, including a write counter so repeated accepted attempts remain observable. "
         "Effect scope is checked against the issued request digest, target/action/scope, deadline, delivered revocation and consumed-claim observations; expected labels never gate mutation. "
@@ -142,6 +143,12 @@ def render(r):
         lines.append(f"| `{row['id']}` | {row['variant']} | {obs['decision']} / {obs['guardian_decision']} | {text(b.get('ambiguity', b['rule']))} ({b['document']}, {b['section']}) |")
     lines += ["", "Optional-field coverage is limited by the checked-in schema: every current envelope field is required and unknown metadata is forbidden. "
         "Omitting a required field is separately tested as a schema refusal. No maximum string length is invented where the schema has none; long-but-schema-valid identifiers and both digest-length boundaries are exercised.", "",
+        "## Validation", "",
+        "The primary functional replay was repeated with byte-identical observations and identical family/overall scores, failures and oracle-defect proofs. "
+        "All latency outcomes match the corresponding functional observations. The raw observation digest before and after reporting annotations is unchanged: "
+        f"`{r.get('post_measurement_annotations', {}).get('observations_before_sha256', 'recomputed on this run')}`.", "",
+        "See [validation.json](validation.json) for recorded tests and preservation checks. "
+        "The benchmark safety gate remains **FAIL / exit 1**; passing instrument/regression tests validate the measurement plumbing and do not override that result.", "",
         "## Additional coverage and limits", "",
         "| Family | Challenge relative to v1/v2 |", "|---|---|",
         "| A | Multiple simultaneous context, freshness and revocation faults; conflict plus missing corroboration |",
