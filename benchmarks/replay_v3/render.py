@@ -71,9 +71,9 @@ def render(r):
         f"Oracle SHA-256: `{r['oracle_sha256']}`. Materialized corpus SHA-256: `{r['corpus_sha256']}`.", "",
         f"Measured harness source: `{r.get('measurement_harness', {}).get('commit', 'recorded in history below')}`. "
         "Post-measurement annotations flag input-proven oracle defects and add descriptive intervals without changing primary observations or retiming samples.", "",
-        "An earlier harness attempt was invalidated because the setup factory inherited an attack-modified trust configuration. "
-        "Only that positive-control plumbing was corrected, before this valid run; the frozen oracle and evaluated system were unchanged. "
-        "[Initial invalid-attempt record](invalid_measurement_initial.json) is retained and contributes no scored observations.", "",
+        "The inherited harness history includes a correction to positive-control setup for attack-modified trust configurations. "
+        "This published run uses the corrected harness and does not count earlier development attempts. "
+        "The frozen oracle and evaluated system remain unchanged.", "",
         "## Preservation and chronology", "", "```text"]
     h = r["source_preservation"]["history"]
     lines += [f"{name}: {commit or 'not introduced yet at measurement time'}" for name, commit in h.items()]
@@ -126,7 +126,7 @@ def render(r):
         "Only enforcement is timed, including refusals and receipt/audit work. Issuance, evidence signing, construction, fault setup and state grading are outside the timer. "
         "Constructor refusals have no enforcement call and are explicitly excluded/N/A. Commit-hook worker creation is included on synchronized contention paths. "
         "Per-attempt percentiles and all raw samples are retained; these are same-host observed timings, not guarantees. "
-        "The roughly two-second maximum includes the unchanged SQLite busy-lock timeout on intentionally locked state; tail samples are retained.", "",
+        "Intentionally locked SQLite state exercises the unchanged store busy timeout; tail samples are retained.", "",
         "| Family | Samples | p50 (ms) | p95 (ms) | max (ms) | Constructor refusals with no call |", "|---|---:|---:|---:|---:|---:|"]
     for name, stats in r["latency"]["aggregates"].items():
         p = stats["latency"]
@@ -145,9 +145,10 @@ def render(r):
         "Omitting a required field is separately tested as a schema refusal. No maximum string length is invented where the schema has none; long-but-schema-valid identifiers and both digest-length boundaries are exercised.", "",
         "## Validation", "",
         "The primary functional replay was repeated with byte-identical observations and identical family/overall scores, failures and oracle-defect proofs. "
-        "All latency outcomes match the corresponding functional observations. The raw observation digest before and after reporting annotations is unchanged: "
-        f"`{r.get('post_measurement_annotations', {}).get('observations_before_sha256', 'recomputed on this run')}`.", "",
-        "See [validation.json](validation.json) for recorded tests and preservation checks. "
+        "All latency outcomes match the corresponding functional observations. Both functional runs have observation SHA-256: "
+        f"`{r['validation']['primary_observations_sha256']}`.", "",
+        "See [validation.json](validation.json) for runner reproducibility and preservation checks. "
+        "Instrument/regression tests are run separately; these self-checks do not imply a test-suite result. "
         "The benchmark safety gate remains **FAIL / exit 1**; passing instrument/regression tests validate the measurement plumbing and do not override that result.", "",
         "## Additional coverage and limits", "",
         "| Family | Challenge relative to v1/v2 |", "|---|---|",

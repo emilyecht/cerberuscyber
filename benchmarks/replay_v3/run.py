@@ -685,10 +685,18 @@ def main():
             functional_outcomes = {o["id"]: o["systems"]["cerberus"]["decision"] for o in result["observations"]}
             if any(p["outcome"] != functional_outcomes[p["id"]] for p in result["latency"]["per_request"]):
                 raise RuntimeError("latency outcomes disagree with functional measurement")
+            from benchmarks.replay_v3.evidence import sqlite_empty_evidence, validate_repetition
+            print("Rechecking full functional observations in fresh worlds", flush=True)
+            repeated, _ = functional(oracle, cases, preservation)
+            result["validation"] = validate_repetition(result, repeated, result["latency"])
+            storage_evidence = sqlite_empty_evidence(cases, instrument)
+            result["supplemental_storage_evidence"] = "sqlite_empty_evidence.json"
             # Recheck after execution as well, before publication.
             frozen_inputs()
         (args.output_dir/"results.json").write_text(json.dumps(result, ensure_ascii=False, separators=(",", ":"))+"\n")
         (args.output_dir/"latency_samples.jsonl").write_text("".join(json.dumps(s, separators=(",", ":"))+"\n" for s in raw))
+        (args.output_dir/"validation.json").write_text(json.dumps(result["validation"], indent=2)+"\n")
+        (args.output_dir/"sqlite_empty_evidence.json").write_text(json.dumps(storage_evidence, indent=2)+"\n")
         import gzip
         with gzip.GzipFile(filename="", mode="wb", fileobj=(args.output_dir/"corpus.jsonl.gz").open("wb"), mtime=0) as stream:
             for c in cases:
