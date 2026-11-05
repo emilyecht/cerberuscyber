@@ -24,6 +24,16 @@ def render(r):
     counts = r.get("failure_counts", {})
     defects = r.get("oracle_defects", [])
     production_failures = counts.get("failures_without_proven_oracle_defect", len(failures))
+    harness = r.get("measurement_harness", {})
+    harness_note = f"Measured harness source: `{harness.get('commit', 'recorded in history below')}`."
+    if harness.get("published_equivalent_commit"):
+        published = harness["published_equivalent_commit"]
+        harness_note += (
+            f" The identical source was published as [`{published}`]"
+            f"(https://github.com/emilyecht/cerberuscyber/commit/{published}); "
+            f"both Git trees are `{harness['source_tree_sha']}`. "
+            "The commit identifier differs because authenticated GitHub publication creates its own commit metadata."
+        )
     lines = ["# replay_v3 held-out evaluation", "",
         f"**{status}: {production_failures} implementation-state failures; {len(defects)} proven oracle-basis defects retained in the frozen scores. No production fix applied.**", ""]
     if failures:
@@ -51,7 +61,7 @@ def render(r):
     else:
         lines += ["No scored CERBERUS mismatch, unsafe authorization, false denial or invariant violation was observed on these fixtures.", ""]
     lines += ["", "[v1 **FAIL**](../replay_v1/report.md) · [v2 **PASS — same development corpus**](../replay_v2/report.md) · "
-        "[machine-readable results](results.json) · [raw latency samples](latency_samples.jsonl) · [complete frozen-recipe corpus](corpus.jsonl.gz)", "",
+        "[complete results JSON (gzip)](results.json.gz) · [raw latency samples](latency_samples.jsonl) · [complete frozen-recipe corpus](corpus.jsonl.gz)", "",
         f"Seed **{r['seed']}**, clock **{r['clock']}**. **{r['episodes']} episodes / {r['requests']} primary attempts**. "
         f"Eight families: A–G are 300 newly generated cases; H is 3,240 source-derived mutations. **{len(r['doc_ambiguous'])} attempts are doc-ambiguous and excluded from all scored denominators.**", "",
         "A held-out challenge evaluation measures the unchanged v2 snapshot. H reuses source inputs, and several primitive replay/binding controls overlap earlier probes; new compositions, ordering, clock boundaries and field sweeps provide additional challenge coverage. "
@@ -66,11 +76,13 @@ def render(r):
         lines.append(f"| `{defect['id']}` | `{defect['field']}` | `{defect['request_sha256']}` |")
     lines += ["", "## Reproduce offline", "", "```bash", "python benchmarks/replay_v3/run.py", "```", "",
         "Use a Git checkout with history and the repository runtime dependencies already installed. No downloads occur. "
+        "The runner writes normal `results.json` plus a lossless `results.json.gz` copy; the complete gzip copy is checked in to fit the publication transport limit. "
         "Exit 0 means all scored gates pass, 1 means measured CERBERUS failure, 2 means invalid measurement. "
         "The unchanged historical files are never written. A rerun overwrites only v3 output; use `--output-dir /tmp/replay-v3` for an alternate output location.", "",
         f"Oracle SHA-256: `{r['oracle_sha256']}`. Materialized corpus SHA-256: `{r['corpus_sha256']}`.", "",
-        f"Measured harness source: `{r.get('measurement_harness', {}).get('commit', 'recorded in history below')}`. "
-        "Post-measurement annotations flag input-proven oracle defects and add descriptive intervals without changing primary observations or retiming samples.", "",
+        harness_note,
+        "Documentary-basis diagnostics flag input-proven oracle defects while retaining the frozen labels and scores. "
+        "Report rendering does not change primary observations or retime samples.", "",
         "The inherited harness history includes a correction to positive-control setup for attack-modified trust configurations. "
         "This published run uses the corrected harness and does not count earlier development attempts. "
         "The frozen oracle and evaluated system remain unchanged.", "",
@@ -162,6 +174,7 @@ def render(r):
         "| H | All 135 v2 source requests x 24 single-field mutations, using this oracle's documentary rule rather than v2 outcomes; correlated/source-derived |", "",
         r["limits"], "", "The live registry is trusted and process-local, not durable/distributed. Correct controller provisioning and event delivery remain assumptions. "
         "Compromised trusted producers are outside scope: signatures authenticate configured origin, not observation truth. "
+        "Injection probes alter structured proposals/evidence; they do not evaluate an LLM or natural-language prompt-injection robustness. "
         "There is no field false-positive estimate, independent external label adjudication, real containment/recovery or production security claim.", "",
         "Oracle label/score changes after measurement: **none**. Seven documentary-basis defects are separately proven and every original discrepancy remains scored. "
         "A future repair developed against these cases needs a newly frozen holdout to assess generalization.", ""]

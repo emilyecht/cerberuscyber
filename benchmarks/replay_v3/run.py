@@ -57,8 +57,10 @@ def introduced(path):
 def history():
     paths = {"plan": "benchmarks/replay_v3/PLAN.md", "oracle": "benchmarks/replay_v3/oracle.json",
         "oracle_hash": "benchmarks/replay_v3/oracle.sha256", "implementation": "benchmarks/replay_v3/run.py",
-        "results": "results/replay_v3/results.json"}
+        "results": "results/replay_v3/results.json.gz"}
     commits = {k: introduced(p) for k, p in paths.items()}
+    if commits["results"] is None:
+        commits["results"] = introduced("results/replay_v3/results.json")
     if not commits["plan"] or not commits["oracle"] or commits["oracle"] != commits["oracle_hash"]:
         raise ValueError("missing pre-registered plan/oracle/hash history")
     if commits["plan"] == commits["oracle"]:
@@ -698,6 +700,10 @@ def main():
         (args.output_dir/"validation.json").write_text(json.dumps(result["validation"], indent=2)+"\n")
         (args.output_dir/"sqlite_empty_evidence.json").write_text(json.dumps(storage_evidence, indent=2)+"\n")
         import gzip
+        # Identical JSON schema and observations, in a lossless publication
+        # container. Keep ordinary JSON locally for v1/v2-style consumers.
+        with gzip.GzipFile(filename="", mode="wb", fileobj=(args.output_dir/"results.json.gz").open("wb"), mtime=0) as stream:
+            stream.write((args.output_dir/"results.json").read_bytes())
         with gzip.GzipFile(filename="", mode="wb", fileobj=(args.output_dir/"corpus.jsonl.gz").open("wb"), mtime=0) as stream:
             for c in cases:
                 stream.write(canonical(c)+b"\n")

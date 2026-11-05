@@ -16,6 +16,9 @@ python benchmarks/replay_v3/run.py
 The command is offline. Exit 0 means pass, 1 means measured CERBERUS failure,
 2 means an invalid measurement. It writes only `results/replay_v3/**`.
 Use `--output-dir /tmp/replay-v3` to preserve checked-in v3 observations on rerun.
+The runner writes ordinary `results.json` and the identical JSON in
+`results.json.gz`. The complete gzip copy is checked in to fit the publication
+transport limit; no observations, labels, scores or fields are removed.
 
 - [Frozen plan](PLAN.md), committed first.
 - [Documentary oracle](oracle.json) and [SHA-256](oracle.sha256), committed before

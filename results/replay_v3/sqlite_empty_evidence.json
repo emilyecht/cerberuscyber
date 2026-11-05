@@ -1,0 +1,81 @@
+{
+  "synthetic_only": true,
+  "primary_scoring_contribution": 0,
+  "latency_sample_contribution": 0,
+  "probes": [
+    {
+      "episode": "F-007",
+      "expected": "deny",
+      "basis": "docs/ASSURANCE_BOUNDARY.md: State setup and recovery",
+      "before_constructor": {
+        "exists": true,
+        "bytes": 0
+      },
+      "create_argument": false,
+      "constructor_refused": false,
+      "bytes_after_constructor": 12288,
+      "accepted": true,
+      "reason": "Kernel returned a simulated receipt",
+      "replay_claims_added": 1,
+      "receipt": {
+        "status": "simulated",
+        "side_effects": false,
+        "envelope_id": "v3:F-007",
+        "envelope_digest": "500398881f184be2d6df6c97c40870ef90d2939bc68fac27ac41d8f706204e60",
+        "idempotency_key": "0297e74d-3776-4f5c-b58f-ba4818315e29",
+        "actor": "sentinel:v3-frozen-fixture",
+        "incident_id": "synthetic:F-007:2622f6bd",
+        "policy_version": "0.5.0",
+        "policy_digest": "08bada90caf5038c317fa3749edccb92fb6383c394fdfd41b1773538c1fabbf9",
+        "action": "temporary_egress_hold",
+        "target": "sandbox:v3:F-007:14e8fdd09d443b53",
+        "scope": "single_workload",
+        "executed_at": "2026-11-03T12:00:00Z"
+      },
+      "tables_after_execution": [
+        {
+          "name": "claims",
+          "rows": 2
+        }
+      ],
+      "bytes_after_execution": 12288
+    },
+    {
+      "episode": "F-027",
+      "expected": "deny",
+      "basis": "docs/ASSURANCE_BOUNDARY.md: State setup and recovery",
+      "before_constructor": {
+        "exists": true,
+        "bytes": 0
+      },
+      "create_argument": false,
+      "constructor_refused": false,
+      "bytes_after_constructor": 12288,
+      "accepted": true,
+      "reason": "Kernel returned a simulated receipt",
+      "replay_claims_added": 1,
+      "receipt": {
+        "status": "simulated",
+        "side_effects": false,
+        "envelope_id": "v3:F-027",
+        "envelope_digest": "fe8f6228cded725ad788d38f4df43a8e417a4e826ed9a3c2bfc65a2ee0ae62e2",
+        "idempotency_key": "23fe7612-30fe-45fd-8c4d-16301729b013",
+        "actor": "sentinel:v3-frozen-fixture",
+        "incident_id": "synthetic:F-027:519f22c7",
+        "policy_version": "0.5.0",
+        "policy_digest": "08bada90caf5038c317fa3749edccb92fb6383c394fdfd41b1773538c1fabbf9",
+        "action": "temporary_egress_hold",
+        "target": "sandbox:v3:F-027:ba87607a88600a5a",
+        "scope": "single_workload",
+        "executed_at": "2026-11-03T12:00:00Z"
+      },
+      "tables_after_execution": [
+        {
+          "name": "claims",
+          "rows": 2
+        }
+      ],
+      "bytes_after_execution": 12288
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 """Checks of the measurement instrument; never patch evaluated implementation."""
 from collections import Counter
 from copy import deepcopy
+import gzip
 import json
 import socket
 
@@ -112,9 +113,13 @@ def test_h_uses_trusted_original_grant_before_mutated_trust(episodes):
 
 def test_committed_results_retain_original_labels_and_every_failure():
     path = v3.ROOT/'results/replay_v3/results.json'
-    if not path.exists():
+    compressed = path.with_suffix('.json.gz')
+    if not path.exists() and not compressed.exists():
         pytest.skip('measurement not yet written')
-    r = json.loads(path.read_text())
+    raw = path.read_bytes() if path.exists() else gzip.decompress(compressed.read_bytes())
+    if path.exists() and compressed.exists():
+        assert gzip.decompress(compressed.read_bytes()) == raw
+    r = json.loads(raw)
     oracle = json.loads((v3.HERE/'oracle.json').read_text())
     expected = {f"{c['id']}.s{i}": s['expected'] for c in oracle['cases']
         for i, s in enumerate(c.get('steps', [c]), 1)}

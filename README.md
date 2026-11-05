@@ -28,7 +28,7 @@ The intelligent layer does not hold enforcement authority. Model confidence is i
 |---|---|---|
 | v1 | **FAIL** — 16 old-authority/context acceptances | [Unmodified report](results/replay_v1/report.md) · [JSON](results/replay_v1/results.json) |
 | v2 | **PASS — same development corpus**, 135/135 exact decisions; does not establish generalization | [v1/v2 comparison and every failure](results/replay_v2/report.md) · [JSON](results/replay_v2/results.json) |
-| v3 | **FAIL — frozen held-out challenge:** 2 empty replay-state failures; 7 input-proven oracle defects retained in frozen scores; 8 doc-ambiguous attempts excluded | [Every failure, intervals and latency](results/replay_v3/report.md) · [JSON](results/replay_v3/results.json) · [Frozen plan and oracle](benchmarks/replay_v3/README.md) |
+| v3 | **FAIL — frozen held-out challenge:** 2 empty replay-state failures; 7 input-proven oracle defects retained in frozen scores; 8 doc-ambiguous attempts excluded | [Every failure, intervals and latency](results/replay_v3/report.md) · [Full JSON (gzip)](results/replay_v3/results.json.gz) · [Frozen plan and oracle](benchmarks/replay_v3/README.md) |
 
 V3 uses seed **87160329**: 300 new A–G episodes plus 3,240 deterministic H
 mutations derived from v2 inputs. The full run has 3,625 primary attempts;
