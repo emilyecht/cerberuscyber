@@ -92,6 +92,15 @@ def test_baselines_are_original_functions_and_no_shadow_policy(episodes):
         assert row['systems'][name] == v3.v1.baseline(source, name, .9)
 
 
+def test_h_uses_trusted_original_grant_before_mutated_trust(episodes):
+    case = next(c for c in episodes[1] if c['class'] == 'H' and
+        len({a['independence_domain'] for a in c['original_trust']['evidence_authorities']}) == 1)
+    rows = exercise(case)
+    assert rows[0]['systems']['cerberus']['setup_control_passed']
+    assert rows[0]['systems']['cerberus']['measurement_valid']
+    assert rows[0]['systems']['cerberus']['decision'] == 'deny'
+
+
 def test_committed_results_retain_original_labels_and_every_failure():
     path = v3.ROOT/'results/replay_v3/results.json'
     if not path.exists():

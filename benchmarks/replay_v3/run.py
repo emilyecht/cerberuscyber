@@ -209,8 +209,11 @@ class Instrument:
                 verifier, proofs = fixture_assurance(envelope)
                 trust = trust_configuration(envelope)
             else:
-                trust = deepcopy(original_trust)
-                trust["revoked_key_ids"] = []
+                # Original case trust can itself be adversarial (shared domains,
+                # revoked keys). The original grant predates those mutations.
+                # Mint its positive control from the documented trusted setup;
+                # retain original_trust unchanged for the submitted request.
+                trust = trust_configuration(envelope)
                 verifier, proofs = v1.verifier(trust), api.AssuranceBundle.from_dict(original_assurance)
             self.proofs[key] = (envelope, verifier, proofs, trust)
         return self.proofs[key]
