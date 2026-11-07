@@ -83,7 +83,9 @@ class SQLiteStateStore:
         page_size = connection.execute("PRAGMA page_size").fetchone()[0]
         if Path(self.path).stat().st_size % page_size:
             raise StateUnavailable("durable authority state has a truncated page")
-        if connection.execute("PRAGMA quick_check").fetchall() != [("ok",)]:
+        # A damaged UNIQUE index can hide consumed claims from lookups while
+        # quick_check reports ok; verify table/index consistency as well.
+        if connection.execute("PRAGMA integrity_check").fetchall() != [("ok",)]:
             raise StateUnavailable("durable authority state integrity cannot be verified")
 
     def _claim(self, rows: list[tuple[str, str, str]]) -> bool:

@@ -11,7 +11,11 @@ import sqlite3
 
 import pytest
 
+from cerberus import DecisionTokenSigner, EnforcementDenied, Guardian
 from cerberus.state import ReplayDetected, SQLiteStateStore, StateUnavailable
+from simulator.assurance_fixtures import fixture_assurance
+from tests.assurance_support import registered_gateway
+from tests.test_assurance_hardening import KEY, NOW, POLICIES, request
 
 
 @pytest.fixture
@@ -179,3 +183,95 @@ def test_claim_rechecks_schema_after_startup(tmp_path, normal_open):
         assert connection.execute("SELECT count(*) FROM claims").fetchone() == (0,)
     finally:
         connection.close()
+
+
+@pytest.mark.parametrize("operation", ["open", "consume"])
+def test_corrupt_replay_index_cannot_hide_consumed_claims(tmp_path, operation):
+    path = tmp_path / "state.db"
+    store = SQLiteStateStore(path, create=True)
+    store.consume("used-token", "used-execution", "synthetic-digest")
+    with sqlite3.connect(path) as connection:
+        page_size = connection.execute("PRAGMA page_size").fetchone()[0]
+        index_page = connection.execute(
+            "SELECT rootpage FROM sqlite_master WHERE type = 'index' AND tbl_name = 'claims'"
+        ).fetchone()[0]
+    connection.close()
+
+    # Damage only the index keys, preserving its structure and entry count.
+    # The consumed rows remain in the table, but UNIQUE lookups miss them.
+    data = bytearray(path.read_bytes())
+    offset = (index_page - 1) * page_size
+    page = bytes(data[offset:offset + page_size])
+    assert page.count(b"used-token") == page.count(b"used-execution") == 1
+    page = page.replace(b"used-token", b"lost-token").replace(b"used-execution", b"lost-execution")
+    data[offset:offset + page_size] = page
+    path.write_bytes(data)
+    before = path.read_bytes()
+    with sqlite3.connect(path) as connection:
+        assert connection.execute("PRAGMA quick_check").fetchall() == [("ok",)]
+        assert connection.execute("PRAGMA integrity_check").fetchall() != [("ok",)]
+    connection.close()
+
+    with pytest.raises(StateUnavailable):
+        if operation == "open":
+            SQLiteStateStore(path, create=False)
+        else:
+            store.consume("used-token", "used-execution", "synthetic-digest")
+    assert path.read_bytes() == before
+
+
+@pytest.mark.parametrize("fault", ["missing", "zero-byte", "corrupt", "locked", "healthy"])
+def test_pipeline_state_fault_withholds_authority_and_receipts(tmp_path, fault):
+    path = tmp_path / "state.db"
+    store = SQLiteStateStore(path, create=True)
+    envelope = request()
+    verifier, bundle = fixture_assurance(envelope)
+    signer = DecisionTokenSigner(KEY)
+    guardian = Guardian(
+        POLICIES, signer=signer, assurance_verifier=verifier, idempotency_registry=store,
+    )
+    decision = guardian.evaluate(envelope, assurance=bundle, now=NOW)
+    assert decision.guardian_decision == "approve"
+    gateway = registered_gateway(signer, decision.decision_token, now=NOW, replay_cache=store)
+    lock = None
+    if fault == "missing":
+        path.unlink()
+    elif fault == "zero-byte":
+        path.write_bytes(b"")
+    elif fault == "corrupt":
+        path.write_bytes(b"not a SQLite database")
+    elif fault == "locked":
+        lock = sqlite3.connect(path)
+        lock.execute("BEGIN IMMEDIATE")
+    before = path.read_bytes() if path.exists() else None
+
+    def enforce():
+        return gateway.authorize_and_simulate(
+            decision.decision_token, expected_envelope=envelope, action=envelope.action,
+            target=envelope.target, scope=envelope.scope, now=NOW,
+        )
+
+    try:
+        if fault == "healthy":
+            receipt = enforce()
+            assert receipt["status"] == "simulated" and receipt["side_effects"] is False
+            assert receipt["envelope_digest"] == envelope.digest()
+            with pytest.raises(EnforcementDenied, match="consumed"):
+                enforce()
+            assert len(gateway.ledger.records) == 1
+        else:
+            denied = guardian.evaluate(envelope, assurance=bundle, now=NOW)
+            assert denied.guardian_decision == "deny"
+            assert denied.policy == "GLOBAL-STATE-AVAILABILITY"
+            assert denied.decision_token is None
+            with pytest.raises(EnforcementDenied):
+                enforce()
+            assert gateway.ledger.records == ()
+            if before is None:
+                assert not path.exists()
+            else:
+                assert path.read_bytes() == before
+    finally:
+        if lock is not None:
+            lock.rollback()
+            lock.close()
