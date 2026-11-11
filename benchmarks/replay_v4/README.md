@@ -1,4 +1,4 @@
-# Replay v4 post-repair instrument, version 1
+# Replay v4 post-repair instrument, version 2
 
 Stage A's `PLAN.md`, `ORACLE.md`, `oracle.json` and `oracle.sha256` are byte-for-byte
 copies of commit `93f70d4603d06d323675456f90f2629b6b0d3b52`. The evaluated system
@@ -66,3 +66,13 @@ Historical source pins remain intact. On repaired code, the original v3 instrume
 tests intentionally reject changed `cerberus/state.py`; a distinct post-repair CI
 path runs other tests on repaired code and runs those historical tests on their
 original pinned tree. This does not make the original full test command pass.
+
+Version 1 (runner commit `9fe0bf02ee6144aa8f5f2d6838646f1ac2ac385a`)
+incorrectly required both separate read and write denial for `wrong_permissions`.
+Frozen S-023/S-024 use modes 0200/0300, which deny the combined O_RDWR access
+required by SQLite but permit write-only access. Its full run is retained under
+`results/replay_v4/pr19_2026-11-11/` as invalid instrument evidence. Version 2
+adds the actual O_RDWR probe and keeps separate read/write diagnostics; readonly
+also requires readable/write-denied state. Ten additional instrument regressions
+cover every frozen S permission mode. No oracle, expected label, source under
+test, namespace, mode bit, permission override or comparison baseline changed.

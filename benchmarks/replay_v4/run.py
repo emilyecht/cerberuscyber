@@ -190,7 +190,7 @@ def permission_probe(path, readonly=False):
     if os.geteuid() == 0 or caps is None or int(caps, 16):
         raise FixtureInvalid("permission fixture requires non-root identity and no effective capabilities")
     results = {}
-    for name, flags in (("read", os.O_RDONLY), ("write", os.O_WRONLY)):
+    for name, flags in (("read", os.O_RDONLY), ("write", os.O_WRONLY), ("read_write", os.O_RDWR)):
         try:
             fd = os.open(path, flags)
         except OSError as exc:
@@ -198,7 +198,10 @@ def permission_probe(path, readonly=False):
         else:
             os.close(fd)
             results[name] = {"denied": False}
-    if not results["write"]["denied"] or results["read"]["denied"] == readonly:
+    # SQLite mode=rw requires combined O_RDWR access. Frozen modes 0200/0300
+    # intentionally allow write-only while denying that required combined access.
+    if not results["read_write"]["denied"] or (readonly and
+        (not results["write"]["denied"] or results["read"]["denied"])):
         raise FixtureInvalid("OS access denial was not confirmed: " + str(results))
     return {"euid": os.geteuid(), "egid": os.getegid(), "effective_capabilities": caps, "os_open": results}
 
@@ -678,7 +681,7 @@ def run(output, warmup=WARMUP, repetitions=REPETITIONS):
     summaries = {group:{s:summarize(selected,s) for s in SYSTEMS} for group,selected in groups.items()}
     errors = sum(not r["systems"]["cerberus"]["measurement_valid"] for r in rows)
     code = 2 if errors or mismatches else 1 if failures else 0
-    result = {"instrument":"replay_v4_post_repair_1", "target_commit":TARGET, "freeze_commit":FREEZE,
+    result = {"instrument":"replay_v4_post_repair_2", "target_commit":TARGET, "freeze_commit":FREEZE,
         "seed":oracle["seed"],"clock":oracle["clock"],"started_utc":started,"finished_utc":datetime.now(timezone.utc).isoformat(),
         "preservation":preservation,"environment":env,"cases":len(oracle["cases"]),"primary_attempts":len(rows),
         "summaries":summaries,"failures":failures,"observations":rows,
@@ -699,7 +702,7 @@ def run(output, warmup=WARMUP, repetitions=REPETITIONS):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output-dir",type=Path,default=ROOT/"results/replay_v4/pr19_2026-11-11")
+    parser.add_argument("--output-dir",type=Path,default=ROOT/"results/replay_v4/pr19_2026-11-11_v2")
     parser.add_argument("--verify-inputs-only",action="store_true")
     args = parser.parse_args()
     if args.verify_inputs_only:

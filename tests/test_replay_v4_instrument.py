@@ -89,3 +89,18 @@ def test_baselines_are_unchanged_calls(instrument):
     assert rows["confidence_0.9"]["decision"] == "allow"
     assert rows["soar_b2"]["decision"] == "deny"
     assert all(r["effects_measured"] is False for r in rows.values())
+
+
+@pytest.mark.parametrize("identifier",["S-021","S-022","S-023","S-024","S-025",
+    "S-036","S-037","S-038","S-039","S-040"])
+def test_all_frozen_permission_modes_use_actual_sqlite_access_requirement(instrument,identifier):
+    row, = v4.episode(instrument,case(instrument,identifier))
+    obs = row["systems"]["cerberus"]
+    assert obs["measurement_valid"]
+    assert obs["constructor_refusal"]
+    assert obs["decision"] == "deny"
+    probe, = obs["permission_probes"]
+    assert probe["os_open"]["read_write"]["denied"]
+    if identifier in ("S-023","S-024"):
+        assert not probe["os_open"]["write"]["denied"]
+        assert probe["os_open"]["read"]["denied"]
