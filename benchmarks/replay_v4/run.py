@@ -608,9 +608,9 @@ def summarize(rows, system):
         "false_allows": rate(sum(r["systems"][system]["decision"] == "allow" for r in unsafe), len(unsafe)),
         "false_denies": rate(sum(r["systems"][system]["decision"] != "allow" for r in positive), len(positive)),
         "observed_decisions": dict(Counter(r["systems"][system]["decision"] for r in valid)),
-        "invariant_violations_scored": sum(len(r["systems"][system].get("violations",[])) for r in valid),
-        "symbolic_writes_scored": sum(r["systems"][system].get("symbolic_writes",0) for r in valid),
-        "constructor_refusals_scored": sum(r["systems"][system].get("constructor_refusal",False) for r in valid)}
+        "invariant_violations_scored": sum(len(r["systems"][system].get("violations",[])) for r in valid) if system == "cerberus" else None,
+        "symbolic_writes_scored": sum(r["systems"][system].get("symbolic_writes",0) for r in valid) if system == "cerberus" else None,
+        "constructor_refusals_scored": sum(r["systems"][system].get("constructor_refusal",False) for r in valid) if system == "cerberus" else None}
 
 
 def signature(row):
