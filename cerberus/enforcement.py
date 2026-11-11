@@ -114,6 +114,12 @@ class EnforcementGateway:
                 self.replay_cache.consume(payload["token_id"], payload["idempotency_key"], payload["envelope_digest"])
             except (ReplayDetected, StateUnavailable) as exc:
                 raise EnforcementDenied(str(exc)) from exc
+            # Durable consumption can wait for a writer lock or integrity scan.
+            # Keep the claim consumed if that wait crosses the deadline, but do
+            # not issue a receipt using the stale pre-consumption timestamp.
+            execution_time = now or datetime.now(timezone.utc)
+            if parse_time(payload["expires_at"]) <= execution_time:
+                raise EnforcementDenied("decision token expired during durable consumption")
             executed_at = execution_time.isoformat().replace("+00:00", "Z")
             receipt = {
                 "status": "simulated", "side_effects": False,
