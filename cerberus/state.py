@@ -69,6 +69,12 @@ class SQLiteStateStore:
         return connection
 
     def _verify(self, connection: sqlite3.Connection) -> None:
+        # A checksum-damaged committed WAL can be discarded during SQLite
+        # recovery, leaving a structurally healthy database with lost claims.
+        # Support only the explicitly provisioned default rollback-journal mode;
+        # never silently convert a recovered WAL database and trust its history.
+        if connection.execute("PRAGMA journal_mode").fetchone() != ("delete",):
+            raise StateUnavailable("durable authority state requires DELETE journal mode")
         # Verify the provisioned table, uniqueness constraint and absence of
         # claim-altering triggers before startup or consumption can proceed.
         schema = connection.execute(
