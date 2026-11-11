@@ -1,0 +1,181 @@
+{
+  "runner_sha256_loaded": "1bb4b9250032f51b7d4c558e770cfd24dc4a63e3d31960342b6d011efa760521",
+  "runner_sha256_at_finish": "1bb4b9250032f51b7d4c558e770cfd24dc4a63e3d31960342b6d011efa760521",
+  "stage": "post-instrument-v1-discovery AI examination; not blinded",
+  "full_run_executed": false,
+  "observations": [
+    {
+      "id": "S-021",
+      "mode": "0000",
+      "expected": "deny",
+      "decision": "deny",
+      "measurement_valid": true,
+      "permission_probes": [
+        {
+          "euid": 1000,
+          "egid": 1000,
+          "effective_capabilities": "0000000000000000",
+          "os_open": {
+            "read": {
+              "denied": true,
+              "errno": 13
+            },
+            "write": {
+              "denied": true,
+              "errno": 13
+            },
+            "read_write": {
+              "denied": true,
+              "errno": 13
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "S-022",
+      "mode": "0111",
+      "expected": "deny",
+      "decision": "deny",
+      "measurement_valid": true,
+      "permission_probes": [
+        {
+          "euid": 1000,
+          "egid": 1000,
+          "effective_capabilities": "0000000000000000",
+          "os_open": {
+            "read": {
+              "denied": true,
+              "errno": 13
+            },
+            "write": {
+              "denied": true,
+              "errno": 13
+            },
+            "read_write": {
+              "denied": true,
+              "errno": 13
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "S-023",
+      "mode": "0200",
+      "expected": "deny",
+      "decision": "deny",
+      "measurement_valid": true,
+      "permission_probes": [
+        {
+          "euid": 1000,
+          "egid": 1000,
+          "effective_capabilities": "0000000000000000",
+          "os_open": {
+            "read": {
+              "denied": true,
+              "errno": 13
+            },
+            "write": {
+              "denied": false
+            },
+            "read_write": {
+              "denied": true,
+              "errno": 13
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "S-024",
+      "mode": "0300",
+      "expected": "deny",
+      "decision": "deny",
+      "measurement_valid": true,
+      "permission_probes": [
+        {
+          "euid": 1000,
+          "egid": 1000,
+          "effective_capabilities": "0000000000000000",
+          "os_open": {
+            "read": {
+              "denied": true,
+              "errno": 13
+            },
+            "write": {
+              "denied": false
+            },
+            "read_write": {
+              "denied": true,
+              "errno": 13
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "S-025",
+      "mode": "0100",
+      "expected": "deny",
+      "decision": "deny",
+      "measurement_valid": true,
+      "permission_probes": [
+        {
+          "euid": 1000,
+          "egid": 1000,
+          "effective_capabilities": "0000000000000000",
+          "os_open": {
+            "read": {
+              "denied": true,
+              "errno": 13
+            },
+            "write": {
+              "denied": true,
+              "errno": 13
+            },
+            "read_write": {
+              "denied": true,
+              "errno": 13
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "S-036",
+      "mode": "0400",
+      "expected": "deny",
+      "decision": "deny",
+      "measurement_valid": true,
+      "permission_probes": [
+        {
+          "euid": 1000,
+          "egid": 1000,
+          "effective_capabilities": "0000000000000000",
+          "os_open": {
+            "read": {
+              "denied": false
+            },
+            "write": {
+              "denied": true,
+              "errno": 13
+            },
+            "read_write": {
+              "denied": true,
+              "errno": 13
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "S-046",
+      "mode": null,
+      "expected": "allow",
+      "decision": "allow",
+      "measurement_valid": true,
+      "permission_probes": []
+    }
+  ]
+}

@@ -1,0 +1,1015 @@
+{
+  "stage": "post-SQLite-review exposure; not blinded evaluation",
+  "runner_sha256_loaded": "aa955897e20b20f0669a991eacd790f4b423b873016f86d7f076c5de10095ef8",
+  "runner_sha256_at_finish": "aa955897e20b20f0669a991eacd790f4b423b873016f86d7f076c5de10095ef8",
+  "euid": 1000,
+  "selected_episodes": 30,
+  "full_run_executed": false,
+  "observations": [
+    {
+      "case": "S-001",
+      "variant": "missing_file",
+      "attempts": [
+        {
+          "id": "S-001.s1",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "constructor",
+          "violations": [],
+          "constructor_ns": 41905,
+          "guardian_ns": null,
+          "kernel_ns": null,
+          "execution_claim_added": false,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "S-011",
+      "variant": "truncated_file",
+      "attempts": [
+        {
+          "id": "S-011.s1",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "constructor",
+          "violations": [],
+          "constructor_ns": 164005,
+          "guardian_ns": null,
+          "kernel_ns": null,
+          "execution_claim_added": false,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "S-016",
+      "variant": "wrong_schema",
+      "attempts": [
+        {
+          "id": "S-016.s1",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "constructor",
+          "violations": [],
+          "constructor_ns": 151688,
+          "guardian_ns": null,
+          "kernel_ns": null,
+          "execution_claim_added": false,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "S-021",
+      "variant": "wrong_permissions",
+      "attempts": [
+        {
+          "id": "S-021.s1",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "constructor",
+          "violations": [],
+          "constructor_ns": 27894,
+          "guardian_ns": null,
+          "kernel_ns": null,
+          "execution_claim_added": false,
+          "controller_events": [],
+          "permission_probes": [
+            {
+              "euid": 1000,
+              "egid": 1000,
+              "effective_capabilities": "0000000000000000",
+              "os_open": {
+                "read": {
+                  "denied": true,
+                  "errno": 13
+                },
+                "write": {
+                  "denied": true,
+                  "errno": 13
+                }
+              }
+            }
+          ],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "S-036",
+      "variant": "read_only_file",
+      "attempts": [
+        {
+          "id": "S-036.s1",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "constructor",
+          "violations": [],
+          "constructor_ns": 58935,
+          "guardian_ns": null,
+          "kernel_ns": null,
+          "execution_claim_added": false,
+          "controller_events": [],
+          "permission_probes": [
+            {
+              "euid": 1000,
+              "egid": 1000,
+              "effective_capabilities": "0000000000000000",
+              "os_open": {
+                "read": {
+                  "denied": false
+                },
+                "write": {
+                  "denied": true,
+                  "errno": 13
+                }
+              }
+            }
+          ],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "S-041",
+      "variant": "locked_file",
+      "attempts": [
+        {
+          "id": "S-041.s1",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "constructor",
+          "violations": [],
+          "constructor_ns": 2392341640,
+          "guardian_ns": null,
+          "kernel_ns": null,
+          "execution_claim_added": false,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "S-046",
+      "variant": "correctly_provisioned_file",
+      "attempts": [
+        {
+          "id": "S-046.s1",
+          "expected": "allow",
+          "decision": "allow",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 293569,
+          "guardian_ns": 3589899,
+          "kernel_ns": 1328105,
+          "execution_claim_added": true,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "S-051",
+      "variant": "explicit_provision_then_use",
+      "attempts": [
+        {
+          "id": "S-051.s1",
+          "expected": "allow",
+          "decision": "allow",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 329847,
+          "guardian_ns": 2444861,
+          "kernel_ns": 1002442,
+          "execution_claim_added": true,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "T-001",
+      "variant": "missing_after_issue",
+      "attempts": [
+        {
+          "id": "T-001.s1",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 206251,
+          "guardian_ns": null,
+          "kernel_ns": 1397753,
+          "execution_claim_added": false,
+          "controller_events": [
+            "unlink_database"
+          ],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        },
+        {
+          "id": "T-001.s2",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "constructor",
+          "violations": [],
+          "constructor_ns": 35076,
+          "guardian_ns": null,
+          "kernel_ns": null,
+          "execution_claim_added": false,
+          "controller_events": [
+            "unlink_database",
+            "ordinary_reopen_create_false_without_provisioning"
+          ],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "T-016",
+      "variant": "missing_after_receipt",
+      "attempts": [
+        {
+          "id": "T-016.s1",
+          "expected": "allow",
+          "decision": "allow",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 160860,
+          "guardian_ns": null,
+          "kernel_ns": 1101841,
+          "execution_claim_added": true,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        },
+        {
+          "id": "T-016.s2",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": null,
+          "guardian_ns": null,
+          "kernel_ns": 1560593,
+          "execution_claim_added": false,
+          "controller_events": [
+            "unlink_database"
+          ],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        },
+        {
+          "id": "T-016.s3",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "constructor",
+          "violations": [],
+          "constructor_ns": 220759,
+          "guardian_ns": null,
+          "kernel_ns": null,
+          "execution_claim_added": false,
+          "controller_events": [
+            "unlink_database",
+            "leave_or_replace_path_as_zero_byte_file",
+            "ordinary_reopen_create_false_without_provisioning"
+          ],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "T-031",
+      "variant": "permission_loss",
+      "attempts": [
+        {
+          "id": "T-031.s1",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 205847,
+          "guardian_ns": null,
+          "kernel_ns": 799808,
+          "execution_claim_added": false,
+          "controller_events": [
+            "effective_OS_access_denied"
+          ],
+          "permission_probes": [
+            {
+              "euid": 1000,
+              "egid": 1000,
+              "effective_capabilities": "0000000000000000",
+              "os_open": {
+                "read": {
+                  "denied": true,
+                  "errno": 13
+                },
+                "write": {
+                  "denied": true,
+                  "errno": 13
+                }
+              }
+            }
+          ],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        },
+        {
+          "id": "T-031.s2",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "constructor",
+          "violations": [],
+          "constructor_ns": 29060,
+          "guardian_ns": null,
+          "kernel_ns": null,
+          "execution_claim_added": false,
+          "controller_events": [
+            "effective_OS_access_denied",
+            "ordinary_reopen_still_without_access"
+          ],
+          "permission_probes": [
+            {
+              "euid": 1000,
+              "egid": 1000,
+              "effective_capabilities": "0000000000000000",
+              "os_open": {
+                "read": {
+                  "denied": true,
+                  "errno": 13
+                },
+                "write": {
+                  "denied": true,
+                  "errno": 13
+                }
+              }
+            }
+          ],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "T-036",
+      "variant": "locked_then_zero_replacement",
+      "attempts": [
+        {
+          "id": "T-036.s1",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 153605,
+          "guardian_ns": null,
+          "kernel_ns": 2294254781,
+          "execution_claim_added": false,
+          "controller_events": [
+            "hold_conflicting_lock"
+          ],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        },
+        {
+          "id": "T-036.s2",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "constructor",
+          "violations": [],
+          "constructor_ns": 348133,
+          "guardian_ns": null,
+          "kernel_ns": null,
+          "execution_claim_added": false,
+          "controller_events": [
+            "hold_conflicting_lock",
+            "replace_test_path_with_zero_byte_file",
+            "ordinary_reopen_create_false_without_provisioning"
+          ],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "T-041",
+      "variant": "restore_exact_snapshot",
+      "attempts": [
+        {
+          "id": "T-041.s1",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 152520,
+          "guardian_ns": null,
+          "kernel_ns": 667302,
+          "execution_claim_added": false,
+          "controller_events": [
+            "save_exact_preexecution_provisioned_snapshot",
+            "unlink_database"
+          ],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        },
+        {
+          "id": "T-041.s2",
+          "expected": "doc-ambiguous",
+          "decision": "allow",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 215579,
+          "guardian_ns": null,
+          "kernel_ns": 1015644,
+          "execution_claim_added": true,
+          "controller_events": [
+            "save_exact_preexecution_provisioned_snapshot",
+            "unlink_database",
+            "restore_exact_snapshot_without_documented_operator_reconciliation"
+          ],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "T-046",
+      "variant": "erase_claim_history",
+      "attempts": [
+        {
+          "id": "T-046.s1",
+          "expected": "allow",
+          "decision": "allow",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 158097,
+          "guardian_ns": null,
+          "kernel_ns": 1280156,
+          "execution_claim_added": true,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        },
+        {
+          "id": "T-046.s2",
+          "expected": "doc-ambiguous",
+          "decision": "allow",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [
+            "REPLAY_HISTORY_VIOLATION",
+            "OUT_OF_SCOPE_SIMULATOR_MUTATION"
+          ],
+          "constructor_ns": null,
+          "guardian_ns": null,
+          "kernel_ns": 1498654,
+          "execution_claim_added": true,
+          "controller_events": [
+            "retain_valid_schema_but_erase_persisted_claim_history"
+          ],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "U-C-021",
+      "variant": "conflict_missing_corroboration",
+      "attempts": [
+        {
+          "id": "U-C-021.s1",
+          "expected": "escalate",
+          "decision": "escalate",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 147634,
+          "guardian_ns": 646277,
+          "kernel_ns": 12966,
+          "execution_claim_added": false,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "U-R-011",
+      "variant": "partial_claim_audit_failure",
+      "attempts": [
+        {
+          "id": "U-R-011.s1",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 149390,
+          "guardian_ns": null,
+          "kernel_ns": 1177438,
+          "execution_claim_added": true,
+          "controller_events": [
+            "inject_audit_failure_after_claim_before_receipt"
+          ],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        },
+        {
+          "id": "U-R-011.s2",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": null,
+          "guardian_ns": null,
+          "kernel_ns": 2309697,
+          "execution_claim_added": false,
+          "controller_events": [
+            "inject_audit_failure_after_claim_before_receipt"
+          ],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "U-O-011",
+      "variant": "receipt_before_revocation",
+      "attempts": [
+        {
+          "id": "U-O-011.s1",
+          "expected": "allow",
+          "decision": "allow",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 148352,
+          "guardian_ns": null,
+          "kernel_ns": 1016401,
+          "execution_claim_added": true,
+          "controller_events": [
+            "token_revoked"
+          ],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "U-K-016",
+      "variant": "evidence_age_edges",
+      "attempts": [
+        {
+          "id": "U-K-016.s1",
+          "expected": "allow",
+          "decision": "allow",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 149574,
+          "guardian_ns": 2425761,
+          "kernel_ns": 1490964,
+          "execution_claim_added": true,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "U-K-017",
+      "variant": "evidence_age_edges",
+      "attempts": [
+        {
+          "id": "U-K-017.s1",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 144137,
+          "guardian_ns": 818951,
+          "kernel_ns": 12393,
+          "execution_claim_added": false,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "U-K-022",
+      "variant": "future_skew_edges",
+      "attempts": [
+        {
+          "id": "U-K-022.s1",
+          "expected": "allow",
+          "decision": "allow",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 153337,
+          "guardian_ns": 1904554,
+          "kernel_ns": 992654,
+          "execution_claim_added": true,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "U-K-023",
+      "variant": "future_skew_edges",
+      "attempts": [
+        {
+          "id": "U-K-023.s1",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 190383,
+          "guardian_ns": 506357,
+          "kernel_ns": 10299,
+          "execution_claim_added": false,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "U-P-025",
+      "variant": "required_human_approvals_omitted",
+      "attempts": [
+        {
+          "id": "U-P-025.s1",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 606916,
+          "guardian_ns": null,
+          "kernel_ns": 498768,
+          "execution_claim_added": false,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "V-021",
+      "variant": "last_live_microsecond",
+      "attempts": [
+        {
+          "id": "V-021.s1",
+          "expected": "allow",
+          "decision": "allow",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 205644,
+          "guardian_ns": 1983612,
+          "kernel_ns": 1277855,
+          "execution_claim_added": true,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "V-031",
+      "variant": "empty_then_explicit_provision",
+      "attempts": [
+        {
+          "id": "V-031.s1",
+          "expected": "allow",
+          "decision": "allow",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 155654,
+          "guardian_ns": 2304521,
+          "kernel_ns": 1337376,
+          "execution_claim_added": true,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "V-041",
+      "variant": "omitted_empty_sidecar_approvals",
+      "attempts": [
+        {
+          "id": "V-041.s1",
+          "expected": "doc-ambiguous",
+          "decision": "deny",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 148625,
+          "guardian_ns": null,
+          "kernel_ns": 10331,
+          "execution_claim_added": false,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "W-0010",
+      "variant": "field:confidence",
+      "attempts": [
+        {
+          "id": "W-0010.s1",
+          "expected": "deny",
+          "decision": "deny",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 150963,
+          "guardian_ns": null,
+          "kernel_ns": 613128,
+          "execution_claim_added": false,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "W-0026",
+      "variant": "identity_noop_assignment",
+      "attempts": [
+        {
+          "id": "W-0026.s1",
+          "expected": "allow",
+          "decision": "allow",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 149558,
+          "guardian_ns": null,
+          "kernel_ns": 1069302,
+          "execution_claim_added": true,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "W-0027",
+      "variant": "identity_object_order_and_whitespace",
+      "attempts": [
+        {
+          "id": "W-0027.s1",
+          "expected": "allow",
+          "decision": "allow",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 243779,
+          "guardian_ns": null,
+          "kernel_ns": 938209,
+          "execution_claim_added": true,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "W-0028",
+      "variant": "identity_escaped_ASCII_identifier",
+      "attempts": [
+        {
+          "id": "W-0028.s1",
+          "expected": "allow",
+          "decision": "allow",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 142243,
+          "guardian_ns": null,
+          "kernel_ns": 978941,
+          "execution_claim_added": true,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    },
+    {
+      "case": "W-0029",
+      "variant": "identity_change_then_restore",
+      "attempts": [
+        {
+          "id": "W-0029.s1",
+          "expected": "allow",
+          "decision": "allow",
+          "valid": true,
+          "layer": "kernel",
+          "violations": [],
+          "constructor_ns": 295766,
+          "guardian_ns": null,
+          "kernel_ns": 2472062,
+          "execution_claim_added": true,
+          "controller_events": [],
+          "permission_probes": [],
+          "baseline_decisions": {
+            "allow_if_recommended": "allow",
+            "confidence_0.9": "allow",
+            "soar_b2": "allow"
+          }
+        }
+      ]
+    }
+  ]
+}

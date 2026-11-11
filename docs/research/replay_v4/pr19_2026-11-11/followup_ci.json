@@ -1,0 +1,426 @@
+{
+  "schema_version": "replay-v4-ci-snapshot-1",
+  "followup_pr": 20,
+  "head": "c5fad3b3dc3fe5e214b143f9d43142d5466ac358",
+  "runs": [
+    {
+      "id": 43122778474,
+      "url": "https://github.com/emilyecht/cerberuscyber/actions/runs/43122778474",
+      "name": "tests",
+      "status": "completed",
+      "conclusion": "failure",
+      "jobs": [
+        {
+          "id": 130867167799,
+          "name": "test (3.10)",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_id": 43122778474,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Check out repository",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Set up Python",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Install test dependencies",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "Compile Python sources",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "Validate JSON artifacts",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "Run unit, schema, and adversarial corpus tests",
+              "status": "completed",
+              "conclusion": "failure",
+              "number": 7
+            },
+            {
+              "name": "Require actual local-effect enforcement and kernel bypass tests",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 8
+            },
+            {
+              "name": "Run combined-contract benchmark",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 9
+            },
+            {
+              "name": "Build source and wheel distributions",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 10
+            },
+            {
+              "name": "Verify wheel in a separate installed environment",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 11
+            },
+            {
+              "name": "Post Set up Python",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 21
+            },
+            {
+              "name": "Post Check out repository",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 22
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 23
+            }
+          ]
+        },
+        {
+          "id": 130867168347,
+          "name": "test (3.12)",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_id": 43122778474,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Check out repository",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Set up Python",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Install test dependencies",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "Compile Python sources",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "Validate JSON artifacts",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "Run unit, schema, and adversarial corpus tests",
+              "status": "completed",
+              "conclusion": "failure",
+              "number": 7
+            },
+            {
+              "name": "Require actual local-effect enforcement and kernel bypass tests",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 8
+            },
+            {
+              "name": "Run combined-contract benchmark",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 9
+            },
+            {
+              "name": "Build source and wheel distributions",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 10
+            },
+            {
+              "name": "Verify wheel in a separate installed environment",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 11
+            },
+            {
+              "name": "Post Set up Python",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 21
+            },
+            {
+              "name": "Post Check out repository",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 22
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 23
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 43122778287,
+      "url": "https://github.com/emilyecht/cerberuscyber/actions/runs/43122778287",
+      "name": "sqlite-postrepair",
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 130867166647,
+          "name": "validate (3.12)",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 43122778287,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Run python -m pip install -r requirements-dev.txt -r requirements-build.txt",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "Run python -m compileall -q cerberus sdk simulator tests benchmarks",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "Validate repaired source without rewriting historical pins",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "Validate historical instrument on its historical source",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7
+            },
+            {
+              "name": "Run python -m cerberus.evaluation enforcement-demo --json",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8
+            },
+            {
+              "name": "Run python benchmarks/release_candidate/run.py --target . --output \"$RUNNER_TEMP/release-candidate.json\" --fail-on-violation",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9
+            },
+            {
+              "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 17
+            },
+            {
+              "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 18
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 19
+            }
+          ]
+        },
+        {
+          "id": 130867167029,
+          "name": "validate (3.10)",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 43122778287,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Run python -m pip install -r requirements-dev.txt -r requirements-build.txt",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "Run python -m compileall -q cerberus sdk simulator tests benchmarks",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "Validate repaired source without rewriting historical pins",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "Validate historical instrument on its historical source",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7
+            },
+            {
+              "name": "Run python -m cerberus.evaluation enforcement-demo --json",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8
+            },
+            {
+              "name": "Run python benchmarks/release_candidate/run.py --target . --output \"$RUNNER_TEMP/release-candidate.json\" --fail-on-violation",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9
+            },
+            {
+              "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 17
+            },
+            {
+              "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 18
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 19
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "selected_log_evidence": [
+    {
+      "job_id": 130867166647,
+      "lines": [
+        "2026-11-11T23:50:40.0647834Z 326 passed in 37.10s",
+        "2026-11-11T23:50:42.5849612Z 10 passed in 2.27s",
+        "2026-11-11T23:50:42.8665491Z   \"cases_passed\": 14,",
+        "2026-11-11T23:50:42.8670144Z     \"Landlock protection is from Linux, not a newly invented CERBERUS sandbox.\",",
+        "2026-11-11T23:50:43.7213669Z {\"cases\": 22, \"measurement_errors\": 0, \"unsafe_authorizations\": 0, \"unsafe_requests\": 11, \"eligible_successes\": 8, \"eligible_requests\": 8, \"duplicate_effects\": 0, \"lifecycle_episodes\": 3}"
+      ]
+    },
+    {
+      "job_id": 130867167029,
+      "lines": [
+        "2026-11-11T23:50:49.7303345Z 326 passed in 41.85s",
+        "2026-11-11T23:50:51.8940011Z 10 passed in 1.94s",
+        "2026-11-11T23:50:52.1591722Z   \"cases_passed\": 14,",
+        "2026-11-11T23:50:52.1598898Z     \"Landlock protection is from Linux, not a newly invented CERBERUS sandbox.\",",
+        "2026-11-11T23:50:52.6532128Z {\"cases\": 22, \"measurement_errors\": 0, \"unsafe_authorizations\": 0, \"unsafe_requests\": 11, \"eligible_successes\": 8, \"eligible_requests\": 8, \"duplicate_effects\": 0, \"lifecycle_episodes\": 3}"
+      ]
+    },
+    {
+      "job_id": 130867167799,
+      "lines": [
+        "2026-11-11T23:50:31.5612052Z >           raise ValueError(\"protected source changed: \" + \", \".join(mismatch))",
+        "2026-11-11T23:50:31.5612477Z E           ValueError: protected source changed: cerberus/enforcement.py, cerberus/state.py",
+        "2026-11-11T23:50:31.5621262Z >           raise ValueError(\"protected source changed: \" + \", \".join(mismatch))",
+        "2026-11-11T23:50:31.5621698Z E           ValueError: protected source changed: cerberus/enforcement.py, cerberus/state.py",
+        "2026-11-11T23:50:31.5627389Z >           raise ValueError(\"protected source changed: \" + \", \".join(mismatch))",
+        "2026-11-11T23:50:31.5627955Z E           ValueError: protected source changed: cerberus/enforcement.py, cerberus/state.py",
+        "2026-11-11T23:50:31.5634057Z >           raise ValueError(\"protected source changed: \" + \", \".join(mismatch))",
+        "2026-11-11T23:50:31.5634573Z E           ValueError: protected source changed: cerberus/enforcement.py, cerberus/state.py",
+        "2026-11-11T23:50:31.5640305Z >           raise ValueError(\"protected source changed: \" + \", \".join(mismatch))",
+        "2026-11-11T23:50:31.5640892Z E           ValueError: protected source changed: cerberus/enforcement.py, cerberus/state.py",
+        "2026-11-11T23:50:31.5646592Z >           raise ValueError(\"protected source changed: \" + \", \".join(mismatch))",
+        "2026-11-11T23:50:31.5647000Z E           ValueError: protected source changed: cerberus/enforcement.py, cerberus/state.py",
+        "2026-11-11T23:50:31.5652796Z >           raise ValueError(\"protected source changed: \" + \", \".join(mismatch))",
+        "2026-11-11T23:50:31.5653209Z E           ValueError: protected source changed: cerberus/enforcement.py, cerberus/state.py",
+        "2026-11-11T23:50:31.5654541Z FAILED benchmarks/replay_v3/test_instrument.py::test_frozen_coverage_labels_and_history - ValueError: protected source changed: cerberus/enforcement.py, cerberus/state.py",
+        "2026-11-11T23:50:31.5655565Z ERROR benchmarks/replay_v3/test_instrument.py::test_partial_claim_is_not_erased_before_retry - ValueError: protected source changed: cerberus/enforcement.py, cerberus/state.py",
+        "2026-11-11T23:50:31.5656465Z ERROR benchmarks/replay_v3/test_instrument.py::test_named_ordering_and_overlapping_duplicates - ValueError: protected source changed: cerberus/enforcement.py, cerberus/state.py",
+        "2026-11-11T23:50:31.5657417Z ERROR benchmarks/replay_v3/test_instrument.py::test_scoring_excludes_ambiguity_and_does_not_hide_unsafe_allow - ValueError: protected source changed: cerberus/enforcement.py, cerberus/state.py",
+        "2026-11-11T23:50:31.5658394Z ERROR benchmarks/replay_v3/test_instrument.py::test_constructor_refusal_is_separate_from_kernel_call - ValueError: protected source changed: cerberus/enforcement.py, cerberus/state.py",
+        "2026-11-11T23:50:31.5659341Z ERROR benchmarks/replay_v3/test_instrument.py::test_baselines_are_original_functions_and_no_shadow_policy - ValueError: protected source changed: cerberus/enforcement.py, cerberus/state.py",
+        "2026-11-11T23:50:31.5660319Z ERROR benchmarks/replay_v3/test_instrument.py::test_h_uses_trusted_original_grant_before_mutated_trust - ValueError: protected source changed: cerberus/enforcement.py, cerberus/state.py",
+        "2026-11-11T23:50:31.5661016Z 1 failed, 329 passed, 6 errors in 28.19s"
+      ]
+    }
+  ]
+}

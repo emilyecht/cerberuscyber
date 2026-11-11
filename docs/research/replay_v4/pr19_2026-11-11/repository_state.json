@@ -1,0 +1,715 @@
+{
+  "schema_version": "replay-v4-initial-inspection-1",
+  "observed_utc": "2026-11-11",
+  "repository": "https://github.com/emilyecht/cerberuscyber",
+  "initial_worktree": "new full clone, clean main, no local modifications",
+  "branches": [
+    {
+      "name": "agent/workstream-c-policy-bundle-v1",
+      "sha": "16164b3e541e278bc2defb71b80325cc5996c6cd"
+    },
+    {
+      "name": "bench/guardian-authorization-v1",
+      "sha": "f259c1fe146c3e17bbea0e710b35405b2df7ad83"
+    },
+    {
+      "name": "chore/authorship-licensing-record",
+      "sha": "de76bea52c6a605fd53bab201f7cd6714e389f17"
+    },
+    {
+      "name": "docs/claim-audit-alignment",
+      "sha": "044a72fa6ee0126db693a35dd9b3c7cdb311d7e3"
+    },
+    {
+      "name": "docs/update-readme-workstreams-ab",
+      "sha": "548fb69e3a71a4e2c2d6e0fbb50009edf795d01c"
+    },
+    {
+      "name": "eval/injection-v1-plan",
+      "sha": "2dc10b9e8ab15ba0dac0178f7519adb661fbe5f6"
+    },
+    {
+      "name": "eval/replay-v4-plan",
+      "sha": "93f70d4603d06d323675456f90f2629b6b0d3b52"
+    },
+    {
+      "name": "evidence/main-after-pr11",
+      "sha": "ad84ceca762d2ca41965448b60f5208691524614"
+    },
+    {
+      "name": "feat/local-enforcement-demonstration",
+      "sha": "8fd40196c54648b67d346ef0b893f00e10d4850e"
+    },
+    {
+      "name": "fix/assurance-boundaries",
+      "sha": "f081297268127d9155fae049eb456e62b982e509"
+    },
+    {
+      "name": "fix/exact-action-contract-validation",
+      "sha": "651bd4a465661c7c54d58d3c60c279338b727c4f"
+    },
+    {
+      "name": "fix/kernel-context-replay-v2",
+      "sha": "2b4d992fb0ef05ed7b95950d14e4195c1e440ac7"
+    },
+    {
+      "name": "fix/sqlite-fail-closed-init",
+      "sha": "6fe417400ff4844d7647dddd9435288c3485ffc0"
+    },
+    {
+      "name": "hardening/action-envelope-v1",
+      "sha": "d28ce6a47e3e44a55e966adf167f29738781bcd3"
+    },
+    {
+      "name": "integration/workstream-a-clean",
+      "sha": "0ac5be6c893d21f1a8c172999279f0c83b8cd042"
+    },
+    {
+      "name": "integration/workstream-b-clean",
+      "sha": "33bb2d0f6605fc88f595df4d0daf62f743b718a0"
+    },
+    {
+      "name": "main",
+      "sha": "c6894a5cee974ff7904d2f27c13c547a973debda"
+    },
+    {
+      "name": "release/evaluation-kit-rc1",
+      "sha": "13d3e2fd19f0f1baedc19e297b2c75e904acfac7"
+    },
+    {
+      "name": "research/five-class-replay-v1",
+      "sha": "48eefd82cee2c47c5ffc4f79de392ce3b0049ffe"
+    },
+    {
+      "name": "research/replay-v3-held-out",
+      "sha": "f0ebd38c58e9d40af35d35c5cc32b5614eb60439"
+    },
+    {
+      "name": "workstream-a/adversarial-corpus-v1",
+      "sha": "91cde789f0d6418f08c4390c8d92d4c0fc4b2a63"
+    },
+    {
+      "name": "workstream-b/action-envelope-v1",
+      "sha": "60f5b2335be75e9e6c4fe162e6846778c6b5725d"
+    }
+  ],
+  "pull_requests": [
+    {
+      "number": 18,
+      "title": "Add replay v3 holdout: report empty replay-state acceptance",
+      "state": "open",
+      "draft": false,
+      "base_ref": "fix/kernel-context-replay-v2",
+      "base_sha": "2b4d992fb0ef05ed7b95950d14e4195c1e440ac7",
+      "head_ref": "research/replay-v3-held-out",
+      "head_sha": "f0ebd38c58e9d40af35d35c5cc32b5614eb60439",
+      "body": "Adds a pre-registered replay_v3 challenge evaluation of the frozen v2 system. **The safety gate is FAIL; no implementation repair is included.**\n\nOpening an existing zero-byte replay database with `create=False` still initializes a claims table and permits a simulated receipt. Cases F-007.s1 and F-027.s1 expose this SQLite replay-state initialization failure and produce two out-of-scope symbolic state mutations.\n\nSeven additional H discrepancies have input-proven oracle defects: the mutation restores the complete original approved request. The report supplies identical request/setup hashes and the documentary refutation. All seven original labels, discrepancies and scores remain in the frozen gate.\n\n- Seed **87160329**; 300 new A–G episodes and 3,240 v2-derived field mutations.\n- **3,625 primary attempts; 3,617 scored; 8 doc-ambiguous attempts listed separately.**\n- Frozen scores retain **9/3,484 false allows**, **0/133 false denies**, and all invariant tallies.\n- Per-family and overall counts, 95% Wilson intervals, 0/N rule-of-three bounds, unchanged baselines, state snapshots, failing layers, and raw latency are included.\n- Latency uses 5 warmup plus 20 measured repetitions per primary attempt: **72,420 measured samples**. Hardware and intentionally locked-store timeout tails are disclosed.\n\n[Full report](https://github.com/emilyecht/cerberuscyber/blob/research/replay-v3-held-out/results/replay_v3/report.md) · [Complete results JSON, lossless gzip](https://github.com/emilyecht/cerberuscyber/blob/research/replay-v3-held-out/results/replay_v3/results.json.gz)\n\nPlan commit `8aa9ef4` precedes oracle/hash commit `e7f4820`, which precedes implementation and results. Oracle SHA-256 remains `20c4b1967054e0dbab12ea72a674da807c75be830b835e1799320958a14bbfb2`. All **234 protected files** are byte-identical to v2; the protected `git diff --stat` is empty.\n\nValidation: **176 selected instrument/regression checks passed**, including the pinned historical v1 verifier and v2 gates. The repeated functional observations and all timed outcomes match. Publication preserves the measured source tree and records the equivalent GitHub commit. Full JSON is losslessly compressed for upload; the command also writes ordinary JSON locally.\n\n```bash\npython benchmarks/replay_v3/run.py\npython benchmarks/replay_v3/verify_history.py\n```\n\nThe first command returns **1** for the recorded safety failure. Runtime dependencies must already be installed; evaluation is offline.\n\nThis PR is stacked on `fix/kernel-context-replay-v2` so its diff contains only v3 artifacts and the README. Synthetic replay, repository-derived labels, trusted process-local registry, and correct trusted provisioning/revocation delivery are assumptions; compromised trusted producers are out of scope. H is correlated and source-derived. These results are not field validation.",
+      "requested_reviewers": [],
+      "requested_teams": []
+    },
+    {
+      "number": 19,
+      "title": "Fail closed on unprovisioned and corrupt SQLite replay state",
+      "state": "open",
+      "draft": true,
+      "base_ref": "research/replay-v3-held-out",
+      "base_sha": "f0ebd38c58e9d40af35d35c5cc32b5614eb60439",
+      "head_ref": "fix/sqlite-fail-closed-init",
+      "head_sha": "6fe417400ff4844d7647dddd9435288c3485ffc0",
+      "body": "Opening an existing zero-byte database with `create=False` used to create `claims` and permit a simulated receipt (PR #18, F-007.s1/F-027.s1). Ordinary opens now require already-provisioned, verifiable state. Missing, corrupt, empty-unprovisioned or conflicting locked state refuses startup/claims without creating a table or falling back to memory.\n\nThis two-file PR is stacked on #18 (`research/replay-v3-held-out`), not main. It reuses the existing unmerged initialization repair `7a386ea` and closes one additional corruption gap found during review.\n\n| File | Change |\n| --- | --- |\n| `cerberus/state.py` | Only explicit `create=True` performs schema creation. Verify the canonical claims table, primary key, absence of claim triggers, page alignment and database integrity under `BEGIN IMMEDIATE`, both at startup and before each atomic claim. Preserve both execution uniqueness constraints and the existing two-second busy timeout. Convert SQLite/filesystem failures to `StateUnavailable`. |\n| `tests/test_state_initialization.py` | 25 focused storage cases: unavailable/unprovisioned/malformed startup states, no-DDL ordinary open, explicit provisioning and durable duplicate refusal, schema damage after startup, two index-corruption regressions, and shared-store Guardian/gateway faults plus a healthy one-receipt control. |\n\n### Review finding: quick_check is insufficient for the replay index\n\nIn a temporary synthetic database, corrupting only the two index keys for an already-consumed token/execution pair preserved the index structure and entry count. `PRAGMA quick_check` returned `ok`; the previous repair reopened the store and consumed the same pair again. `PRAGMA integrity_check` detects the missing table/index correspondence.\n\nThe additional production change replaces quick_check with integrity_check. Both new corruption regressions fail on `7a386ea` and pass after this change. See [SQLite's integrity/quick-check contract](https://www.sqlite.org/pragma.html#pragma_quick_check).\n\n### Validation\n\n```sh\npython -m pytest -q tests/test_state_initialization.py tests/test_assurance_hardening.py tests/test_kernel_binding.py\npython -m pip check\n```\n\n- **107 passed**: 25 storage cases and 82 existing assurance/Kernel checks, including restart, concurrent replay, post-consumption audit failure and authority/request binding. No skips in this selection.\n- The zero-byte startup regression independently fails against the original v3 commit `f0ebd38`. Both new index-corruption cases fail against the prior repair; the final focused selection passes.\n- Faults after issuance withhold a new Guardian token and the original grant's gateway receipt; the enforcement ledger stays empty and missing/zero/corrupt backing files are not recreated or repaired. Healthy shared state permits exactly one simulated receipt and rejects its replay.\n- Python 3.12.14, SQLite 3.53.1; repository pins pytest 8.3.5, cryptography 50.0.1, jsonschema 4.23.0 and rfc3339-validator 0.1.4. Dependency check clean; `git diff --check` clean.\n- Published Git tree `14df4c600a48a71bab701fe3b5eeec83876b49e1` exactly matches the locally tested tree.\n\n### Frozen evidence and remaining work\n\nThe diff against #18 contains **only these two files**. Guardian, enforcement gateway, policies, schemas, every benchmark/oracle/corpus and all recorded results are byte-identical to the v3 baseline. Oracle SHA-256 remains `20c4b1967054e0dbab12ea72a674da807c75be830b835e1799320958a14bbfb2`.\n\nThe historical v3 gate remains **FAIL, 9/3,484 false allows**, including its seven documented oracle defects. No relabeling, replacement result or post-fix benchmark claim is made. No benchmark or full CI workflow was run. The commits retain `[skip ci]` because the full workflow invokes historical evaluation instruments whose source pins correctly reject repaired state.py; those pins and gates have not been weakened.\n\nSelf-review and focused regression validation are complete; independent review and a separately authorized post-fix evaluation remain pending. This draft is not merged.\n\nLimits: trusted single-host SQLite; no authenticated history, rollback/replacement resistance or exactly-once real execution. Schema-valid erased history is not detected. Canonical schema checks conservatively reject alternate schema/index/trigger layouts; path checks reject symlinks, nonregular and mode-read-only files. The permission test establishes conservative mode-based refusal, not an independent unprivileged OS-denial experiment. Full integrity checks run under a writer lock before each claim, adding unmeasured cost/contention as history grows. Tests use synthetic inputs and simulated receipts, not field validation or held-out generalization.\n",
+      "requested_reviewers": [],
+      "requested_teams": []
+    }
+  ],
+  "existing_v4_work": "Only Stage A branch and four frozen files; no published runner, result branch or PR. PR19 already reuses initialization repair 7a386eaa1bc4bf96e600c846def848158276f285.",
+  "freeze": {
+    "commit": "93f70d4603d06d323675456f90f2629b6b0d3b52",
+    "sha256": "18539d829f7f95ef0a3e93bde607b253b76b15085c184816b862574c48b217a0",
+    "oracle_git_blob": "03ec9c3c2bffb29d89077adf5ce6f15d3d791783",
+    "commit_time": "2026-11-05T15:12:27-06:00",
+    "first_repair_time": "2026-11-05T16:52:06-06:00",
+    "final_repair_time": "2026-11-06T19:21:04-06:00",
+    "common_parent": "f0ebd38c58e9d40af35d35c5cc32b5614eb60439",
+    "ancestry": "Sibling branches: oracle is not an ancestor of repair. Timestamps indicate earlier freeze but do not cryptographically establish ordering or author blindness. Both become parents/ancestors of evaluation integration commit b87a272011c37f8d8dc5232efaa13f57018ab70e."
+  },
+  "pr19_reviews": {
+    "reviews": []
+  },
+  "pr19_comments": {
+    "comments": [],
+    "url": "https://github.com/emilyecht/cerberuscyber/pull/19",
+    "title": "emilyecht/cerberuscyber PR #19 comments",
+    "display_url": "https://github.com/emilyecht/cerberuscyber/pull/19",
+    "display_title": "emilyecht/cerberuscyber PR #19 comments"
+  },
+  "pr19_checks": {
+    "content": "{\"total_count\":0,\"check_runs\":[]}",
+    "title": "check-runs",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/emilyecht/cerberuscyber/commits/6fe417400ff4844d7647dddd9435288c3485ffc0/check-runs",
+    "display_url": "https://api.github.com/repos/emilyecht/cerberuscyber/commits/6fe417400ff4844d7647dddd9435288c3485ffc0/check-runs",
+    "display_title": "check-runs",
+    "structuredContent": {
+      "title": "check-runs",
+      "content": "{\"total_count\":0,\"check_runs\":[]}",
+      "display_url": "https://api.github.com/repos/emilyecht/cerberuscyber/commits/6fe417400ff4844d7647dddd9435288c3485ffc0/check-runs"
+    }
+  },
+  "pr19_statuses": {
+    "statuses": []
+  },
+  "pr18_ci_jobs": {
+    "jobs": [
+      {
+        "id": 127524485585,
+        "name": "test (3.10)",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 42107042886,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Check out repository",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Set up Python",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Install test dependencies",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Compile Python sources",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Validate JSON artifacts",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Run unit, schema, and adversarial corpus tests",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Require actual local-effect enforcement and kernel bypass tests",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Run combined-contract benchmark",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Build source and wheel distributions",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10
+          },
+          {
+            "name": "Verify wheel in a separate installed environment",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11
+          },
+          {
+            "name": "Post Set up Python",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 21
+          },
+          {
+            "name": "Post Check out repository",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 22
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 23
+          }
+        ]
+      },
+      {
+        "id": 127524486255,
+        "name": "test (3.12)",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 42107042886,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Check out repository",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Set up Python",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Install test dependencies",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Compile Python sources",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Validate JSON artifacts",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Run unit, schema, and adversarial corpus tests",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Require actual local-effect enforcement and kernel bypass tests",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Run combined-contract benchmark",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Build source and wheel distributions",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10
+          },
+          {
+            "name": "Verify wheel in a separate installed environment",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11
+          },
+          {
+            "name": "Post Set up Python",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 21
+          },
+          {
+            "name": "Post Check out repository",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 22
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 23
+          }
+        ]
+      }
+    ]
+  },
+  "ci_runs": [
+    {
+      "id": 42107042886,
+      "name": "tests",
+      "branch": "research/replay-v3-held-out",
+      "sha": "f0ebd38c58e9d40af35d35c5cc32b5614eb60439",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 41926101400,
+      "name": "tests",
+      "branch": "fix/kernel-context-replay-v2",
+      "sha": "2b4d992fb0ef05ed7b95950d14e4195c1e440ac7",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 41916438832,
+      "name": "tests",
+      "branch": "research/five-class-replay-v1",
+      "sha": "48eefd82cee2c47c5ffc4f79de392ce3b0049ffe",
+      "status": "completed",
+      "conclusion": "failure",
+      "event": "pull_request"
+    },
+    {
+      "id": 41210078177,
+      "name": "tests",
+      "branch": "main",
+      "sha": "c6894a5cee974ff7904d2f27c13c547a973debda",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push"
+    },
+    {
+      "id": 41209960592,
+      "name": "tests",
+      "branch": "docs/claim-audit-alignment",
+      "sha": "044a72fa6ee0126db693a35dd9b3c7cdb311d7e3",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 41208964452,
+      "name": "tests",
+      "branch": "main",
+      "sha": "667d0d045822cc2f7e193e710e433a83c5142b98",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push"
+    },
+    {
+      "id": 41208794085,
+      "name": "tests",
+      "branch": "feat/local-enforcement-demonstration",
+      "sha": "8fd40196c54648b67d346ef0b893f00e10d4850e",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 41208041199,
+      "name": "tests",
+      "branch": "feat/local-enforcement-demonstration",
+      "sha": "5be68bd534eac84f4fd1354bc6e79b4d1421cc10",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 41207033896,
+      "name": "tests",
+      "branch": "main",
+      "sha": "9f7a9b6e12389a76807ac83d049c45e3eda171db",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push"
+    },
+    {
+      "id": 41206970373,
+      "name": "tests",
+      "branch": "chore/authorship-licensing-record",
+      "sha": "de76bea52c6a605fd53bab201f7cd6714e389f17",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 41206910214,
+      "name": "tests",
+      "branch": "chore/authorship-licensing-record",
+      "sha": "0ae30c8cd83e3f7afd25c257f7149f23559c3c1d",
+      "status": "completed",
+      "conclusion": "failure",
+      "event": "pull_request"
+    },
+    {
+      "id": 34428298394,
+      "name": "tests",
+      "branch": "main",
+      "sha": "93f0d540f94eb03442a5d0ba83836d970541cdd7",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push"
+    },
+    {
+      "id": 34427873153,
+      "name": "tests",
+      "branch": "evidence/main-after-pr11",
+      "sha": "ad84ceca762d2ca41965448b60f5208691524614",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 34427623770,
+      "name": "tests",
+      "branch": "main",
+      "sha": "59c6a29ac40448fe8c897dc5249c3f32e3e716cb",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push"
+    },
+    {
+      "id": 34405805600,
+      "name": "tests",
+      "branch": "release/evaluation-kit-rc1",
+      "sha": "13d3e2fd19f0f1baedc19e297b2c75e904acfac7",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 34405533707,
+      "name": "tests",
+      "branch": "release/evaluation-kit-rc1",
+      "sha": "64f08221a8f919cece4fa3554c000a3804ca9e64",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 34273359664,
+      "name": "tests",
+      "branch": "fix/assurance-boundaries",
+      "sha": "f081297268127d9155fae049eb456e62b982e509",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 34273241018,
+      "name": "tests",
+      "branch": "fix/assurance-boundaries",
+      "sha": "9845d1ec92e03df5522d505f74ba3ac87e2f51f3",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 34273240157,
+      "name": "tests",
+      "branch": "fix/assurance-boundaries",
+      "sha": "9845d1ec92e03df5522d505f74ba3ac87e2f51f3",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "event": "pull_request"
+    },
+    {
+      "id": 34272847303,
+      "name": "tests",
+      "branch": "main",
+      "sha": "d9e58ecc2443e237c685e8510f864a343913723e",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push"
+    },
+    {
+      "id": 34272812454,
+      "name": "tests",
+      "branch": "main",
+      "sha": "0af57b6e8b578f0f4afce11701f831506f50aaf7",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push"
+    },
+    {
+      "id": 34272497510,
+      "name": "tests",
+      "branch": "fix/assurance-boundaries",
+      "sha": "63ae8853fd3000c504e283f453bef3df4efc1918",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 34255355387,
+      "name": "tests",
+      "branch": "bench/guardian-authorization-v1",
+      "sha": "f259c1fe146c3e17bbea0e710b35405b2df7ad83",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 34181453793,
+      "name": "tests",
+      "branch": "bench/guardian-authorization-v1",
+      "sha": "ac81c0e3ac3acf3b5f022cecc350de58f5b04e65",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 34155318080,
+      "name": "tests",
+      "branch": "bench/guardian-authorization-v1",
+      "sha": "e96a3c6e70420080da33e3b5d266cd7a522377e0",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 34083736468,
+      "name": "tests",
+      "branch": "fix/exact-action-contract-validation",
+      "sha": "651bd4a465661c7c54d58d3c60c279338b727c4f",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 29888337898,
+      "name": "tests",
+      "branch": "main",
+      "sha": "ac22a922fae1475cbfa9921534222df96cbdf2b5",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push"
+    },
+    {
+      "id": 29755570368,
+      "name": "tests",
+      "branch": "agent/workstream-c-policy-bundle-v1",
+      "sha": "16164b3e541e278bc2defb71b80325cc5996c6cd",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 29661534980,
+      "name": "tests",
+      "branch": "main",
+      "sha": "38f267a0d491c56f3023c38acfa324883cd31805",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push"
+    },
+    {
+      "id": 29661522036,
+      "name": "tests",
+      "branch": "docs/update-readme-workstreams-ab",
+      "sha": "548fb69e3a71a4e2c2d6e0fbb50009edf795d01c",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 29659060276,
+      "name": "tests",
+      "branch": "main",
+      "sha": "0b8439bcf28ee8366a3acc8dfff2195c21a881ba",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push"
+    },
+    {
+      "id": 29659042225,
+      "name": "tests",
+      "branch": "integration/workstream-b-clean",
+      "sha": "33bb2d0f6605fc88f595df4d0daf62f743b718a0",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 29658932884,
+      "name": "tests",
+      "branch": "main",
+      "sha": "6962c22b6a749e45cc39b79c0b93284ee573a1fa",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push"
+    },
+    {
+      "id": 29658917625,
+      "name": "tests",
+      "branch": "integration/workstream-a-clean",
+      "sha": "0ac5be6c893d21f1a8c172999279f0c83b8cd042",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 29658716928,
+      "name": "tests",
+      "branch": "main",
+      "sha": "d506ef5705722b504b6a71201b22c38db0a45371",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push"
+    },
+    {
+      "id": 29658566864,
+      "name": "tests",
+      "branch": "workstream-b/action-envelope-v1",
+      "sha": "60f5b2335be75e9e6c4fe162e6846778c6b5725d",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 29658005797,
+      "name": "tests",
+      "branch": "workstream-a/adversarial-corpus-v1",
+      "sha": "91cde789f0d6418f08c4390c8d92d4c0fc4b2a63",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 29266769198,
+      "name": "tests",
+      "branch": "hardening/action-envelope-v1",
+      "sha": "d28ce6a47e3e44a55e966adf167f29738781bcd3",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 29266741609,
+      "name": "tests",
+      "branch": "hardening/action-envelope-v1",
+      "sha": "ba72f743cd2703b8070c629b250770e9685701fa",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request"
+    },
+    {
+      "id": 29266716761,
+      "name": "tests",
+      "branch": "hardening/action-envelope-v1",
+      "sha": "a5acaf6b6112907f0713163998f18e8c8bf87cea",
+      "status": "completed",
+      "conclusion": "failure",
+      "event": "pull_request"
+    }
+  ]
+}
