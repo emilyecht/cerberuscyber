@@ -1,0 +1,42 @@
+........................................................................ [ 22%]
+........................................................................ [ 44%]
+...................................................F.................... [ 66%]
+...............................s........................................ [ 88%]
+......................................                                   [100%]
+=================================== FAILURES ===================================
+_______ test_fresh_process_probe_and_positive_control_use_actual_target ________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-10/test_fresh_process_probe_and_p0')
+
+    def test_fresh_process_probe_and_positive_control_use_actual_target(tmp_path):
+        destination = tmp_path / "result.json"
+        completed = subprocess.run(
+            [sys.executable, str(SCRIPT), "--target", str(ROOT), "--output", str(destination),
+             "--case", "V01", "--case", "G08"], text=True, capture_output=True, timeout=30,
+        )
+>       result = json.loads(destination.read_text())
+
+tests/test_guardian_benchmark.py:112: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/pytest-of-agent/pytest-10/test_fresh_process_probe_and_p0/result.json')
+mode = 'r', buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-agent/pytest-10/test_fresh_process_probe_and_p0/result.json'
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1013: FileNotFoundError
+=========================== short test summary info ============================
+FAILED tests/test_guardian_benchmark.py::test_fresh_process_probe_and_positive_control_use_actual_target
+1 failed, 324 passed, 1 skipped in 60.34s (0:01:00)

@@ -29,8 +29,17 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install -r requirements-dev.txt -r requirements-build.txt
+      - name: Record validation environment
+        run: |
+          python -c 'import sys,sqlite3,platform,json; from importlib.metadata import version; print(json.dumps({"python":sys.version,"sqlite":sqlite3.sqlite_version,"platform":platform.platform(),"dependencies":{p:version(p) for p in ("cryptography","jsonschema","rfc3339-validator","pytest")}}))'
+          python -m pip freeze
       - run: python -m compileall -q cerberus sdk simulator tests benchmarks
       - run: python benchmarks/replay_v4/run.py --verify-inputs-only
+      - name: Verify original measurement commits and complete recorded artifacts
+        run: |
+          python benchmarks/replay_v4/restore_local_commits.py
+          python benchmarks/replay_v4/verify_results.py results/replay_v4/pr19_2026-11-11
+          python benchmarks/replay_v4/verify_results.py results/replay_v4/pr19_2026-11-11_v2 --require-pass
       - name: Run post-repair tests without relabeling the historical instrument
         run: python -m pytest -q --ignore=benchmarks/replay_v3/test_instrument.py
       - name: Run the historical v3 instrument on its unchanged historical tree

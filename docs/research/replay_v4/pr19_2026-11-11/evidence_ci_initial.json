@@ -1,0 +1,215 @@
+{
+  "run_id": 43123735320,
+  "commit": "ecec033e07fe1a377f80cf030c571978339dfc66",
+  "workflow": "replay-v4-postrepair",
+  "scope": "Initial evidence publication; final artifact-verification steps are added later and require final-head checks",
+  "jobs": [
+    {
+      "id": 130870443874,
+      "name": "validate (3.10)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 43123735320,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run python -m pip install -r requirements-dev.txt -r requirements-build.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run python -m compileall -q cerberus sdk simulator tests benchmarks",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run python benchmarks/replay_v4/run.py --verify-inputs-only",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run post-repair tests without relabeling the historical instrument",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Run the historical v3 instrument on its unchanged historical tree",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Run python -m cerberus.evaluation enforcement-demo --json",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Run python benchmarks/release_candidate/run.py --target . --output \"$RUNNER_TEMP/release-candidate.json\" --fail-on-violation",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Run python -m build && python scripts/release_checksums.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Verify installed wheel separately",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25
+        }
+      ]
+    },
+    {
+      "id": 130870444235,
+      "name": "validate (3.12)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 43123735320,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run python -m pip install -r requirements-dev.txt -r requirements-build.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run python -m compileall -q cerberus sdk simulator tests benchmarks",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run python benchmarks/replay_v4/run.py --verify-inputs-only",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run post-repair tests without relabeling the historical instrument",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Run the historical v3 instrument on its unchanged historical tree",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Run python -m cerberus.evaluation enforcement-demo --json",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Run python benchmarks/release_candidate/run.py --target . --output \"$RUNNER_TEMP/release-candidate.json\" --fail-on-violation",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Run python -m build && python scripts/release_checksums.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Verify installed wheel separately",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25
+        }
+      ]
+    }
+  ],
+  "selected_python312_log_evidence": [
+    "2026-11-11T23:58:44.9020244Z 336 passed in 48.15s",
+    "2026-11-11T23:58:47.2714893Z 10 passed in 2.10s",
+    "2026-11-11T23:58:47.5834600Z   \"cases_passed\": 14,",
+    "2026-11-11T23:58:48.1418619Z {\"cases\": 22, \"measurement_errors\": 0, \"unsafe_authorizations\": 0, \"unsafe_requests\": 11, \"eligible_successes\": 8, \"eligible_requests\": 8, \"duplicate_effects\": 0, \"lifecycle_episodes\": 3}",
+    "2026-11-11T23:58:57.5930176Z {\"cases_passed\": 4, \"installed_artifact\": \"passed\", \"local_enforcement_lab_cases\": 14, \"python\": \"3.12.16\", \"source_checkout_imported\": false, \"version\": \"0.1.0rc1\"}"
+  ]
+}

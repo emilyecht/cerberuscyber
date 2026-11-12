@@ -1,0 +1,95 @@
+{
+  "commands": [
+    {
+      "command": "python -m pytest -q",
+      "target": "original repaired PR19 full path, local Python 3.12",
+      "result": "1 failed, 322 passed, 1 skipped, 6 errors",
+      "reason": "v3 frozen source hash rejects repaired state.py; pins retained"
+    },
+    {
+      "command": "python -m pytest -q --ignore=benchmarks/replay_v3/test_instrument.py",
+      "target": "corrected-instrument evidence branch on Python 3.10.22 and 3.12.14",
+      "result": "335 passed, 1 skipped on each",
+      "reason": "skip is unavailable Landlock ABI >=3 on this host"
+    },
+    {
+      "command": "python -m pytest -q benchmarks/replay_v3/test_instrument.py",
+      "target": "original f0ebd38 historical worktree, both Python versions",
+      "result": "10 passed on each"
+    },
+    {
+      "command": "python -m pytest -q tests/test_state_initialization.py tests/test_assurance_hardening.py tests/test_kernel_binding.py",
+      "target": "original PR19, Python 3.12.14",
+      "result": "107 passed"
+    },
+    {
+      "command": "python -m pytest -q tests/test_sqlite_review_followups.py tests/test_state_initialization.py tests/test_assurance_hardening.py tests/test_kernel_binding.py",
+      "target": "separate followup branch, both Python versions",
+      "result": "113 passed on each"
+    },
+    {
+      "command": "python -m pytest -q --ignore=benchmarks/replay_v3/test_instrument.py",
+      "target": "clean committed followup branch, both Python versions",
+      "result": "325 passed, 1 skipped on each"
+    },
+    {
+      "command": "python -m build --no-isolation",
+      "target": "original PR19 source plus evidence files, both Python versions",
+      "result": "source and wheel built"
+    },
+    {
+      "command": "python -I scripts/verify_installed.py --repo-root /absolute/repository/path",
+      "target": "local clean installed wheel, Python 3.12",
+      "result": "failed at enforcement-demo exit2 due Landlock ENOSYS; not a pass"
+    },
+    {
+      "command": "cerberus-cyber demo --json",
+      "target": "installed wheel simulation",
+      "result": "4 cases passed, no real effects"
+    },
+    {
+      "command": "python benchmarks/release_candidate/run.py --target . --output RESULT --fail-on-violation",
+      "target": "original PR19, both Python versions",
+      "result": "22 cases, 0 measurement errors, 0 unsafe authorizations, 8/8 eligible successes, 0 duplicate effects"
+    },
+    {
+      "command": "python -m cerberus.evaluation enforcement-demo --json",
+      "target": "local host, both Python versions",
+      "result": "exit2 UNAVAILABLE, Landlock ABI >=3 ENOSYS"
+    },
+    {
+      "command": "python -m compileall -q cerberus sdk simulator tests benchmarks",
+      "target": "supported Python versions",
+      "result": "passed; new v4 helpers also compiled on both"
+    },
+    {
+      "command": "python benchmarks/replay_v4/verify_results.py recorded-directory",
+      "target": "preserved invalid v1 artifact",
+      "result": "artifact verified on both Python versions; recorded INVALID_MEASUREMENT remains invalid"
+    }
+  ],
+  "development_attempts": [
+    {
+      "result": "six new followup tests initially failed",
+      "reason": "new-test exception-wrapper/clock fixture errors; corrected chained-cause assertion and shared clock; no existing tests weakened",
+      "retained_log": "validation/python312/followups-test-development-initial.log"
+    },
+    {
+      "result": "one broader followup test initially failed on each Python version",
+      "reason": "existing benchmark clean-source gate refused dirty uncommitted production sources; clean committed reruns passed",
+      "retained_logs": [
+        "validation/python310/followups-postrepair.log",
+        "validation/python312/followups-postrepair.log"
+      ]
+    },
+    {
+      "result": "first artifact-verifier calculation rejected U-K-026",
+      "reason": "verifier incorrectly applied evidence skew to token not-before; corrected exact token not-before, runner observations unchanged"
+    },
+    {
+      "result": "a first tamper-probe invocation did not run",
+      "reason": "default Python lacked runtime dependency; rerun in pinned venv verified altered label rejection"
+    }
+  ],
+  "provenance": "Observed command results; scripts were not represented as executed where only compile/static review was done. Final corrected full evaluation and artifact verification are recorded separately."
+}

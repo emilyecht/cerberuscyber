@@ -1,0 +1,68 @@
+{
+  "coverage": {
+    "cases": 1005,
+    "by_family": {
+      "S": 55,
+      "T": 50,
+      "U": 130,
+      "V": 45,
+      "W": 725
+    },
+    "case_terminal_labels": {
+      "deny": 813,
+      "doc-ambiguous": 22,
+      "allow": 165,
+      "escalate": 5
+    },
+    "primary_attempts": 1100,
+    "attempt_labels": {
+      "deny": 873,
+      "doc-ambiguous": 22,
+      "allow": 200,
+      "escalate": 5
+    },
+    "W": {
+      "fresh_parent_clusters": 25,
+      "field_mutations_per_parent": 25,
+      "identity_controls_per_parent": 4,
+      "identity_controls": 100,
+      "nonidentity_denials": 625,
+      "fields": [
+        "schema_version",
+        "envelope_id",
+        "incident_id",
+        "actor",
+        "threat",
+        "action",
+        "target",
+        "scope",
+        "evidence_refs",
+        "confidence",
+        "freshness",
+        "idempotency_key",
+        "reversibility_flag",
+        "required_approval_mode",
+        "policy_version",
+        "mission_impact",
+        "human_approvals",
+        "evidence_refs.0.source_id",
+        "evidence_refs.0.digest",
+        "evidence_refs.0.signal",
+        "evidence_refs.0.observed_at",
+        "freshness.timestamp",
+        "freshness.expires_at",
+        "freshness.nonce",
+        "human_approvals.0"
+      ]
+    },
+    "doc_ambiguous_attempts": 22
+  },
+  "preservation": {
+    "v4_oracle_sha256": "18539d829f7f95ef0a3e93bde607b253b76b15085c184816b862574c48b217a0",
+    "protected_paths": 183,
+    "target_commit": "6fe417400ff4844d7647dddd9435288c3485ffc0",
+    "freeze_commit": "93f70d4603d06d323675456f90f2629b6b0d3b52",
+    "source_diff_stat": "",
+    "historical_diff_stat": ""
+  }
+}

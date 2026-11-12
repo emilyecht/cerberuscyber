@@ -51,6 +51,17 @@ def verify(directory):
         obs = row["systems"]["cerberus"]
         if obs["measurement_valid"]:
             assert row["request_sha256"] == v4.sha(v4.canonical(request))
+            receipt = obs.get("receipt")
+            if receipt is not None:
+                assert obs["decision"] == "allow" and obs["symbolic_writes"] == 1
+                assert receipt["status"] == "simulated" and receipt["side_effects"] is False
+                assert receipt["envelope_digest"] == row["request_sha256"]
+                for name in ("envelope_id","idempotency_key","actor","incident_id","action","target","scope","policy_version"):
+                    assert receipt[name] == request[name]
+                target = receipt["target"]
+                assert obs["state_after"][target]["writes"] == obs["state_before"].get(target,{}).get("writes",0)+1
+            else:
+                assert obs["decision"] != "allow" and obs["symbolic_writes"] == 0
             for name,expected in (("allow_if_recommended","deny" if request["action"] == "none" else "allow"),
                 ("confidence_0.9","deny" if request["action"] == "none" else "allow" if request["confidence"] >= .9 else "escalate")):
                 assert row["systems"][name]["decision"] == expected
@@ -65,7 +76,8 @@ def verify(directory):
             if original["human_approvals"]:
                 deadlines.append(v4.parse(template["assurance_recipe"]["approval_expiry"]))
             now = v4.parse(row["logical_time"])
-            approved = now < min(deadlines) and now >= clock-timedelta(seconds=5)
+            # Token not-before is exact, distinct from evidence's skew allowance.
+            approved = now < min(deadlines) and now >= clock
             approved &= v4.v2.B2_ACTIONS.get(request["action"]) == request["scope"]
             approved &= all(request[k] == original[k] for k in ("action","target","scope"))
             assert row["systems"]["soar_b2"]["decision"] == ("allow" if approved else "deny"), "SOAR baseline mismatch: "+identifier
@@ -107,4 +119,9 @@ def verify(directory):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("directory",type=Path)
-    print(json.dumps(verify(parser.parse_args().directory),indent=2))
+    parser.add_argument("--require-pass",action="store_true")
+    args = parser.parse_args()
+    outcome = verify(args.directory)
+    print(json.dumps(outcome,indent=2))
+    if args.require_pass and outcome["recorded_gate"] != "PASS":
+        raise SystemExit(1)

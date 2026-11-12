@@ -1,0 +1,804 @@
+FFFFFF.................................................................. [ 63%]
+.........................................                                [100%]
+=================================== FAILURES ===================================
+____________ test_wal_state_cannot_supply_authority[ordinary-open] _____________
+
+self = <cerberus.state.SQLiteStateStore object at 0x7fdbd0e0a6f0>
+path = PosixPath('/tmp/pytest-of-agent/pytest-7/test_wal_state_cannot_supply_a0/state.db')
+
+    def __init__(self, path: str | Path, *, namespace: str = "cerberus", create: bool = False) -> None:
+        if not isinstance(namespace, str) or not namespace.strip():
+            raise ValueError("state namespace must be non-empty")
+        if str(path) in ("", ":memory:"):
+            raise ValueError("durable state requires an explicit filesystem path")
+        self.path = str(Path(path).absolute())
+        self.namespace = namespace
+        connection = None
+        try:
+            connection = self._connect(create=create)
+            with connection:
+                if create:
+                    connection.execute(f"CREATE TABLE IF NOT EXISTS claims ({_CLAIMS_SCHEMA})")
+>               self._verify(connection)
+
+cerberus/state.py:45: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <cerberus.state.SQLiteStateStore object at 0x7fdbd0e0a6f0>
+connection = <sqlite3.Connection object at 0x7fdbcfcc46d0>
+
+    def _verify(self, connection: sqlite3.Connection) -> None:
+        # A checksum-damaged committed WAL can be discarded during SQLite
+        # recovery, leaving a structurally healthy database with lost claims.
+        # Support only the explicitly provisioned default rollback-journal mode;
+        # never silently convert a recovered WAL database and trust its history.
+        if connection.execute("PRAGMA journal_mode").fetchone() != ("delete",):
+>           raise StateUnavailable("durable authority state requires DELETE journal mode")
+E           cerberus.state.StateUnavailable: durable authority state requires DELETE journal mode
+
+cerberus/state.py:77: StateUnavailable
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-7/test_wal_state_cannot_supply_a0')
+operation = 'ordinary-open'
+
+    @pytest.mark.parametrize("operation", ["ordinary-open", "existing-claim", "explicit-provision"])
+    def test_wal_state_cannot_supply_authority(tmp_path, operation):
+        path = tmp_path/"state.db"
+        store = SQLiteStateStore(path, create=True)
+        store.consume("used-token", "used-execution", "synthetic-digest")
+        con = sqlite3.connect(path)
+        assert con.execute("PRAGMA journal_mode=WAL").fetchone() == ("wal",)
+        con.close()
+        with pytest.raises(StateUnavailable, match="DELETE journal"):
+>           if operation == "ordinary-open": SQLiteStateStore(path)
+
+tests/test_sqlite_review_followups.py:29: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <cerberus.state.SQLiteStateStore object at 0x7fdbd0e0a6f0>
+path = PosixPath('/tmp/pytest-of-agent/pytest-7/test_wal_state_cannot_supply_a0/state.db')
+
+    def __init__(self, path: str | Path, *, namespace: str = "cerberus", create: bool = False) -> None:
+        if not isinstance(namespace, str) or not namespace.strip():
+            raise ValueError("state namespace must be non-empty")
+        if str(path) in ("", ":memory:"):
+            raise ValueError("durable state requires an explicit filesystem path")
+        self.path = str(Path(path).absolute())
+        self.namespace = namespace
+        connection = None
+        try:
+            connection = self._connect(create=create)
+            with connection:
+                if create:
+                    connection.execute(f"CREATE TABLE IF NOT EXISTS claims ({_CLAIMS_SCHEMA})")
+                self._verify(connection)
+        except (sqlite3.Error, OSError) as exc:
+>           raise StateUnavailable("cannot initialize durable authority state") from exc
+E           cerberus.state.StateUnavailable: cannot initialize durable authority state
+
+cerberus/state.py:47: StateUnavailable
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-7/test_wal_state_cannot_supply_a0')
+operation = 'ordinary-open'
+
+    @pytest.mark.parametrize("operation", ["ordinary-open", "existing-claim", "explicit-provision"])
+    def test_wal_state_cannot_supply_authority(tmp_path, operation):
+        path = tmp_path/"state.db"
+        store = SQLiteStateStore(path, create=True)
+        store.consume("used-token", "used-execution", "synthetic-digest")
+        con = sqlite3.connect(path)
+        assert con.execute("PRAGMA journal_mode=WAL").fetchone() == ("wal",)
+        con.close()
+>       with pytest.raises(StateUnavailable, match="DELETE journal"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'DELETE journal'
+E        Input: 'cannot initialize durable authority state'
+
+tests/test_sqlite_review_followups.py:28: AssertionError
+____________ test_wal_state_cannot_supply_authority[existing-claim] ____________
+
+self = <cerberus.state.SQLiteStateStore object at 0x7fdbcfce75f0>
+rows = [('token', 'fresh-token', 'synthetic-digest'), ('execution', 'fresh-execution', 'synthetic-digest')]
+
+    def _claim(self, rows: list[tuple[str, str, str]]) -> bool:
+        connection = None
+        try:
+            connection = self._connect()
+>           self._verify(connection)
+
+cerberus/state.py:101: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <cerberus.state.SQLiteStateStore object at 0x7fdbcfce75f0>
+connection = <sqlite3.Connection object at 0x7fdbcfcc53f0>
+
+    def _verify(self, connection: sqlite3.Connection) -> None:
+        # A checksum-damaged committed WAL can be discarded during SQLite
+        # recovery, leaving a structurally healthy database with lost claims.
+        # Support only the explicitly provisioned default rollback-journal mode;
+        # never silently convert a recovered WAL database and trust its history.
+        if connection.execute("PRAGMA journal_mode").fetchone() != ("delete",):
+>           raise StateUnavailable("durable authority state requires DELETE journal mode")
+E           cerberus.state.StateUnavailable: durable authority state requires DELETE journal mode
+
+cerberus/state.py:77: StateUnavailable
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-7/test_wal_state_cannot_supply_a1')
+operation = 'existing-claim'
+
+    @pytest.mark.parametrize("operation", ["ordinary-open", "existing-claim", "explicit-provision"])
+    def test_wal_state_cannot_supply_authority(tmp_path, operation):
+        path = tmp_path/"state.db"
+        store = SQLiteStateStore(path, create=True)
+        store.consume("used-token", "used-execution", "synthetic-digest")
+        con = sqlite3.connect(path)
+        assert con.execute("PRAGMA journal_mode=WAL").fetchone() == ("wal",)
+        con.close()
+        with pytest.raises(StateUnavailable, match="DELETE journal"):
+            if operation == "ordinary-open": SQLiteStateStore(path)
+>           elif operation == "existing-claim": store.consume("fresh-token", "fresh-execution", "synthetic-digest")
+
+tests/test_sqlite_review_followups.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cerberus/state.py:129: in consume
+    if not self._claim([
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <cerberus.state.SQLiteStateStore object at 0x7fdbcfce75f0>
+rows = [('token', 'fresh-token', 'synthetic-digest'), ('execution', 'fresh-execution', 'synthetic-digest')]
+
+    def _claim(self, rows: list[tuple[str, str, str]]) -> bool:
+        connection = None
+        try:
+            connection = self._connect()
+            self._verify(connection)
+            for kind, key, digest in rows:
+                if not isinstance(key, str) or not key:
+                    raise ValueError("state claim key must be a non-empty string")
+                connection.execute(
+                    "INSERT INTO claims(namespace, kind, claim_key, digest) VALUES (?, ?, ?, ?)",
+                    (self.namespace, kind, key, digest),
+                )
+            connection.commit()
+            return True
+        except sqlite3.IntegrityError:
+            if connection is not None:
+                connection.rollback()
+            return False
+        except (sqlite3.Error, OSError) as exc:
+            if connection is not None:
+                connection.rollback()
+>           raise StateUnavailable("durable authority state unavailable") from exc
+E           cerberus.state.StateUnavailable: durable authority state unavailable
+
+cerberus/state.py:118: StateUnavailable
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-7/test_wal_state_cannot_supply_a1')
+operation = 'existing-claim'
+
+    @pytest.mark.parametrize("operation", ["ordinary-open", "existing-claim", "explicit-provision"])
+    def test_wal_state_cannot_supply_authority(tmp_path, operation):
+        path = tmp_path/"state.db"
+        store = SQLiteStateStore(path, create=True)
+        store.consume("used-token", "used-execution", "synthetic-digest")
+        con = sqlite3.connect(path)
+        assert con.execute("PRAGMA journal_mode=WAL").fetchone() == ("wal",)
+        con.close()
+>       with pytest.raises(StateUnavailable, match="DELETE journal"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'DELETE journal'
+E        Input: 'durable authority state unavailable'
+
+tests/test_sqlite_review_followups.py:28: AssertionError
+__________ test_wal_state_cannot_supply_authority[explicit-provision] __________
+
+self = <cerberus.state.SQLiteStateStore object at 0x7fdbcfce5fa0>
+path = PosixPath('/tmp/pytest-of-agent/pytest-7/test_wal_state_cannot_supply_a2/state.db')
+
+    def __init__(self, path: str | Path, *, namespace: str = "cerberus", create: bool = False) -> None:
+        if not isinstance(namespace, str) or not namespace.strip():
+            raise ValueError("state namespace must be non-empty")
+        if str(path) in ("", ":memory:"):
+            raise ValueError("durable state requires an explicit filesystem path")
+        self.path = str(Path(path).absolute())
+        self.namespace = namespace
+        connection = None
+        try:
+            connection = self._connect(create=create)
+            with connection:
+                if create:
+                    connection.execute(f"CREATE TABLE IF NOT EXISTS claims ({_CLAIMS_SCHEMA})")
+>               self._verify(connection)
+
+cerberus/state.py:45: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <cerberus.state.SQLiteStateStore object at 0x7fdbcfce5fa0>
+connection = <sqlite3.Connection object at 0x7fdbcfcc5c60>
+
+    def _verify(self, connection: sqlite3.Connection) -> None:
+        # A checksum-damaged committed WAL can be discarded during SQLite
+        # recovery, leaving a structurally healthy database with lost claims.
+        # Support only the explicitly provisioned default rollback-journal mode;
+        # never silently convert a recovered WAL database and trust its history.
+        if connection.execute("PRAGMA journal_mode").fetchone() != ("delete",):
+>           raise StateUnavailable("durable authority state requires DELETE journal mode")
+E           cerberus.state.StateUnavailable: durable authority state requires DELETE journal mode
+
+cerberus/state.py:77: StateUnavailable
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-7/test_wal_state_cannot_supply_a2')
+operation = 'explicit-provision'
+
+    @pytest.mark.parametrize("operation", ["ordinary-open", "existing-claim", "explicit-provision"])
+    def test_wal_state_cannot_supply_authority(tmp_path, operation):
+        path = tmp_path/"state.db"
+        store = SQLiteStateStore(path, create=True)
+        store.consume("used-token", "used-execution", "synthetic-digest")
+        con = sqlite3.connect(path)
+        assert con.execute("PRAGMA journal_mode=WAL").fetchone() == ("wal",)
+        con.close()
+        with pytest.raises(StateUnavailable, match="DELETE journal"):
+            if operation == "ordinary-open": SQLiteStateStore(path)
+            elif operation == "existing-claim": store.consume("fresh-token", "fresh-execution", "synthetic-digest")
+>           else: SQLiteStateStore(path, create=True)
+
+tests/test_sqlite_review_followups.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <cerberus.state.SQLiteStateStore object at 0x7fdbcfce5fa0>
+path = PosixPath('/tmp/pytest-of-agent/pytest-7/test_wal_state_cannot_supply_a2/state.db')
+
+    def __init__(self, path: str | Path, *, namespace: str = "cerberus", create: bool = False) -> None:
+        if not isinstance(namespace, str) or not namespace.strip():
+            raise ValueError("state namespace must be non-empty")
+        if str(path) in ("", ":memory:"):
+            raise ValueError("durable state requires an explicit filesystem path")
+        self.path = str(Path(path).absolute())
+        self.namespace = namespace
+        connection = None
+        try:
+            connection = self._connect(create=create)
+            with connection:
+                if create:
+                    connection.execute(f"CREATE TABLE IF NOT EXISTS claims ({_CLAIMS_SCHEMA})")
+                self._verify(connection)
+        except (sqlite3.Error, OSError) as exc:
+>           raise StateUnavailable("cannot initialize durable authority state") from exc
+E           cerberus.state.StateUnavailable: cannot initialize durable authority state
+
+cerberus/state.py:47: StateUnavailable
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-7/test_wal_state_cannot_supply_a2')
+operation = 'explicit-provision'
+
+    @pytest.mark.parametrize("operation", ["ordinary-open", "existing-claim", "explicit-provision"])
+    def test_wal_state_cannot_supply_authority(tmp_path, operation):
+        path = tmp_path/"state.db"
+        store = SQLiteStateStore(path, create=True)
+        store.consume("used-token", "used-execution", "synthetic-digest")
+        con = sqlite3.connect(path)
+        assert con.execute("PRAGMA journal_mode=WAL").fetchone() == ("wal",)
+        con.close()
+>       with pytest.raises(StateUnavailable, match="DELETE journal"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'DELETE journal'
+E        Input: 'cannot initialize durable authority state'
+
+tests/test_sqlite_review_followups.py:28: AssertionError
+_______ test_corrupt_committed_wal_is_not_mistaken_for_verified_history ________
+
+self = <cerberus.state.SQLiteStateStore object at 0x7fdbd0a943b0>
+path = PosixPath('/tmp/pytest-of-agent/pytest-7/test_corrupt_committed_wal_is_0/state.db')
+
+    def __init__(self, path: str | Path, *, namespace: str = "cerberus", create: bool = False) -> None:
+        if not isinstance(namespace, str) or not namespace.strip():
+            raise ValueError("state namespace must be non-empty")
+        if str(path) in ("", ":memory:"):
+            raise ValueError("durable state requires an explicit filesystem path")
+        self.path = str(Path(path).absolute())
+        self.namespace = namespace
+        connection = None
+        try:
+            connection = self._connect(create=create)
+            with connection:
+                if create:
+                    connection.execute(f"CREATE TABLE IF NOT EXISTS claims ({_CLAIMS_SCHEMA})")
+>               self._verify(connection)
+
+cerberus/state.py:45: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <cerberus.state.SQLiteStateStore object at 0x7fdbd0a943b0>
+connection = <sqlite3.Connection object at 0x7fdbcfcc6200>
+
+    def _verify(self, connection: sqlite3.Connection) -> None:
+        # A checksum-damaged committed WAL can be discarded during SQLite
+        # recovery, leaving a structurally healthy database with lost claims.
+        # Support only the explicitly provisioned default rollback-journal mode;
+        # never silently convert a recovered WAL database and trust its history.
+        if connection.execute("PRAGMA journal_mode").fetchone() != ("delete",):
+>           raise StateUnavailable("durable authority state requires DELETE journal mode")
+E           cerberus.state.StateUnavailable: durable authority state requires DELETE journal mode
+
+cerberus/state.py:77: StateUnavailable
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-7/test_corrupt_committed_wal_is_0')
+
+    def test_corrupt_committed_wal_is_not_mistaken_for_verified_history(tmp_path):
+        path = tmp_path/"state.db"
+        SQLiteStateStore(path, create=True)
+        # Build the exact legacy crash artifact with SQLite itself. Both claims are
+        # committed and observed by a second connection before abrupt child exit.
+        child = '''import os,sqlite3,sys
+    p=sys.argv[1]
+    keeper=sqlite3.connect(p)
+    assert keeper.execute("PRAGMA journal_mode=WAL").fetchone()==("wal",)
+    keeper.execute("BEGIN")
+    keeper.execute("SELECT count(*) FROM claims").fetchone()
+    writer=sqlite3.connect(p)
+    writer.executemany("INSERT INTO claims VALUES (?,?,?,?)",[
+     ("cerberus","token","used-token","synthetic-digest"),
+     ("cerberus","execution","used-execution","synthetic-digest")])
+    writer.commit()
+    observer=sqlite3.connect(p)
+    assert observer.execute("SELECT count(*) FROM claims").fetchone()==(2,)
+    print("two committed claims independently observed",flush=True)
+    os._exit(0)
+    '''
+        completed = subprocess.run([sys.executable,"-c",child,str(path)],check=True,text=True,capture_output=True)
+        assert completed.stdout.strip() == "two committed claims independently observed"
+        wal = Path(str(path)+"-wal")
+        data = bytearray(wal.read_bytes()); data[-1] ^= 1; wal.write_bytes(data)
+        # Demonstrate why structural integrity alone is insufficient after recovery.
+        con = sqlite3.connect(path)
+        assert con.execute("PRAGMA integrity_check").fetchall() == [("ok",)]
+        assert con.execute("SELECT count(*) FROM claims").fetchone() == (0,)
+        con.close()
+        with pytest.raises(StateUnavailable, match="DELETE journal"):
+>           SQLiteStateStore(path)
+
+tests/test_sqlite_review_followups.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <cerberus.state.SQLiteStateStore object at 0x7fdbd0a943b0>
+path = PosixPath('/tmp/pytest-of-agent/pytest-7/test_corrupt_committed_wal_is_0/state.db')
+
+    def __init__(self, path: str | Path, *, namespace: str = "cerberus", create: bool = False) -> None:
+        if not isinstance(namespace, str) or not namespace.strip():
+            raise ValueError("state namespace must be non-empty")
+        if str(path) in ("", ":memory:"):
+            raise ValueError("durable state requires an explicit filesystem path")
+        self.path = str(Path(path).absolute())
+        self.namespace = namespace
+        connection = None
+        try:
+            connection = self._connect(create=create)
+            with connection:
+                if create:
+                    connection.execute(f"CREATE TABLE IF NOT EXISTS claims ({_CLAIMS_SCHEMA})")
+                self._verify(connection)
+        except (sqlite3.Error, OSError) as exc:
+>           raise StateUnavailable("cannot initialize durable authority state") from exc
+E           cerberus.state.StateUnavailable: cannot initialize durable authority state
+
+cerberus/state.py:47: StateUnavailable
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-7/test_corrupt_committed_wal_is_0')
+
+    def test_corrupt_committed_wal_is_not_mistaken_for_verified_history(tmp_path):
+        path = tmp_path/"state.db"
+        SQLiteStateStore(path, create=True)
+        # Build the exact legacy crash artifact with SQLite itself. Both claims are
+        # committed and observed by a second connection before abrupt child exit.
+        child = '''import os,sqlite3,sys
+    p=sys.argv[1]
+    keeper=sqlite3.connect(p)
+    assert keeper.execute("PRAGMA journal_mode=WAL").fetchone()==("wal",)
+    keeper.execute("BEGIN")
+    keeper.execute("SELECT count(*) FROM claims").fetchone()
+    writer=sqlite3.connect(p)
+    writer.executemany("INSERT INTO claims VALUES (?,?,?,?)",[
+     ("cerberus","token","used-token","synthetic-digest"),
+     ("cerberus","execution","used-execution","synthetic-digest")])
+    writer.commit()
+    observer=sqlite3.connect(p)
+    assert observer.execute("SELECT count(*) FROM claims").fetchone()==(2,)
+    print("two committed claims independently observed",flush=True)
+    os._exit(0)
+    '''
+        completed = subprocess.run([sys.executable,"-c",child,str(path)],check=True,text=True,capture_output=True)
+        assert completed.stdout.strip() == "two committed claims independently observed"
+        wal = Path(str(path)+"-wal")
+        data = bytearray(wal.read_bytes()); data[-1] ^= 1; wal.write_bytes(data)
+        # Demonstrate why structural integrity alone is insufficient after recovery.
+        con = sqlite3.connect(path)
+        assert con.execute("PRAGMA integrity_check").fetchall() == [("ok",)]
+        assert con.execute("SELECT count(*) FROM claims").fetchone() == (0,)
+        con.close()
+>       with pytest.raises(StateUnavailable, match="DELETE journal"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'DELETE journal'
+E        Input: 'cannot initialize durable authority state'
+
+tests/test_sqlite_review_followups.py:71: AssertionError
+________ test_real_clock_is_rechecked_after_durable_consumption[False] _________
+
+self = <cerberus.enforcement.EnforcementGateway object at 0x7fdbd0e318b0>
+token = 'eyJhY3Rpb24iOiJpc29sYXRlX2VuZHBvaW50IiwiYWN0b3IiOiJzZW50aW5lbDpsZWdhY3ktc2ltdWxhdG9yIiwiYXNzdXJhbmNlX2RpZ2VzdCI6IjViZ...FhMzdiNWZmNTg0MTQyOWNhYmExM2ZjMzU1NTMwNyIsInRva2VuX3ZlcnNpb24iOiIxLjMuMCJ9.yOatkqNtNTPp6nfjCSUvIPo1ZfA4NUtqhSOSEJB3WFQ'
+
+    def authorize_and_simulate(
+        self,
+        token: str,
+        *,
+        action: str,
+        target: str,
+        scope: str,
+        expected_envelope: ActionEnvelope | dict | None = None,
+        now: datetime | None = None,
+    ) -> dict[str, Any]:
+        try:
+>           payload = self.signer.verify(token, now=now)
+
+cerberus/enforcement.py:88: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <cerberus.token.DecisionTokenSigner object at 0x7fdbd0912c00>
+token = 'eyJhY3Rpb24iOiJpc29sYXRlX2VuZHBvaW50IiwiYWN0b3IiOiJzZW50aW5lbDpsZWdhY3ktc2ltdWxhdG9yIiwiYXNzdXJhbmNlX2RpZ2VzdCI6IjViZ...FhMzdiNWZmNTg0MTQyOWNhYmExM2ZjMzU1NTMwNyIsInRva2VuX3ZlcnNpb24iOiIxLjMuMCJ9.yOatkqNtNTPp6nfjCSUvIPo1ZfA4NUtqhSOSEJB3WFQ'
+
+    def verify(self, token: str, *, now: datetime | None = None) -> dict[str, Any]:
+        if not isinstance(token, str) or not token.isascii() or len(token) > 16384:
+            raise TokenValidationError("token must be bounded ASCII text")
+        try:
+            encoded, signature = token.split(".", 1)
+        except ValueError as exc:
+            raise TokenValidationError("token must contain payload and signature") from exc
+        expected = hmac.new(self._key, encoded.encode("ascii"), hashlib.sha256).digest()
+        supplied = _b64decode(signature)
+        if not hmac.compare_digest(expected, supplied):
+            raise TokenValidationError("invalid token signature")
+        try:
+            payload = json.loads(_b64decode(encoded))
+        except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+            raise TokenValidationError("invalid token payload") from exc
+        if not isinstance(payload, dict):
+            raise TokenValidationError("token payload must be an object")
+        required = {
+            "token_version",
+            "token_id",
+            "key_id",
+            "envelope_id",
+            "envelope_digest",
+            "assurance_digest",
+            "idempotency_key",
+            "actor",
+            "incident_id",
+            "action",
+            "target",
+            "scope",
+            "policy_id",
+            "policy_version",
+            "policy_digest",
+            "issued_at",
+            "expires_at",
+            "nonce",
+            "reversible",
+        }
+        missing = sorted(required.difference(payload))
+        if missing:
+            raise TokenValidationError(f"token missing fields: {', '.join(missing)}")
+        if payload["token_version"] != self.TOKEN_VERSION:
+            raise TokenValidationError("unsupported token version")
+        if payload["key_id"] != self.key_id:
+            raise TokenValidationError("unexpected signing key id")
+        if set(payload) != required:
+            raise TokenValidationError("token has unknown fields")
+        for field in ("envelope_digest", "assurance_digest", "policy_digest"):
+            if not isinstance(payload[field], str) or re.fullmatch(r"[0-9a-f]{64}", payload[field]) is None:
+                raise TokenValidationError(f"invalid {field}")
+        for field in required - {"reversible"}:
+            if not isinstance(payload[field], str) or not payload[field]:
+                raise TokenValidationError(f"invalid token field: {field}")
+        if type(payload["reversible"]) is not bool:
+            raise TokenValidationError("invalid reversibility flag")
+        current = now or datetime.now(timezone.utc)
+        try:
+            expires = parse_time(payload["expires_at"])
+            issued = parse_time(payload["issued_at"])
+        except (ValueError, TypeError) as exc:
+            raise TokenValidationError("invalid token timestamps") from exc
+        if expires <= current or expires <= issued:
+>           raise TokenValidationError("decision token expired")
+E           cerberus.token.TokenValidationError: decision token expired
+
+cerberus/token.py:192: TokenValidationError
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-7/test_real_clock_is_rechecked_a0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fdbcfce7c20>
+crosses_deadline = False
+
+    @pytest.mark.parametrize("crosses_deadline", [False, True])
+    def test_real_clock_is_rechecked_after_durable_consumption(tmp_path, monkeypatch, crosses_deadline):
+        env = request()
+        verifier, proofs = fixture_assurance(env)
+        signer = DecisionTokenSigner(KEY)
+        decision = Guardian(POLICIES,signer=signer,assurance_verifier=verifier).evaluate(env,assurance=proofs,now=NOW)
+        expiry = datetime.fromisoformat(signer.verify(decision.decision_token,now=NOW)["expires_at"].replace("Z","+00:00"))
+        current = [expiry-timedelta(microseconds=1)]
+    
+        class Clock(datetime):
+            @classmethod
+            def now(cls,tz=None): return current[0]
+    
+        store = SQLiteStateStore(tmp_path/"state.db",create=True)
+    
+        class BlockingConsumption:
+            def consume(self,*args):
+                store.consume(*args)
+                # Deterministic stand-in for lock wait / integrity scan. No sleep,
+                # fake token, disabled replay check, or frozen expected-label edit.
+                current[0] = expiry if crosses_deadline else expiry-timedelta(microseconds=1)
+    
+        gateway = registered_gateway(signer,decision.decision_token,now=NOW,replay_cache=BlockingConsumption())
+        monkeypatch.setattr(enforcement,"datetime",Clock)
+    
+        def execute():
+            return gateway.authorize_and_simulate(decision.decision_token,expected_envelope=env,
+                action=env.action,target=env.target,scope=env.scope)
+    
+        if crosses_deadline:
+            with pytest.raises(EnforcementDenied,match="expired during durable consumption"): execute()
+            assert gateway.ledger.records == ()
+        else:
+>           assert execute()["executed_at"] == current[0].isoformat().replace("+00:00","Z")
+
+tests/test_sqlite_review_followups.py:108: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sqlite_review_followups.py:101: in execute
+    return gateway.authorize_and_simulate(decision.decision_token,expected_envelope=env,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <cerberus.enforcement.EnforcementGateway object at 0x7fdbd0e318b0>
+token = 'eyJhY3Rpb24iOiJpc29sYXRlX2VuZHBvaW50IiwiYWN0b3IiOiJzZW50aW5lbDpsZWdhY3ktc2ltdWxhdG9yIiwiYXNzdXJhbmNlX2RpZ2VzdCI6IjViZ...FhMzdiNWZmNTg0MTQyOWNhYmExM2ZjMzU1NTMwNyIsInRva2VuX3ZlcnNpb24iOiIxLjMuMCJ9.yOatkqNtNTPp6nfjCSUvIPo1ZfA4NUtqhSOSEJB3WFQ'
+
+    def authorize_and_simulate(
+        self,
+        token: str,
+        *,
+        action: str,
+        target: str,
+        scope: str,
+        expected_envelope: ActionEnvelope | dict | None = None,
+        now: datetime | None = None,
+    ) -> dict[str, Any]:
+        try:
+            payload = self.signer.verify(token, now=now)
+        except TokenValidationError as exc:
+>           raise EnforcementDenied(str(exc)) from exc
+E           cerberus.enforcement.EnforcementDenied: decision token expired
+
+cerberus/enforcement.py:90: EnforcementDenied
+_________ test_real_clock_is_rechecked_after_durable_consumption[True] _________
+
+self = <cerberus.enforcement.EnforcementGateway object at 0x7fdbd0e14fb0>
+token = 'eyJhY3Rpb24iOiJpc29sYXRlX2VuZHBvaW50IiwiYWN0b3IiOiJzZW50aW5lbDpsZWdhY3ktc2ltdWxhdG9yIiwiYXNzdXJhbmNlX2RpZ2VzdCI6IjY4M...cyM2U3ODVlMDQ0NmQzOTU4YzQ5YjAxMmY2NGE1ZCIsInRva2VuX3ZlcnNpb24iOiIxLjMuMCJ9.SKUYYGxCv0PS3zSMLVwBeemzXCVEPPIFRch_vZochOM'
+
+    def authorize_and_simulate(
+        self,
+        token: str,
+        *,
+        action: str,
+        target: str,
+        scope: str,
+        expected_envelope: ActionEnvelope | dict | None = None,
+        now: datetime | None = None,
+    ) -> dict[str, Any]:
+        try:
+>           payload = self.signer.verify(token, now=now)
+
+cerberus/enforcement.py:88: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <cerberus.token.DecisionTokenSigner object at 0x7fdbcfce6bd0>
+token = 'eyJhY3Rpb24iOiJpc29sYXRlX2VuZHBvaW50IiwiYWN0b3IiOiJzZW50aW5lbDpsZWdhY3ktc2ltdWxhdG9yIiwiYXNzdXJhbmNlX2RpZ2VzdCI6IjY4M...cyM2U3ODVlMDQ0NmQzOTU4YzQ5YjAxMmY2NGE1ZCIsInRva2VuX3ZlcnNpb24iOiIxLjMuMCJ9.SKUYYGxCv0PS3zSMLVwBeemzXCVEPPIFRch_vZochOM'
+
+    def verify(self, token: str, *, now: datetime | None = None) -> dict[str, Any]:
+        if not isinstance(token, str) or not token.isascii() or len(token) > 16384:
+            raise TokenValidationError("token must be bounded ASCII text")
+        try:
+            encoded, signature = token.split(".", 1)
+        except ValueError as exc:
+            raise TokenValidationError("token must contain payload and signature") from exc
+        expected = hmac.new(self._key, encoded.encode("ascii"), hashlib.sha256).digest()
+        supplied = _b64decode(signature)
+        if not hmac.compare_digest(expected, supplied):
+            raise TokenValidationError("invalid token signature")
+        try:
+            payload = json.loads(_b64decode(encoded))
+        except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+            raise TokenValidationError("invalid token payload") from exc
+        if not isinstance(payload, dict):
+            raise TokenValidationError("token payload must be an object")
+        required = {
+            "token_version",
+            "token_id",
+            "key_id",
+            "envelope_id",
+            "envelope_digest",
+            "assurance_digest",
+            "idempotency_key",
+            "actor",
+            "incident_id",
+            "action",
+            "target",
+            "scope",
+            "policy_id",
+            "policy_version",
+            "policy_digest",
+            "issued_at",
+            "expires_at",
+            "nonce",
+            "reversible",
+        }
+        missing = sorted(required.difference(payload))
+        if missing:
+            raise TokenValidationError(f"token missing fields: {', '.join(missing)}")
+        if payload["token_version"] != self.TOKEN_VERSION:
+            raise TokenValidationError("unsupported token version")
+        if payload["key_id"] != self.key_id:
+            raise TokenValidationError("unexpected signing key id")
+        if set(payload) != required:
+            raise TokenValidationError("token has unknown fields")
+        for field in ("envelope_digest", "assurance_digest", "policy_digest"):
+            if not isinstance(payload[field], str) or re.fullmatch(r"[0-9a-f]{64}", payload[field]) is None:
+                raise TokenValidationError(f"invalid {field}")
+        for field in required - {"reversible"}:
+            if not isinstance(payload[field], str) or not payload[field]:
+                raise TokenValidationError(f"invalid token field: {field}")
+        if type(payload["reversible"]) is not bool:
+            raise TokenValidationError("invalid reversibility flag")
+        current = now or datetime.now(timezone.utc)
+        try:
+            expires = parse_time(payload["expires_at"])
+            issued = parse_time(payload["issued_at"])
+        except (ValueError, TypeError) as exc:
+            raise TokenValidationError("invalid token timestamps") from exc
+        if expires <= current or expires <= issued:
+>           raise TokenValidationError("decision token expired")
+E           cerberus.token.TokenValidationError: decision token expired
+
+cerberus/token.py:192: TokenValidationError
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-7/test_real_clock_is_rechecked_a1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fdbcfce6510>
+crosses_deadline = True
+
+    @pytest.mark.parametrize("crosses_deadline", [False, True])
+    def test_real_clock_is_rechecked_after_durable_consumption(tmp_path, monkeypatch, crosses_deadline):
+        env = request()
+        verifier, proofs = fixture_assurance(env)
+        signer = DecisionTokenSigner(KEY)
+        decision = Guardian(POLICIES,signer=signer,assurance_verifier=verifier).evaluate(env,assurance=proofs,now=NOW)
+        expiry = datetime.fromisoformat(signer.verify(decision.decision_token,now=NOW)["expires_at"].replace("Z","+00:00"))
+        current = [expiry-timedelta(microseconds=1)]
+    
+        class Clock(datetime):
+            @classmethod
+            def now(cls,tz=None): return current[0]
+    
+        store = SQLiteStateStore(tmp_path/"state.db",create=True)
+    
+        class BlockingConsumption:
+            def consume(self,*args):
+                store.consume(*args)
+                # Deterministic stand-in for lock wait / integrity scan. No sleep,
+                # fake token, disabled replay check, or frozen expected-label edit.
+                current[0] = expiry if crosses_deadline else expiry-timedelta(microseconds=1)
+    
+        gateway = registered_gateway(signer,decision.decision_token,now=NOW,replay_cache=BlockingConsumption())
+        monkeypatch.setattr(enforcement,"datetime",Clock)
+    
+        def execute():
+            return gateway.authorize_and_simulate(decision.decision_token,expected_envelope=env,
+                action=env.action,target=env.target,scope=env.scope)
+    
+        if crosses_deadline:
+>           with pytest.raises(EnforcementDenied,match="expired during durable consumption"): execute()
+
+tests/test_sqlite_review_followups.py:105: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sqlite_review_followups.py:101: in execute
+    return gateway.authorize_and_simulate(decision.decision_token,expected_envelope=env,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <cerberus.enforcement.EnforcementGateway object at 0x7fdbd0e14fb0>
+token = 'eyJhY3Rpb24iOiJpc29sYXRlX2VuZHBvaW50IiwiYWN0b3IiOiJzZW50aW5lbDpsZWdhY3ktc2ltdWxhdG9yIiwiYXNzdXJhbmNlX2RpZ2VzdCI6IjY4M...cyM2U3ODVlMDQ0NmQzOTU4YzQ5YjAxMmY2NGE1ZCIsInRva2VuX3ZlcnNpb24iOiIxLjMuMCJ9.SKUYYGxCv0PS3zSMLVwBeemzXCVEPPIFRch_vZochOM'
+
+    def authorize_and_simulate(
+        self,
+        token: str,
+        *,
+        action: str,
+        target: str,
+        scope: str,
+        expected_envelope: ActionEnvelope | dict | None = None,
+        now: datetime | None = None,
+    ) -> dict[str, Any]:
+        try:
+            payload = self.signer.verify(token, now=now)
+        except TokenValidationError as exc:
+>           raise EnforcementDenied(str(exc)) from exc
+E           cerberus.enforcement.EnforcementDenied: decision token expired
+
+cerberus/enforcement.py:90: EnforcementDenied
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-7/test_real_clock_is_rechecked_a1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fdbcfce6510>
+crosses_deadline = True
+
+    @pytest.mark.parametrize("crosses_deadline", [False, True])
+    def test_real_clock_is_rechecked_after_durable_consumption(tmp_path, monkeypatch, crosses_deadline):
+        env = request()
+        verifier, proofs = fixture_assurance(env)
+        signer = DecisionTokenSigner(KEY)
+        decision = Guardian(POLICIES,signer=signer,assurance_verifier=verifier).evaluate(env,assurance=proofs,now=NOW)
+        expiry = datetime.fromisoformat(signer.verify(decision.decision_token,now=NOW)["expires_at"].replace("Z","+00:00"))
+        current = [expiry-timedelta(microseconds=1)]
+    
+        class Clock(datetime):
+            @classmethod
+            def now(cls,tz=None): return current[0]
+    
+        store = SQLiteStateStore(tmp_path/"state.db",create=True)
+    
+        class BlockingConsumption:
+            def consume(self,*args):
+                store.consume(*args)
+                # Deterministic stand-in for lock wait / integrity scan. No sleep,
+                # fake token, disabled replay check, or frozen expected-label edit.
+                current[0] = expiry if crosses_deadline else expiry-timedelta(microseconds=1)
+    
+        gateway = registered_gateway(signer,decision.decision_token,now=NOW,replay_cache=BlockingConsumption())
+        monkeypatch.setattr(enforcement,"datetime",Clock)
+    
+        def execute():
+            return gateway.authorize_and_simulate(decision.decision_token,expected_envelope=env,
+                action=env.action,target=env.target,scope=env.scope)
+    
+        if crosses_deadline:
+>           with pytest.raises(EnforcementDenied,match="expired during durable consumption"): execute()
+E           AssertionError: Regex pattern did not match.
+E            Regex: 'expired during durable consumption'
+E            Input: 'decision token expired'
+
+tests/test_sqlite_review_followups.py:105: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_sqlite_review_followups.py::test_wal_state_cannot_supply_authority[ordinary-open]
+FAILED tests/test_sqlite_review_followups.py::test_wal_state_cannot_supply_authority[existing-claim]
+FAILED tests/test_sqlite_review_followups.py::test_wal_state_cannot_supply_authority[explicit-provision]
+FAILED tests/test_sqlite_review_followups.py::test_corrupt_committed_wal_is_not_mistaken_for_verified_history
+FAILED tests/test_sqlite_review_followups.py::test_real_clock_is_rechecked_after_durable_consumption[False]
+FAILED tests/test_sqlite_review_followups.py::test_real_clock_is_rechecked_after_durable_consumption[True]
+6 failed, 107 passed in 16.02s
