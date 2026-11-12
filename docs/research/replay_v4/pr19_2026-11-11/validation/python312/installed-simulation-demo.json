@@ -1,0 +1,82 @@
+{
+  "assurance_digest": "341d493d670044b46fc28ee20964a044e9c98877795f4c2ef8189a8414d71197",
+  "cases_passed": 4,
+  "decision": "approve",
+  "limits": "Not independent validation, production protection or real containment.",
+  "mode": "simulation-only",
+  "policy_digest": "08bada90caf5038c317fa3749edccb92fb6383c394fdfd41b1773538c1fabbf9",
+  "receipt": {
+    "action": "temporary_egress_hold",
+    "actor": "sentinel:legacy-simulator",
+    "audit_record_hash": "9905c5a77cca692a675c28ec03dd474a1ee9026345fc1d5ac646ce52a2e8b6a7",
+    "envelope_digest": "80b22c3c3bb6de645c7b326d60f920f06ef246885ef6451e97a966242ab495eb",
+    "envelope_id": "7ab9aa51-f34f-442e-a477-7b132e31c9d8",
+    "executed_at": "2026-11-11T23:58:00.604066Z",
+    "idempotency_key": "65fbdb11-ea14-47bc-819a-e6e213071586",
+    "incident_id": "EVAL-KIT-DEMO",
+    "policy_digest": "08bada90caf5038c317fa3749edccb92fb6383c394fdfd41b1773538c1fabbf9",
+    "policy_version": "0.5.0",
+    "scope": "single_workload",
+    "side_effects": false,
+    "status": "simulated",
+    "target": "workload:local-demo-only",
+    "token_id": "d72bbdf52e5e48e79d2c2a2854fb050d"
+  },
+  "refusals": [
+    {
+      "case": "forged_evidence",
+      "decision": "deny",
+      "reason": "invalid attestation signature or request binding"
+    },
+    {
+      "case": "forged_approval",
+      "decision": "deny",
+      "reason": "invalid attestation signature or request binding"
+    },
+    {
+      "case": "replay_new_gateway",
+      "decision": "blocked",
+      "reason": "token or execution idempotency key already consumed"
+    }
+  ],
+  "request": {
+    "action": "temporary_egress_hold",
+    "actor": "sentinel:legacy-simulator",
+    "confidence": 0.99,
+    "envelope_id": "7ab9aa51-f34f-442e-a477-7b132e31c9d8",
+    "evidence_refs": [
+      {
+        "digest": "0aa7eac8c5e4fafc69b1fb8c8d33ace432ab4b7e0e83e81c46d4f78ad8bb007b",
+        "observed_at": "2026-11-11T23:58:00.604066Z",
+        "signal": "large_outbound_transfer",
+        "source_id": "legacy:large_outbound_transfer"
+      },
+      {
+        "digest": "f913c86fa41681270bcca69378bbb6be91e47b2fa7cf00ff56678710306b3bbe",
+        "observed_at": "2026-11-11T23:58:00.604066Z",
+        "signal": "new_destination",
+        "source_id": "legacy:new_destination"
+      }
+    ],
+    "freshness": {
+      "expires_at": "2026-11-12T00:00:00.604066Z",
+      "nonce": "7d08460fdde6408bb76f294231c5801a",
+      "timestamp": "2026-11-11T23:58:00.604066Z"
+    },
+    "human_approvals": [
+      "demo-incident-commander"
+    ],
+    "idempotency_key": "65fbdb11-ea14-47bc-819a-e6e213071586",
+    "incident_id": "EVAL-KIT-DEMO",
+    "mission_impact": "low",
+    "policy_version": "0.5.0",
+    "required_approval_mode": "single",
+    "reversibility_flag": true,
+    "schema_version": "1.0.0",
+    "scope": "single_workload",
+    "target": "workload:local-demo-only",
+    "threat": "data_exfiltration"
+  },
+  "token_version": "1.3.0",
+  "trust": "fabricated local identities; ephemeral demonstration keys"
+}
