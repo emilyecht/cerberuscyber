@@ -5,7 +5,10 @@ on:
     paths:
       - 'cerberus/state.py'
       - 'cerberus/enforcement.py'
+      - 'cerberus/lab_demo.py'
       - 'tests/test_sqlite_review_followups.py'
+      - 'tests/test_lab_authority_boundary.py'
+      - 'tests/test_durable_process_boundary.py'
       - '.github/workflows/sqlite-postrepair.yml'
   workflow_dispatch:
 
@@ -38,3 +41,11 @@ jobs:
           python -m pytest -q benchmarks/replay_v3/test_instrument.py
       - run: python -m cerberus.evaluation enforcement-demo --json
       - run: python benchmarks/release_candidate/run.py --target . --output "$RUNNER_TEMP/release-candidate.json" --fail-on-violation
+      - name: Build source and wheel distributions
+        run: python -m build && python scripts/release_checksums.py
+      - name: Verify installed wheel including the supported kernel lab
+        run: |
+          python -m venv "$RUNNER_TEMP/installed"
+          "$RUNNER_TEMP/installed/bin/python" -m pip install dist/cerberus_cyber_eval-0.1.0rc1-py3-none-any.whl
+          "$RUNNER_TEMP/installed/bin/python" -m pip check
+          "$RUNNER_TEMP/installed/bin/python" -I scripts/verify_installed.py --repo-root "$GITHUB_WORKSPACE"

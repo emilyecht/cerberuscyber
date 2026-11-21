@@ -25,12 +25,12 @@ import subprocess
 import sys
 from tempfile import TemporaryDirectory
 
-from . import ActionEnvelope, DecisionTokenSigner, EnforcementDenied, EnforcementGateway, Guardian, PolicyBundle, SQLiteStateStore
+from . import ActionEnvelope, DecisionTokenSigner, EnforcementDenied, EnforcementGateway, Guardian, PolicyBundle, SQLiteStateStore, StateUnavailable
 from ._lab_worker import SandboxUnavailable, landlock_abi, receive_message, send_message
 from .audit import AuditLedger
 from .evaluation import _demo_proofs
 from .token import TokenValidationError
-from .authority import TokenAuthorityRegistry
+from .authority import AuthorityStatusError, ENFORCEMENT_PURPOSE, TokenAuthorityRegistry
 
 TARGET = "workload:local-enforcement-lab-only"
 ACTION = "temporary_egress_hold"
@@ -71,28 +71,35 @@ class _LabBroker:
                 raise EnforcementDenied("token does not bind the lab policy")
             if (command["action"], command["target"], command["scope"]) != (ACTION, TARGET, SCOPE):
                 raise EnforcementDenied("outside the fixed lab action/target/scope capability")
-            receipt = EnforcementGateway(
-                self.signer, replay_cache=SQLiteStateStore(self.directory / "claims.db"),
-                ledger=self.ledger, authority_registry=self.authority_registry,
-            ).authorize_and_simulate(command["token"], action=command["action"],
-                                     target=command["target"], scope=command["scope"],
-                                     expected_envelope=self.expected_envelope, now=now)
-        except (EnforcementDenied, TokenValidationError) as exc:
+            # Order revocation against the actual marker effect, not only its
+            # simulated receipt. The registry uses an RLock, so the gateway's
+            # nested status check shares this same authority boundary.
+            with self.authority_registry.authorize(command["token"], payload, purpose=ENFORCEMENT_PURPOSE):
+                receipt = EnforcementGateway(
+                    self.signer, replay_cache=SQLiteStateStore(self.directory / "claims.db"),
+                    ledger=self.ledger, authority_registry=self.authority_registry,
+                ).authorize_and_simulate(command["token"], action=command["action"],
+                                         target=command["target"], scope=command["scope"],
+                                         expected_envelope=self.expected_envelope)
+
+                # Only this controller-owned path is executable. The worker cannot
+                # supply a path. This temporary marker is NOT an egress rule.
+                marker = self.directory / "egress.marker"
+                if marker.is_symlink() or marker.read_bytes() != OPEN:
+                    raise DemonstrationFailed("lab marker changed outside the authorized effect")
+                # Consumption and audit may have blocked. Never freeze time in
+                # this effectful path; leave expired claims burned on refusal.
+                self.signer.verify(command["token"], now=datetime.now(timezone.utc))
+                marker.write_bytes(HELD)
+                self.writes += 1
+                result = {"status": "executed-local-marker", "side_effects": "temporary-file-only",
+                          "effect": "OPEN -> HELD (not network containment)",
+                          "authorization_receipt": receipt}
+                record = self.ledger.append("lab.marker_written", result)
+                return {**result, "audit_record_hash": record.record_hash}
+        except (EnforcementDenied, TokenValidationError, AuthorityStatusError, StateUnavailable) as exc:
             record = self.ledger.append("lab.denied", {"reason": str(exc)})
             return {"status": "blocked", "reason": str(exc), "audit_record_hash": record.record_hash}
-
-        # Only this controller-owned path is executable. The worker cannot supply
-        # a path and cannot alter this mapping. This is a marker, NOT an egress rule.
-        marker = self.directory / "egress.marker"
-        if marker.is_symlink() or marker.read_bytes() != OPEN:
-            raise DemonstrationFailed("lab marker changed outside the authorized effect")
-        marker.write_bytes(HELD)
-        self.writes += 1
-        result = {"status": "executed-local-marker", "side_effects": "temporary-file-only",
-                  "effect": "OPEN -> HELD (not network containment)",
-                  "authorization_receipt": receipt}
-        record = self.ledger.append("lab.marker_written", result)
-        return {**result, "audit_record_hash": record.record_hash}
 
 
 @contextmanager
