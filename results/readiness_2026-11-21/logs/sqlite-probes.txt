@@ -1,0 +1,20 @@
+{"probe": "environment", "python": "3.12.14", "sqlite": "3.53.1"}
+{"probe": "atomic_conflict_restart", "passed": true}
+{"probe": "multiprocess_replay", "outcomes": ["replayed", "accepted", "replayed", "replayed", "replayed", "replayed", "replayed", "replayed"]}
+{"probe": "valid_snapshot_rollback", "replay_accepted": true, "scope": "Documented trusted-storage limitation; also present in parent"}
+{"probe": "lstat_open_race", "initialization_accepted_symlink": true, "subsequent_claim_rejected": true, "scope": "Requires modification of trusted path; no authority bypass established"}
+{"probe": "history_cost", "history_rows": 0, "database_bytes": 12288, "parent_open_seconds": 0.00018596100017020945, "parent_claim_median_seconds": 0.0018758900000648282, "pr_open_seconds": 0.0002497359998869797, "pr_claim_median_seconds": 0.0020254749999821797}
+{"probe": "history_cost", "history_rows": 10000, "database_bytes": 2097152, "parent_open_seconds": 0.000793746999988798, "parent_claim_median_seconds": 0.00230900700012171, "pr_open_seconds": 0.011691745000007359, "pr_claim_median_seconds": 0.008615073999862943}
+{"probe": "history_cost", "history_rows": 100000, "database_bytes": 21221376, "parent_open_seconds": 0.0006162500001209992, "parent_claim_median_seconds": 0.0028045600001860294, "pr_open_seconds": 0.068348184000115, "pr_claim_median_seconds": 0.06854714599990075}
+{"probe": "history_cost", "history_rows": 500000, "database_bytes": 106364928, "parent_open_seconds": 0.0004925830000956921, "parent_claim_median_seconds": 0.0021043629999439872, "pr_open_seconds": 0.3444981640000151, "pr_claim_median_seconds": 0.4113301820000288}
+{"probe": "healthy_history_burst", "implementation": "parent", "history_rows": 500000, "outcomes": [{"outcome": "accepted", "seconds": 0.03765089199987415}, {"outcome": "accepted", "seconds": 0.10864798600005088}, {"outcome": "accepted", "seconds": 0.05914950100009264}, {"outcome": "accepted", "seconds": 0.022394224999970902}, {"outcome": "accepted", "seconds": 0.08232078900005035}, {"outcome": "accepted", "seconds": 0.0073221789998569875}, {"outcome": "accepted", "seconds": 0.003818658999989566}, {"outcome": "accepted", "seconds": 0.01243911599999592}]}
+{"probe": "healthy_history_burst", "implementation": "pr", "history_rows": 500000, "outcomes": [{"outcome": "accepted", "seconds": 0.38747216199999457}, {"outcome": "accepted", "seconds": 1.9865987549999318}, {"outcome": "accepted", "seconds": 1.1879445269998996}, {"outcome": "StateUnavailable", "seconds": 2.0108235210000203}, {"outcome": "accepted", "seconds": 1.5665622359999816}, {"outcome": "accepted", "seconds": 0.7877114290001828}, {"outcome": "accepted", "seconds": 2.344913882000128}, {"outcome": "StateUnavailable", "seconds": 2.0077249530002064}]}
+Traceback (most recent call last):
+  File "/tmp/cerberus-review-probe-qc0jeefw/probe_sqlite_second_review.py", line 229, in <module>
+    expiry_after_wait(base)
+  File "/tmp/cerberus-review-probe-qc0jeefw/probe_sqlite_second_review.py", line 210, in expiry_after_wait
+    receipt = gateway.authorize_and_simulate(token, expected_envelope=envelope,
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/17a8b5e36713/cyber-hardening/cerberus/enforcement.py", line 122, in authorize_and_simulate
+    raise EnforcementDenied("decision token expired during durable consumption")
+cerberus.enforcement.EnforcementDenied: decision token expired during durable consumption

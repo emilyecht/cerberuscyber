@@ -1,0 +1,57 @@
+{
+  "captured_on": "2026-11-21",
+  "cyber_head": "7f0174e14c710cd1d3834fc57af3e05ea110f37f",
+  "cyber_checks": [
+    {
+      "name": "test (3.12)",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/emilyecht/cerberuscyber/actions/runs/44906259876/job/136852378898"
+    },
+    {
+      "name": "test (3.10)",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/emilyecht/cerberuscyber/actions/runs/44906259876/job/136852378682"
+    },
+    {
+      "name": "validate (3.12)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/emilyecht/cerberuscyber/actions/runs/44906259848/job/136852378579"
+    },
+    {
+      "name": "validate (3.10)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/emilyecht/cerberuscyber/actions/runs/44906259848/job/136852378356"
+    }
+  ],
+  "supported_validation": {
+    "current_source_tests_per_python": 336,
+    "historical_v3_instrument_tests_per_python": 10,
+    "lab_cases": 14,
+    "kernel_refusals": 5,
+    "authorized_marker_writes": 1,
+    "unauthorized_resource_changes": 0,
+    "installed_portable_cases": 4,
+    "installed_lab_cases": 14,
+    "source_checkout_imported": false
+  },
+  "protocol_head": "47cc290a9f1b5c7ba17f569071895c0be5390b3b",
+  "protocol_checks": [
+    {
+      "python": "3.10",
+      "status": "success",
+      "url": "https://github.com/emilyecht/cerberus-runtime-assurance/actions/runs/44901885235/job/136839311667"
+    },
+    {
+      "python": "3.12",
+      "status": "success",
+      "url": "https://github.com/emilyecht/cerberus-runtime-assurance/actions/runs/44901885235/job/136839311916"
+    }
+  ],
+  "independent_human_review": false,
+  "required_classic_branch_checks": "unavailable to connected app: 403",
+  "merges": []
+}
