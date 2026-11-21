@@ -5,7 +5,10 @@ on:
     paths:
       - 'cerberus/state.py'
       - 'cerberus/enforcement.py'
+      - 'cerberus/lab_demo.py'
       - 'tests/test_sqlite_review_followups.py'
+      - 'tests/test_lab_authority_boundary.py'
+      - 'tests/test_durable_process_boundary.py'
       - '.github/workflows/sqlite-postrepair.yml'
   workflow_dispatch:
 
