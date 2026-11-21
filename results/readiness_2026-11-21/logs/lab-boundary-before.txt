@@ -1,0 +1,392 @@
+FFFFFF.                                                                  [100%]
+=================================== FAILURES ===================================
+________ test_expiry_during_authorization_never_writes_marker[consume] _________
+
+authorized_lab = (<cerberus.lab_demo._LabBroker object at 0x7fd5b6bb8aa0>, {'action': 'temporary_egress_hold', 'scope': 'single_workloa...9fa2', required_approval_mode='single', policy_version='0.5.0'), <cerberus.guardian.Guardian object at 0x7fd5b62f6ed0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fd5b62f7200>
+delay_at = 'consume'
+
+    @pytest.mark.parametrize("delay_at", ["consume", "receipt_audit"])
+    def test_expiry_during_authorization_never_writes_marker(authorized_lab, monkeypatch, delay_at):
+        broker, command, _, _ = authorized_lab
+        payload = broker.signer.verify(command["token"])
+        expiry = parse_time(payload["expires_at"])
+        current = [expiry - timedelta(microseconds=1)]
+    
+        class Clock(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return current[0]
+    
+        for module in (lab, enforcement, token):
+            monkeypatch.setattr(module, "datetime", Clock)
+        if delay_at == "consume":
+            original = SQLiteStateStore.consume
+    
+            def delayed(store, *args):
+                original(store, *args)
+                current[0] = expiry
+    
+            monkeypatch.setattr(SQLiteStateStore, "consume", delayed)
+        else:
+            original = broker.ledger.append
+    
+            def delayed(kind, data):
+                record = original(kind, data)
+                if kind == "enforcement.simulated":
+                    current[0] = expiry
+                return record
+    
+            monkeypatch.setattr(broker.ledger, "append", delayed)
+        result = broker.execute(command)
+>       assert result["status"] == "blocked" and "expired" in result["reason"]
+E       AssertionError: assert ('executed-local-marker' == 'blocked'
+E         
+E         - blocked
+E         + executed-local-marker)
+
+tests/test_lab_authority_boundary.py:52: AssertionError
+_____ test_expiry_during_authorization_never_writes_marker[receipt_audit] ______
+
+authorized_lab = (<cerberus.lab_demo._LabBroker object at 0x7fd5b67d2e70>, {'action': 'temporary_egress_hold', 'scope': 'single_workloa...cb5d', required_approval_mode='single', policy_version='0.5.0'), <cerberus.guardian.Guardian object at 0x7fd5b637fce0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fd5b669f440>
+delay_at = 'receipt_audit'
+
+    @pytest.mark.parametrize("delay_at", ["consume", "receipt_audit"])
+    def test_expiry_during_authorization_never_writes_marker(authorized_lab, monkeypatch, delay_at):
+        broker, command, _, _ = authorized_lab
+        payload = broker.signer.verify(command["token"])
+        expiry = parse_time(payload["expires_at"])
+        current = [expiry - timedelta(microseconds=1)]
+    
+        class Clock(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return current[0]
+    
+        for module in (lab, enforcement, token):
+            monkeypatch.setattr(module, "datetime", Clock)
+        if delay_at == "consume":
+            original = SQLiteStateStore.consume
+    
+            def delayed(store, *args):
+                original(store, *args)
+                current[0] = expiry
+    
+            monkeypatch.setattr(SQLiteStateStore, "consume", delayed)
+        else:
+            original = broker.ledger.append
+    
+            def delayed(kind, data):
+                record = original(kind, data)
+                if kind == "enforcement.simulated":
+                    current[0] = expiry
+                return record
+    
+            monkeypatch.setattr(broker.ledger, "append", delayed)
+        result = broker.execute(command)
+>       assert result["status"] == "blocked" and "expired" in result["reason"]
+E       AssertionError: assert ('executed-local-marker' == 'blocked'
+E         
+E         - blocked
+E         + executed-local-marker)
+
+tests/test_lab_authority_boundary.py:52: AssertionError
+________________ test_revocation_is_ordered_after_effect_commit ________________
+
+authorized_lab = (<cerberus.lab_demo._LabBroker object at 0x7fd5b67b91c0>, {'action': 'temporary_egress_hold', 'scope': 'single_workloa...de6b', required_approval_mode='single', policy_version='0.5.0'), <cerberus.guardian.Guardian object at 0x7fd5b6140bf0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fd5b70c1280>
+
+    def test_revocation_is_ordered_after_effect_commit(authorized_lab, monkeypatch):
+        broker, command, _, _ = authorized_lab
+        payload = broker.signer.verify(command["token"])
+        entered_write, release_write = Event(), Event()
+        revoke_requested, revoke_completed = Event(), Event()
+        original_write = Path.write_bytes
+    
+        def blocked_write(path, data):
+            if path == broker.directory / "egress.marker":
+                entered_write.set()
+                assert release_write.wait(3), "test did not release marker write"
+                # A complete revocation before this write would invalidate the effect.
+                assert not revoke_completed.is_set()
+            return original_write(path, data)
+    
+        def revoke():
+            revoke_requested.set()
+            broker.authority_registry.revoke_token(payload["token_id"])
+            revoke_completed.set()
+    
+        monkeypatch.setattr(Path, "write_bytes", blocked_write)
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            effect = pool.submit(broker.execute, command)
+            try:
+                assert entered_write.wait(3)
+                revocation = pool.submit(revoke)
+                assert revoke_requested.wait(3)
+>               assert not revoke_completed.wait(0.1), "revocation escaped the effect boundary"
+E               AssertionError: revocation escaped the effect boundary
+E               assert not True
+E                +  where True = wait(0.1)
+E                +    where wait = <threading.Event at 0x7fd5b6140d10: set>.wait
+
+tests/test_lab_authority_boundary.py:88: AssertionError
+________ test_unavailable_store_is_a_controlled_broker_refusal[missing] ________
+
+self = <cerberus.state.SQLiteStateStore object at 0x7fd5b6143e30>
+path = PosixPath('/tmp/pytest-of-agent/pytest-3/test_unavailable_store_is_a_co0/claims.db')
+
+    def __init__(self, path: str | Path, *, namespace: str = "cerberus", create: bool = False) -> None:
+        if not isinstance(namespace, str) or not namespace.strip():
+            raise ValueError("state namespace must be non-empty")
+        if str(path) in ("", ":memory:"):
+            raise ValueError("durable state requires an explicit filesystem path")
+        self.path = str(Path(path).absolute())
+        self.namespace = namespace
+        connection = None
+        try:
+>           connection = self._connect(create=create)
+
+cerberus/state.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cerberus/state.py:54: in _connect
+    mode = Path(self.path).lstat().st_mode
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:847: in lstat
+    return self.stat(follow_symlinks=False)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/pytest-of-agent/pytest-3/test_unavailable_store_is_a_co0/claims.db')
+
+    def stat(self, *, follow_symlinks=True):
+        """
+        Return the result of the stat() system call on this path, like
+        os.stat() does.
+        """
+>       return os.stat(self, follow_symlinks=follow_symlinks)
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-agent/pytest-3/test_unavailable_store_is_a_co0/claims.db'
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:840: FileNotFoundError
+
+The above exception was the direct cause of the following exception:
+
+authorized_lab = (<cerberus.lab_demo._LabBroker object at 0x7fd5b6142630>, {'action': 'temporary_egress_hold', 'scope': 'single_workloa...c14a', required_approval_mode='single', policy_version='0.5.0'), <cerberus.guardian.Guardian object at 0x7fd5b6143680>)
+damage = 'missing'
+
+    @pytest.mark.parametrize("damage", ["missing", "zero", "corrupt"])
+    def test_unavailable_store_is_a_controlled_broker_refusal(authorized_lab, damage):
+        broker, command, _, _ = authorized_lab
+        path = broker.directory / "claims.db"
+        if damage == "missing":
+            path.unlink()
+        else:
+            path.write_bytes(b"" if damage == "zero" else b"corrupt state")
+>       assert broker.execute(command)["status"] == "blocked"
+
+tests/test_lab_authority_boundary.py:106: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cerberus/lab_demo.py:75: in execute
+    self.signer, replay_cache=SQLiteStateStore(self.directory / "claims.db"),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <cerberus.state.SQLiteStateStore object at 0x7fd5b6143e30>
+path = PosixPath('/tmp/pytest-of-agent/pytest-3/test_unavailable_store_is_a_co0/claims.db')
+
+    def __init__(self, path: str | Path, *, namespace: str = "cerberus", create: bool = False) -> None:
+        if not isinstance(namespace, str) or not namespace.strip():
+            raise ValueError("state namespace must be non-empty")
+        if str(path) in ("", ":memory:"):
+            raise ValueError("durable state requires an explicit filesystem path")
+        self.path = str(Path(path).absolute())
+        self.namespace = namespace
+        connection = None
+        try:
+            connection = self._connect(create=create)
+            with connection:
+                if create:
+                    connection.execute(f"CREATE TABLE IF NOT EXISTS claims ({_CLAIMS_SCHEMA})")
+                self._verify(connection)
+        except (sqlite3.Error, OSError) as exc:
+>           raise StateUnavailable("cannot initialize durable authority state") from exc
+E           cerberus.state.StateUnavailable: cannot initialize durable authority state
+
+cerberus/state.py:47: StateUnavailable
+_________ test_unavailable_store_is_a_controlled_broker_refusal[zero] __________
+
+self = <cerberus.state.SQLiteStateStore object at 0x7fd5b620d0d0>
+path = PosixPath('/tmp/pytest-of-agent/pytest-3/test_unavailable_store_is_a_co1/claims.db')
+
+    def __init__(self, path: str | Path, *, namespace: str = "cerberus", create: bool = False) -> None:
+        if not isinstance(namespace, str) or not namespace.strip():
+            raise ValueError("state namespace must be non-empty")
+        if str(path) in ("", ":memory:"):
+            raise ValueError("durable state requires an explicit filesystem path")
+        self.path = str(Path(path).absolute())
+        self.namespace = namespace
+        connection = None
+        try:
+            connection = self._connect(create=create)
+            with connection:
+                if create:
+                    connection.execute(f"CREATE TABLE IF NOT EXISTS claims ({_CLAIMS_SCHEMA})")
+>               self._verify(connection)
+
+cerberus/state.py:45: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <cerberus.state.SQLiteStateStore object at 0x7fd5b620d0d0>
+connection = <sqlite3.Connection object at 0x7fd5b63527a0>
+
+    def _verify(self, connection: sqlite3.Connection) -> None:
+        # A checksum-damaged committed WAL can be discarded during SQLite
+        # recovery, leaving a structurally healthy database with lost claims.
+        # Support only the explicitly provisioned default rollback-journal mode;
+        # never silently convert a recovered WAL database and trust its history.
+        if connection.execute("PRAGMA journal_mode").fetchone() != ("delete",):
+            raise StateUnavailable("durable authority state requires DELETE journal mode")
+        # Verify the provisioned table, uniqueness constraint and absence of
+        # claim-altering triggers before startup or consumption can proceed.
+        schema = connection.execute(
+            "SELECT type, name, sql FROM sqlite_master WHERE tbl_name = 'claims' "
+            "ORDER BY type, name"
+        ).fetchall()
+        if schema != [
+            ("index", "sqlite_autoindex_claims_1", None),
+            ("table", "claims", f"CREATE TABLE claims ({_CLAIMS_SCHEMA})"),
+        ]:
+>           raise StateUnavailable("durable authority state is not explicitly provisioned")
+E           cerberus.state.StateUnavailable: durable authority state is not explicitly provisioned
+
+cerberus/state.py:88: StateUnavailable
+
+The above exception was the direct cause of the following exception:
+
+authorized_lab = (<cerberus.lab_demo._LabBroker object at 0x7fd5b6434860>, {'action': 'temporary_egress_hold', 'scope': 'single_workloa...84e7', required_approval_mode='single', policy_version='0.5.0'), <cerberus.guardian.Guardian object at 0x7fd5b620fe30>)
+damage = 'zero'
+
+    @pytest.mark.parametrize("damage", ["missing", "zero", "corrupt"])
+    def test_unavailable_store_is_a_controlled_broker_refusal(authorized_lab, damage):
+        broker, command, _, _ = authorized_lab
+        path = broker.directory / "claims.db"
+        if damage == "missing":
+            path.unlink()
+        else:
+            path.write_bytes(b"" if damage == "zero" else b"corrupt state")
+>       assert broker.execute(command)["status"] == "blocked"
+
+tests/test_lab_authority_boundary.py:106: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cerberus/lab_demo.py:75: in execute
+    self.signer, replay_cache=SQLiteStateStore(self.directory / "claims.db"),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <cerberus.state.SQLiteStateStore object at 0x7fd5b620d0d0>
+path = PosixPath('/tmp/pytest-of-agent/pytest-3/test_unavailable_store_is_a_co1/claims.db')
+
+    def __init__(self, path: str | Path, *, namespace: str = "cerberus", create: bool = False) -> None:
+        if not isinstance(namespace, str) or not namespace.strip():
+            raise ValueError("state namespace must be non-empty")
+        if str(path) in ("", ":memory:"):
+            raise ValueError("durable state requires an explicit filesystem path")
+        self.path = str(Path(path).absolute())
+        self.namespace = namespace
+        connection = None
+        try:
+            connection = self._connect(create=create)
+            with connection:
+                if create:
+                    connection.execute(f"CREATE TABLE IF NOT EXISTS claims ({_CLAIMS_SCHEMA})")
+                self._verify(connection)
+        except (sqlite3.Error, OSError) as exc:
+>           raise StateUnavailable("cannot initialize durable authority state") from exc
+E           cerberus.state.StateUnavailable: cannot initialize durable authority state
+
+cerberus/state.py:47: StateUnavailable
+________ test_unavailable_store_is_a_controlled_broker_refusal[corrupt] ________
+
+self = <cerberus.state.SQLiteStateStore object at 0x7fd5b620ee70>
+path = PosixPath('/tmp/pytest-of-agent/pytest-3/test_unavailable_store_is_a_co2/claims.db')
+
+    def __init__(self, path: str | Path, *, namespace: str = "cerberus", create: bool = False) -> None:
+        if not isinstance(namespace, str) or not namespace.strip():
+            raise ValueError("state namespace must be non-empty")
+        if str(path) in ("", ":memory:"):
+            raise ValueError("durable state requires an explicit filesystem path")
+        self.path = str(Path(path).absolute())
+        self.namespace = namespace
+        connection = None
+        try:
+>           connection = self._connect(create=create)
+
+cerberus/state.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <cerberus.state.SQLiteStateStore object at 0x7fd5b620ee70>
+
+    def _connect(self, *, create: bool = False) -> sqlite3.Connection:
+        try:
+            mode = Path(self.path).lstat().st_mode
+        except FileNotFoundError:
+            if not create:
+                raise
+        else:
+            if not stat.S_ISREG(mode) or not mode & 0o222:
+                raise StateUnavailable("durable authority state must be a writable regular file")
+        uri = Path(self.path).as_uri() + ("?mode=rwc" if create else "?mode=rw")
+        connection = sqlite3.connect(uri, timeout=2.0, uri=True)
+        try:
+>           connection.execute("PRAGMA synchronous=FULL")
+E           sqlite3.DatabaseError: file is not a database
+
+cerberus/state.py:64: DatabaseError
+
+The above exception was the direct cause of the following exception:
+
+authorized_lab = (<cerberus.lab_demo._LabBroker object at 0x7fd5b67d1f70>, {'action': 'temporary_egress_hold', 'scope': 'single_workloa...8413', required_approval_mode='single', policy_version='0.5.0'), <cerberus.guardian.Guardian object at 0x7fd5b620d760>)
+damage = 'corrupt'
+
+    @pytest.mark.parametrize("damage", ["missing", "zero", "corrupt"])
+    def test_unavailable_store_is_a_controlled_broker_refusal(authorized_lab, damage):
+        broker, command, _, _ = authorized_lab
+        path = broker.directory / "claims.db"
+        if damage == "missing":
+            path.unlink()
+        else:
+            path.write_bytes(b"" if damage == "zero" else b"corrupt state")
+>       assert broker.execute(command)["status"] == "blocked"
+
+tests/test_lab_authority_boundary.py:106: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cerberus/lab_demo.py:75: in execute
+    self.signer, replay_cache=SQLiteStateStore(self.directory / "claims.db"),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <cerberus.state.SQLiteStateStore object at 0x7fd5b620ee70>
+path = PosixPath('/tmp/pytest-of-agent/pytest-3/test_unavailable_store_is_a_co2/claims.db')
+
+    def __init__(self, path: str | Path, *, namespace: str = "cerberus", create: bool = False) -> None:
+        if not isinstance(namespace, str) or not namespace.strip():
+            raise ValueError("state namespace must be non-empty")
+        if str(path) in ("", ":memory:"):
+            raise ValueError("durable state requires an explicit filesystem path")
+        self.path = str(Path(path).absolute())
+        self.namespace = namespace
+        connection = None
+        try:
+            connection = self._connect(create=create)
+            with connection:
+                if create:
+                    connection.execute(f"CREATE TABLE IF NOT EXISTS claims ({_CLAIMS_SCHEMA})")
+                self._verify(connection)
+        except (sqlite3.Error, OSError) as exc:
+>           raise StateUnavailable("cannot initialize durable authority state") from exc
+E           cerberus.state.StateUnavailable: cannot initialize durable authority state
+
+cerberus/state.py:47: StateUnavailable
+=========================== short test summary info ============================
+FAILED tests/test_lab_authority_boundary.py::test_expiry_during_authorization_never_writes_marker[consume]
+FAILED tests/test_lab_authority_boundary.py::test_expiry_during_authorization_never_writes_marker[receipt_audit]
+FAILED tests/test_lab_authority_boundary.py::test_revocation_is_ordered_after_effect_commit
+FAILED tests/test_lab_authority_boundary.py::test_unavailable_store_is_a_controlled_broker_refusal[missing]
+FAILED tests/test_lab_authority_boundary.py::test_unavailable_store_is_a_controlled_broker_refusal[zero]
+FAILED tests/test_lab_authority_boundary.py::test_unavailable_store_is_a_controlled_broker_refusal[corrupt]
+6 failed, 1 passed in 0.22s

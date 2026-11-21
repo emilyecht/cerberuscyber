@@ -1,0 +1,21 @@
+test_all_hand_calculated_families_and_exact_overlaps (test_vertical_slice.VerticalSliceTests.test_all_hand_calculated_families_and_exact_overlaps) ... ok
+test_all_hand_fixtures_against_independent_truth_tables (test_vertical_slice.VerticalSliceTests.test_all_hand_fixtures_against_independent_truth_tables) ... ok
+test_cli_roundtrip_determinism_and_invalid_input_exit (test_vertical_slice.VerticalSliceTests.test_cli_roundtrip_determinism_and_invalid_input_exit) ... ok
+test_duplicate_json_keys_and_nonfinite_values_are_rejected (test_vertical_slice.VerticalSliceTests.test_duplicate_json_keys_and_nonfinite_values_are_rejected) ... ok
+test_empty_family_differs_from_empty_cut_set (test_vertical_slice.VerticalSliceTests.test_empty_family_differs_from_empty_cut_set) ... ok
+test_input_model_is_not_mutated (test_vertical_slice.VerticalSliceTests.test_input_model_is_not_mutated) ... ok
+test_invalid_models_fail_instead_of_returning_a_score (test_vertical_slice.VerticalSliceTests.test_invalid_models_fail_instead_of_returning_a_score) ... ok
+test_invalid_unicode_never_emits_a_report_or_traceback (test_vertical_slice.VerticalSliceTests.test_invalid_unicode_never_emits_a_report_or_traceback) ... ok
+test_no_partial_results_when_exact_enumeration_exceeds_budgets (test_vertical_slice.VerticalSliceTests.test_no_partial_results_when_exact_enumeration_exceeds_budgets) ... ok
+test_node_renaming_preserves_families_and_metrics (test_vertical_slice.VerticalSliceTests.test_node_renaming_preserves_families_and_metrics) ... ok
+test_permutations_do_not_change_report_or_normalized_hash (test_vertical_slice.VerticalSliceTests.test_permutations_do_not_change_report_or_normalized_hash) ... ok
+test_process_hash_seeds_preserve_three_layer_cli_output (test_vertical_slice.VerticalSliceTests.test_process_hash_seeds_preserve_three_layer_cli_output) ... ok
+test_schema_is_frozen_to_recorded_bytes (test_vertical_slice.VerticalSliceTests.test_schema_is_frozen_to_recorded_bytes) ... ok
+test_seeded_small_dags_against_independent_truth_tables (test_vertical_slice.VerticalSliceTests.test_seeded_small_dags_against_independent_truth_tables) ... ok
+test_three_layer_authority_example_has_hand_calculated_cut_sets (test_vertical_slice.VerticalSliceTests.test_three_layer_authority_example_has_hand_calculated_cut_sets) ... ok
+test_undeveloped_or_incomplete_never_becomes_numeric_zero (test_vertical_slice.VerticalSliceTests.test_undeveloped_or_incomplete_never_becomes_numeric_zero) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.979s
+
+OK
