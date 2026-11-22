@@ -155,11 +155,13 @@ def test_policy_digest_binds_decision_token_and_receipt() -> None:
     validator = Draft202012Validator(TOKEN_SCHEMA, format_checker=FormatChecker())
     assert list(validator.iter_errors(payload)) == []
 
-    receipt = EnforcementGateway(signer, replay_cache=ReplayCache()).authorize_and_simulate(
+    from tests.assurance_support import registered_gateway
+    receipt = registered_gateway(signer, decision.decision_token, replay_cache=ReplayCache()).authorize_and_simulate(
         decision.decision_token,
         action=decision.authorized_action,
         target=decision.target,
         scope=decision.scope,
+        expected_envelope=envelope,
     )
     assert receipt["policy_version"] == bundle.version
     assert receipt["policy_digest"] == bundle.digest

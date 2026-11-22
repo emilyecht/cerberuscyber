@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/379e5a226cc0/cerberuscyber/scripts/verify_installed.py", line 36, in <module>
+    proc = subprocess.run([str(command), "enforcement-demo", "--json"], cwd=directory,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/workspace/scratch/379e5a226cc0/cerberuscyber/../installed312/bin/cerberus-cyber', 'enforcement-demo', '--json']' returned non-zero exit status 2.

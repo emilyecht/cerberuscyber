@@ -25,6 +25,7 @@ from . import (
     ActionEnvelope, ApprovalAuthority, ApprovalProof, AssuranceBundle,
     AssuranceVerifier, DecisionTokenSigner, EnforcementDenied, EnforcementGateway,
     EvidenceAuthority, EvidenceProof, Guardian, PolicyBundle, SQLiteStateStore,
+    TokenAuthorityRegistry,
 )
 from .assurance import approval_message, evidence_message
 
@@ -78,12 +79,15 @@ def run_demo() -> dict:
         if decision.guardian_decision != "approve" or decision.decision_token is None:
             raise RuntimeError("demo failed: eligible request received no authority")
         payload = signer.verify(decision.decision_token, now=now)
+        authority = TokenAuthorityRegistry()
+        authority.register(decision.decision_token, signer,
+            authority_key_ids=frozenset(p.key_id for p in proofs.evidence + proofs.approvals), now=now)
         if (payload["envelope_digest"] != request.digest()
                 or payload["policy_digest"] != policy.digest
                 or payload["assurance_digest"] != decision.assurance_digest):
             raise RuntimeError("demo failed: token does not bind evaluated inputs")
-        receipt = EnforcementGateway(signer, replay_cache=store).authorize_and_simulate(
-            decision.decision_token, action=request.action, target=request.target, scope=request.scope, now=now)
+        receipt = EnforcementGateway(signer, replay_cache=store, authority_registry=authority).authorize_and_simulate(
+            decision.decision_token, action=request.action, target=request.target, scope=request.scope, expected_envelope=request, now=now)
         if (receipt["side_effects"] is not False or receipt["status"] != "simulated"
                 or any(receipt.get(field) != payload[field] for field in (
                     "action", "target", "scope", "actor", "envelope_digest",
@@ -91,8 +95,8 @@ def run_demo() -> dict:
             raise RuntimeError("demo failed: receipt is not simulated and exactly bound")
         # A new gateway reopens the existing database: not just reuse of a Python object.
         try:
-            EnforcementGateway(signer, replay_cache=SQLiteStateStore(path)).authorize_and_simulate(
-                decision.decision_token, action=request.action, target=request.target, scope=request.scope, now=now)
+            EnforcementGateway(signer, replay_cache=SQLiteStateStore(path), authority_registry=authority).authorize_and_simulate(
+                decision.decision_token, action=request.action, target=request.target, scope=request.scope, expected_envelope=request, now=now)
         except EnforcementDenied as exc:
             if "consumed" not in str(exc):
                 raise RuntimeError("replay test failed its precondition") from exc

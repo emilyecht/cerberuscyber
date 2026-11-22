@@ -1,0 +1,23 @@
+{
+  "artifact_verified": true,
+  "recorded_gate": "PASS",
+  "primary_attempts": 1100,
+  "false_allows": [
+    0,
+    878
+  ],
+  "false_denies": [
+    0,
+    200
+  ],
+  "ambiguous": 22,
+  "invalid_primary_measurements": 0,
+  "baseline_decisions_independently_checked": {
+    "allow_if_recommended": 1100,
+    "confidence_0.9": 1100,
+    "soar_b2": 1100
+  },
+  "runner_commit": "00ba8f610e862b5ea30e55da1bb0cd52f34d980e",
+  "runner_sha256": "1bb4b9250032f51b7d4c558e770cfd24dc4a63e3d31960342b6d011efa760521",
+  "oracle_sha256": "18539d829f7f95ef0a3e93bde607b253b76b15085c184816b862574c48b217a0"
+}

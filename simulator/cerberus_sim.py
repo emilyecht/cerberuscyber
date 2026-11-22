@@ -52,6 +52,7 @@ def evaluate(
     result = Guardian(bundle, signer=signer, assurance_verifier=verifier).evaluate(envelope, assurance=proofs)
     output = result.to_dict()
     output["fixture_trust_assumption"] = assume_trusted_fixture
+    output["action_envelope"] = envelope.to_dict()
     return output
 
 
@@ -83,12 +84,16 @@ def main() -> None:
 
     if args.simulate_enforcement and result["guardian_decision"] == "approve":
         signer = DecisionTokenSigner(signing_key or b"")
-        gateway = EnforcementGateway(signer, replay_cache=ReplayCache())
+        from cerberus import TokenAuthorityRegistry
+        authority = TokenAuthorityRegistry()
+        authority.register(result["decision_token"], signer)
+        gateway = EnforcementGateway(signer, replay_cache=ReplayCache(), authority_registry=authority)
         output["enforcement"] = gateway.authorize_and_simulate(
             result["decision_token"],
             action=result["authorized_action"],
             target=result["target"],
             scope=result["scope"],
+            expected_envelope=result["action_envelope"],
         )
 
     print(json.dumps(output, indent=2, sort_keys=True))

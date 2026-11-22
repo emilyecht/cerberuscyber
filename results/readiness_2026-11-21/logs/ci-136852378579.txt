@@ -1,0 +1,13 @@
+2026-11-21T12:55:16.0471271Z  * [new branch]      fix/sqlite-fail-closed-init              -> origin/fix/sqlite-fail-closed-init
+2026-11-21T12:55:16.0474417Z  * [new branch]      fix/sqlite-review-followups              -> origin/fix/sqlite-review-followups
+2026-11-21T12:56:00.3691770Z 336 passed in 39.87s
+2026-11-21T12:56:02.5509524Z 10 passed in 1.95s
+2026-11-21T12:56:02.8080901Z   "authorized_marker_writes": 1,
+2026-11-21T12:56:02.8300463Z   "cases_passed": 14,
+2026-11-21T12:56:02.8305507Z   "kernel_refusals_observed": 5,
+2026-11-21T12:56:02.8312837Z   "unauthorized_resource_changes": 0
+2026-11-21T12:56:04.6942091Z copying docs/research_sqlite_review_followups_v1.md -> cerberus_cyber_eval-0.1.0rc1/docs
+2026-11-21T12:56:04.7092620Z copying results/replay_v3/sqlite_empty_evidence.json -> cerberus_cyber_eval-0.1.0rc1/results/replay_v3
+2026-11-21T12:56:04.7254577Z copying tests/test_sqlite_review_followups.py -> cerberus_cyber_eval-0.1.0rc1/tests
+2026-11-21T12:56:06.2684984Z Successfully built cerberus_cyber_eval-0.1.0rc1.tar.gz and cerberus_cyber_eval-0.1.0rc1-py3-none-any.whl
+2026-11-21T12:56:10.9378754Z {"cases_passed": 4, "installed_artifact": "passed", "local_enforcement_lab_cases": 14, "python": "3.12.16", "source_checkout_imported": false, "version": "0.1.0rc1"}

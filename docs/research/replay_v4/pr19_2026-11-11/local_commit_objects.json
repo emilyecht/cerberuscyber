@@ -1,0 +1,29 @@
+{
+  "purpose": "Restore exact local measurement commits; no branch/checkout mutation",
+  "commits": [
+    {
+      "sha": "b87a272011c37f8d8dc5232efaa13f57018ab70e",
+      "raw_commit": "tree 778dba7ea3bcbb87273807ae5fc6e1c65ae6f9d9\nparent 6fe417400ff4844d7647dddd9435288c3485ffc0\nparent 93f70d4603d06d323675456f90f2629b6b0d3b52\nauthor Codex <codex@openai.com> 1794439621 +0000\ncommitter Codex <codex@openai.com> 1794439621 +0000\n\neval: combine frozen v4 oracle and unmodified PR19 target\n"
+    },
+    {
+      "sha": "4f156406d92ba8357055330fea53528bee502739",
+      "raw_commit": "tree d2de5e7824ad204d3d1a2b2b70085c7443dbfad8\nparent b87a272011c37f8d8dc5232efaa13f57018ab70e\nauthor Codex <codex@openai.com> 1794440241 +0000\ncommitter Codex <codex@openai.com> 1794440241 +0000\n\neval: freeze post-repair v4 instrument and separate validation path\n"
+    },
+    {
+      "sha": "9fe0bf02ee6144aa8f5f2d6838646f1ac2ac385a",
+      "raw_commit": "tree 04fa4dfaffb779a88afdca4c93aff534b0d9ad66\nparent 4f156406d92ba8357055330fea53528bee502739\nauthor Codex <codex@openai.com> 1794440286 +0000\ncommitter Codex <codex@openai.com> 1794440286 +0000\n\neval: distinguish unmeasured baseline effects from measured zero\n"
+    },
+    {
+      "sha": "525086a3e875d2883e69111c361bf9927551d50f",
+      "raw_commit": "tree 8d161cad0c4ce21b0ae54d0cf34dfa6f76babaf3\nparent 9fe0bf02ee6144aa8f5f2d6838646f1ac2ac385a\nauthor Codex <codex@openai.com> 1794440608 +0000\ncommitter Codex <codex@openai.com> 1794440608 +0000\n\neval: correct permission fixture access probe and retain invalid v1 evidence\n"
+    },
+    {
+      "sha": "00ba8f610e862b5ea30e55da1bb0cd52f34d980e",
+      "raw_commit": "tree 1382f024df0c8129fd17661d386c1315791b28f5\nparent 525086a3e875d2883e69111c361bf9927551d50f\nauthor Codex <codex@openai.com> 1794441191 +0000\ncommitter Codex <codex@openai.com> 1794441191 +0000\n\neval: preserve invalid instrument v1 run and separate review provenance\n"
+    },
+    {
+      "sha": "3d403c5edee9458cd086c176e0489defb7e702c5",
+      "raw_commit": "tree 44e8f8c5ee8cf5fa355cf4ddfc2093d42d7c0e48\nparent 6fe417400ff4844d7647dddd9435288c3485ffc0\nauthor Codex <codex@openai.com> 1794440821 +0000\ncommitter Codex <codex@openai.com> 1794440821 +0000\n\nfix: reject WAL replay state and recheck expiry after consumption\n"
+    }
+  ]
+}

@@ -1,0 +1,221 @@
+v4: 25/1005 episodes complete
+v4: 50/1005 episodes complete
+v4: 75/1005 episodes complete
+v4: 100/1005 episodes complete
+v4: 125/1005 episodes complete
+v4: 150/1005 episodes complete
+v4: 175/1005 episodes complete
+v4: 200/1005 episodes complete
+v4: 225/1005 episodes complete
+v4: 250/1005 episodes complete
+v4: 275/1005 episodes complete
+v4: 300/1005 episodes complete
+v4: 325/1005 episodes complete
+v4: 350/1005 episodes complete
+v4: 375/1005 episodes complete
+v4: 400/1005 episodes complete
+v4: 425/1005 episodes complete
+v4: 450/1005 episodes complete
+v4: 475/1005 episodes complete
+v4: 500/1005 episodes complete
+v4: 525/1005 episodes complete
+v4: 550/1005 episodes complete
+v4: 575/1005 episodes complete
+v4: 600/1005 episodes complete
+v4: 625/1005 episodes complete
+v4: 650/1005 episodes complete
+v4: 675/1005 episodes complete
+v4: 700/1005 episodes complete
+v4: 725/1005 episodes complete
+v4: 750/1005 episodes complete
+v4: 775/1005 episodes complete
+v4: 800/1005 episodes complete
+v4: 825/1005 episodes complete
+v4: 850/1005 episodes complete
+v4: 875/1005 episodes complete
+v4: 900/1005 episodes complete
+v4: 925/1005 episodes complete
+v4: 950/1005 episodes complete
+v4: 975/1005 episodes complete
+v4: 1000/1005 episodes complete
+{
+  "gate": "INVALID_MEASUREMENT",
+  "exit_code": 2,
+  "primary_attempts": 1100,
+  "failures": [
+    {
+      "id": "S-023.s1",
+      "expected": "deny",
+      "observed": null,
+      "valid": false,
+      "reason": "FixtureInvalid: OS access denial was not confirmed: {'read': {'denied': True, 'errno': 13}, 'write': {'denied': False}}",
+      "layer": "invalid_setup",
+      "violations": [],
+      "citations": [
+        {
+          "rule_id": "R-STORE",
+          "document": "docs/ASSURANCE_BOUNDARY.md",
+          "section": "State setup and recovery"
+        }
+      ]
+    },
+    {
+      "id": "S-024.s1",
+      "expected": "deny",
+      "observed": null,
+      "valid": false,
+      "reason": "FixtureInvalid: OS access denial was not confirmed: {'read': {'denied': True, 'errno': 13}, 'write': {'denied': False}}",
+      "layer": "invalid_setup",
+      "violations": [],
+      "citations": [
+        {
+          "rule_id": "R-STORE",
+          "document": "docs/ASSURANCE_BOUNDARY.md",
+          "section": "State setup and recovery"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "cerberus": {
+      "attempts": 1100,
+      "planned_scored": 1078,
+      "valid_scored": 1076,
+      "ambiguous": 22,
+      "measurement_errors": 2,
+      "correct": 1076,
+      "false_allows": {
+        "numerator": 0,
+        "denominator": 876,
+        "rate": 0.0,
+        "wilson95": [
+          0,
+          0.004366080709407658
+        ],
+        "rule_of_three_upper": 0.003424657534246575
+      },
+      "false_denies": {
+        "numerator": 0,
+        "denominator": 200,
+        "rate": 0.0,
+        "wilson95": [
+          1.734723475976807e-18,
+          0.018845326377266575
+        ],
+        "rule_of_three_upper": 0.015
+      },
+      "observed_decisions": {
+        "deny": 871,
+        "allow": 200,
+        "escalate": 5
+      },
+      "invariant_violations_scored": 0,
+      "symbolic_writes_scored": 200,
+      "constructor_refusals_scored": 81
+    },
+    "allow_if_recommended": {
+      "attempts": 1100,
+      "planned_scored": 1078,
+      "valid_scored": 1076,
+      "ambiguous": 22,
+      "measurement_errors": 2,
+      "correct": 200,
+      "false_allows": {
+        "numerator": 876,
+        "denominator": 876,
+        "rate": 1.0,
+        "wilson95": [
+          0.9956339192905922,
+          0.9999999999999999
+        ],
+        "rule_of_three_upper": null
+      },
+      "false_denies": {
+        "numerator": 0,
+        "denominator": 200,
+        "rate": 0.0,
+        "wilson95": [
+          1.734723475976807e-18,
+          0.018845326377266575
+        ],
+        "rule_of_three_upper": 0.015
+      },
+      "observed_decisions": {
+        "allow": 1076
+      },
+      "invariant_violations_scored": null,
+      "symbolic_writes_scored": null,
+      "constructor_refusals_scored": null
+    },
+    "confidence_0.9": {
+      "attempts": 1100,
+      "planned_scored": 1078,
+      "valid_scored": 1076,
+      "ambiguous": 22,
+      "measurement_errors": 2,
+      "correct": 199,
+      "false_allows": {
+        "numerator": 876,
+        "denominator": 876,
+        "rate": 1.0,
+        "wilson95": [
+          0.9956339192905922,
+          0.9999999999999999
+        ],
+        "rule_of_three_upper": null
+      },
+      "false_denies": {
+        "numerator": 1,
+        "denominator": 200,
+        "rate": 0.005,
+        "wilson95": [
+          0.0008831687156009814,
+          0.02777370439789293
+        ],
+        "rule_of_three_upper": null
+      },
+      "observed_decisions": {
+        "allow": 1075,
+        "escalate": 1
+      },
+      "invariant_violations_scored": null,
+      "symbolic_writes_scored": null,
+      "constructor_refusals_scored": null
+    },
+    "soar_b2": {
+      "attempts": 1100,
+      "planned_scored": 1078,
+      "valid_scored": 1076,
+      "ambiguous": 22,
+      "measurement_errors": 2,
+      "correct": 298,
+      "false_allows": {
+        "numerator": 778,
+        "denominator": 876,
+        "rate": 0.8881278538812786,
+        "wilson95": [
+          0.8655365739901094,
+          0.907329938701218
+        ],
+        "rule_of_three_upper": null
+      },
+      "false_denies": {
+        "numerator": 0,
+        "denominator": 200,
+        "rate": 0.0,
+        "wilson95": [
+          1.734723475976807e-18,
+          0.018845326377266575
+        ],
+        "rule_of_three_upper": 0.015
+      },
+      "observed_decisions": {
+        "allow": 978,
+        "deny": 98
+      },
+      "invariant_violations_scored": null,
+      "symbolic_writes_scored": null,
+      "constructor_refusals_scored": null
+    }
+  }
+}

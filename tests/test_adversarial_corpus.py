@@ -112,12 +112,14 @@ def _evaluate_scenario(
         return result
 
     assert decision.decision_token is not None
-    receipt = EnforcementGateway(signer, replay_cache=ReplayCache()).authorize_and_simulate(
+    from tests.assurance_support import registered_gateway
+    receipt = registered_gateway(signer, decision.decision_token, now=SIMULATION_NOW, replay_cache=ReplayCache()).authorize_and_simulate(
         decision.decision_token,
         action=decision.authorized_action,
         target=decision.target,
         scope=decision.scope,
         now=SIMULATION_NOW,
+        expected_envelope=envelope,
     )
     result["receipt"] = receipt
     assert receipt["status"] == enforcement_expectation["status"]

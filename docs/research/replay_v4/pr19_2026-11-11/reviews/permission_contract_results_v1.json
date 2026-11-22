@@ -1,0 +1,119 @@
+{
+  "euid": 1000,
+  "effective_capabilities": "0000000000000000",
+  "observations": [
+    {
+      "mode": "0000",
+      "os_open": {
+        "read": {
+          "denied": true,
+          "errno": 13
+        },
+        "write": {
+          "denied": true,
+          "errno": 13
+        },
+        "read_write": {
+          "denied": true,
+          "errno": 13
+        }
+      }
+    },
+    {
+      "mode": "0111",
+      "os_open": {
+        "read": {
+          "denied": true,
+          "errno": 13
+        },
+        "write": {
+          "denied": true,
+          "errno": 13
+        },
+        "read_write": {
+          "denied": true,
+          "errno": 13
+        }
+      }
+    },
+    {
+      "mode": "0200",
+      "os_open": {
+        "read": {
+          "denied": true,
+          "errno": 13
+        },
+        "write": {
+          "denied": false
+        },
+        "read_write": {
+          "denied": true,
+          "errno": 13
+        }
+      }
+    },
+    {
+      "mode": "0300",
+      "os_open": {
+        "read": {
+          "denied": true,
+          "errno": 13
+        },
+        "write": {
+          "denied": false
+        },
+        "read_write": {
+          "denied": true,
+          "errno": 13
+        }
+      }
+    },
+    {
+      "mode": "0100",
+      "os_open": {
+        "read": {
+          "denied": true,
+          "errno": 13
+        },
+        "write": {
+          "denied": true,
+          "errno": 13
+        },
+        "read_write": {
+          "denied": true,
+          "errno": 13
+        }
+      }
+    },
+    {
+      "mode": "0400",
+      "os_open": {
+        "read": {
+          "denied": false
+        },
+        "write": {
+          "denied": true,
+          "errno": 13
+        },
+        "read_write": {
+          "denied": true,
+          "errno": 13
+        }
+      }
+    },
+    {
+      "mode": "0600",
+      "os_open": {
+        "read": {
+          "denied": false
+        },
+        "write": {
+          "denied": false
+        },
+        "read_write": {
+          "denied": false
+        }
+      }
+    }
+  ]
+}

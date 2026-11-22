@@ -4,6 +4,7 @@
 """CERBERUS Cyber runtime-assurance prototype package."""
 
 from .audit import AuditLedger
+from .authority import AuthorityStatusError, TokenAuthorityRegistry
 from .enforcement import EnforcementDenied, EnforcementGateway, ReplayCache
 from .guardian import EnvelopeIdempotencyRegistry, Guardian
 from .models import (
@@ -32,6 +33,8 @@ __all__ = [
     "POLICY_BUNDLE_SCHEMA_VERSION",
     "ActionEnvelope",
     "AuditLedger",
+    "AuthorityStatusError",
+    "TokenAuthorityRegistry",
     "DecisionTokenSigner",
     "EnforcementDenied",
     "EnforcementGateway",

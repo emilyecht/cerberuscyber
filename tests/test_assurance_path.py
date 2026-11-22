@@ -19,7 +19,7 @@ from cerberus import (
 )
 from cerberus.models import format_time
 
-from tests.assurance_support import FixtureGuardian
+from tests.assurance_support import FixtureGuardian, registered_gateway
 from cerberus import ReplayCache
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -64,12 +64,13 @@ class AssurancePathTests(unittest.TestCase):
         self.assertEqual(decision.envelope_digest, envelope.digest())
         self.assertTrue(ledger.verify())
 
-        gateway = EnforcementGateway(signer, replay_cache=ReplayCache())
+        gateway = registered_gateway(signer, decision.decision_token, replay_cache=ReplayCache())
         receipt = gateway.authorize_and_simulate(
             decision.decision_token or "",
             action=decision.authorized_action,
             target=decision.target,
             scope=decision.scope,
+            expected_envelope=envelope,
         )
         self.assertEqual(receipt["status"], "simulated")
         self.assertFalse(receipt["side_effects"])
@@ -80,18 +81,21 @@ class AssurancePathTests(unittest.TestCase):
                 action=decision.authorized_action,
                 target=decision.target,
                 scope=decision.scope,
+                expected_envelope=envelope,
             )
 
     def test_target_cannot_change_after_authorization(self):
         signer = DecisionTokenSigner(TEST_KEY)
-        decision = FixtureGuardian(POLICIES, signer=signer).evaluate(self._ransomware_envelope())
-        gateway = EnforcementGateway(signer, replay_cache=ReplayCache())
+        envelope = self._ransomware_envelope()
+        decision = FixtureGuardian(POLICIES, signer=signer).evaluate(envelope)
+        gateway = registered_gateway(signer, decision.decision_token, replay_cache=ReplayCache())
         with self.assertRaises(EnforcementDenied):
             gateway.authorize_and_simulate(
                 decision.decision_token or "",
                 action=decision.authorized_action,
                 target="endpoint:other",
                 scope=decision.scope,
+                expected_envelope=envelope,
             )
 
     def test_expired_envelope_is_denied(self):

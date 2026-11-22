@@ -63,6 +63,56 @@ simulation, not exactly-once real-world execution. Guardian's default registry a
 an explicitly selected `ReplayCache` are still process-local simulation options.
 The gateway requires an explicit store choice.
 
+## Strict gateway execution context and live token status
+
+The current gateway additionally requires the **actual complete request being
+enforced**, via `expected_envelope=envelope`. It recomputes the canonical
+ActionEnvelope digest and compares it with the signed token. Incident, impact,
+reversibility, actor, nonce, policy version and all other envelope fields are
+bound by that digest. The separately supplied action/target/scope must agree.
+Missing or malformed context refuses execution; there is no unbound fallback.
+Do not substitute the old approved envelope when a caller is asking to execute
+a different request.
+
+Token 1.3.0 already contains that full-envelope digest; its issuance/wire contract
+and Guardian policy reasoning are unchanged. The new checks are at execution.
+
+A trusted issuer/controller provisions `TokenAuthorityRegistry` after receiving
+a genuine approved token. It registers the token fingerprint, intended purpose
+and upstream authority-key dependencies. The gateway never self-registers a
+requester's token. Operators must deliver revocation events to the registry
+shared by every participating gateway:
+
+```python
+registry = TokenAuthorityRegistry()
+registry.register(
+    decision.decision_token, signer, now=clock,
+    authority_key_ids=frozenset(p.key_id for p in proofs.evidence + proofs.approvals),
+)
+gateway = EnforcementGateway(signer, replay_cache=store, authority_registry=registry)
+receipt = gateway.authorize_and_simulate(
+    decision.decision_token, expected_envelope=envelope,
+    action=envelope.action, target=envelope.target, scope=envelope.scope, now=clock,
+)
+registry.revoke_token(token_id)       # trusted controller event
+registry.revoke_authority(key_id)     # issuer/evidence/approver dependency event
+```
+
+Unknown, revoked, wrongly purposed or mismatched registrations fail closed,
+including signature-valid and unexpired tokens. Missing or unavailable registry
+status also refuses. Registration cannot repurpose a token or undo revocation.
+The registry lock covers the live check through replay consumption and receipt
+commit. Revocation is ordered before or after that operation; it does not undo
+an already completed action. Expiry is rechecked at the enforcement commit point.
+
+This registry is **trusted and process-local**. It is not durable or distributed,
+does not deliver upstream revocation events, and does not protect against a
+compromised issuer/controller. Losing it makes prior tokens unknown; trusted
+reprovisioning is needed before further enforcement. The existing SQLite replay
+claims remain separate and must not be erased when reprovisioning. Controller
+dependency records and revocation delivery must be correct; signatures alone do
+not establish the truth of observations or organizational independence.
+
 ## Migration and test fixtures
 
 Evidence v2 supersedes the observation-only v1 proof profile; obtain new evidence
@@ -91,8 +141,9 @@ and proofs before adversarial mutation rather than re-signing altered claims.
   administrators must change that version when rules change; the decision token
   and receipt then record the exact evaluated policy digest.
 - Principal identity and organizational independence depend on correct provisioning.
-- Already-issued tokens are not online-rechecked for revocation; exposure is bounded
-  by their short expiry, assuming trusted time and uncompromised decision keys.
+- Already-issued tokens now receive a live shared-process registry check. Cross-
+  process/distributed status, durable registry recovery and reliable upstream
+  revocation delivery remain unestablished; there is no remote revocation service.
 - SQLite is single-host trusted storage, not distributed consensus or protection
   against malicious rollback, replacement, namespace changes or administrator deletion.
 - Claims are retained indefinitely; quotas, storage exhaustion and production recovery

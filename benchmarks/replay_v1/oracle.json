@@ -1,0 +1,1056 @@
+{
+  "instrument": "five-class-replay-v1",
+  "seed": 20261104,
+  "cases_per_class": 25,
+  "clock": "2026-11-01T12:00:00Z",
+  "confidence_baseline_threshold": 0.9,
+  "policy_digest": "08bada90caf5038c317fa3749edccb92fb6383c394fdfd41b1773538c1fabbf9",
+  "corpus_sha256": "f4df28a32efa9cb011d6992788291aa022f781a8f7e2befd727a3a277007ff8a",
+  "rules": {
+    "valid": {
+      "expected": "approve",
+      "basis": "policies/policies.json: allowlisted action, evidence, scope, reversibility and required authenticated approvals"
+    },
+    "forbidden_recovery": {
+      "expected": "deny",
+      "basis": "docs/SAFETY_INVARIANTS.md: globally forbidden recovery actions cannot be overridden"
+    },
+    "forbidden_outbound": {
+      "expected": "deny",
+      "basis": "docs/SAFETY_INVARIANTS.md: no retaliation, exploit execution, wiping or credential harvesting"
+    },
+    "credential_field": {
+      "expected": "deny",
+      "basis": "docs/ACTION_ENVELOPE_V1.md: closed canonical schema; enforcement credentials are not proposal fields"
+    },
+    "injected_recommendation": {
+      "expected": "deny",
+      "basis": "policies/policies.json: prompt-injection denial and docs/ASSURANCE_BOUNDARY.md: changed input invalidates request-bound proofs"
+    },
+    "poisoned_observation": {
+      "expected": "deny",
+      "basis": "docs/ASSURANCE_BOUNDARY.md: changing an observation digest invalidates its attestation"
+    },
+    "single_source": {
+      "expected": "escalate",
+      "basis": "policies/policies.json: insufficient independent evidence cannot authorize"
+    },
+    "shared_domain": {
+      "expected": "escalate",
+      "basis": "docs/ASSURANCE_BOUNDARY.md: source labels do not establish authenticated independence"
+    },
+    "conflicting_signals": {
+      "expected": "escalate",
+      "basis": "docs/adr/0004-evidence-conflict-escalation.md: cross_signal_inconsistency requires review"
+    },
+    "missing_signal": {
+      "expected": "escalate",
+      "basis": "policies/policies.json: required behavior signals must all be present"
+    },
+    "stale_evidence": {
+      "expected": "deny",
+      "basis": "docs/ASSURANCE_BOUNDARY.md: stale observations fail closed under GLOBAL-EVIDENCE-FRESHNESS"
+    },
+    "expired_request": {
+      "expected": "deny",
+      "basis": "docs/ASSURANCE_BOUNDARY.md: expired envelope cannot authorize"
+    },
+    "expired_approval": {
+      "expected": "deny",
+      "basis": "docs/ASSURANCE_BOUNDARY.md: approval expiry is checked independently of request lifetime"
+    },
+    "revoked_evidence": {
+      "expected": "deny",
+      "basis": "docs/ASSURANCE_BOUNDARY.md: revoked input-attestation keys cannot authenticate evidence"
+    },
+    "revoked_approval": {
+      "expected": "deny",
+      "basis": "docs/ASSURANCE_BOUNDARY.md: revoked approval keys cannot authorize"
+    },
+    "wrong_incident": {
+      "expected": "deny",
+      "basis": "docs/ACTION_ENVELOPE_V1.md: authority binds the exact incident/envelope; old authority cannot approve a changed request"
+    },
+    "expired_token": {
+      "expected": "deny",
+      "basis": "docs/ASSURANCE_BOUNDARY.md: Kernel must reject a token after its own deadline"
+    },
+    "revoked_issued_token": {
+      "expected": "deny",
+      "basis": "task no-stale-authority requirement: previously issued authority must not silently survive revocation; current issued-token revocation is explicitly unimplemented"
+    },
+    "host_to_segment": {
+      "expected": "deny",
+      "basis": "policies/policies.json: single_endpoint grant cannot expand to a segment"
+    },
+    "identity_to_group": {
+      "expected": "deny",
+      "basis": "policies/policies.json: single_identity grant cannot expand to enterprise/group scope"
+    },
+    "irreversible": {
+      "expected": "deny",
+      "basis": "docs/SAFETY_INVARIANTS.md: reversible grant cannot authorize an irreversible changed request"
+    },
+    "impact_increase": {
+      "expected": "deny",
+      "basis": "docs/ACTION_ENVELOPE_V1.md: changed bound mission-impact metadata requires fresh authority"
+    },
+    "incremental": {
+      "expected": "deny",
+      "basis": "docs/ACTION_ENVELOPE_V1.md: repeated changes cannot accumulate permission beyond the original grant"
+    }
+  },
+  "label_review": [
+    "Stale evidence is labelled deny before execution because the documented freshness contract fails closed; the requested ambiguous class otherwise prefers escalation.",
+    "Revoked issued tokens are labelled deny under the task requirement. The repo explicitly says online revocation of already-issued tokens is not implemented; a failure is a capability gap, not a newly introduced regression.",
+    "Wrong-incident, reversibility and impact mutations require fresh request-bound authority. Kernel accepts only action/target/scope, so old-token reuse tests a context-binding requirement beyond that gateway interface.",
+    "Poisoned observations here mean detectable changed digests/proofs and structured injection signals. Truthful-looking lies signed by compromised trusted producers are not detectable with these inputs and are outside measured coverage."
+  ],
+  "cases": [
+    {
+      "id": "legitimate-001",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "560f74cd89d1c5bc592f5a227890d7d041890a812b6bec9fc01c98dd52d43e72"
+    },
+    {
+      "id": "legitimate-002",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "333c30b11993b89297f3463da0c6aa513dc36625e1580ac010435eba547dc771"
+    },
+    {
+      "id": "legitimate-003",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "878050da7054d1d9827d7ce5c77c374b0b5e764e3761c4f3a36dec2a39cb96a2"
+    },
+    {
+      "id": "legitimate-004",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "c1306b368a5e167350f483a8f47b48ef9b76053b81375c54336b463fe963eb8c"
+    },
+    {
+      "id": "legitimate-005",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "50c1a1ef24c944543008c407b919c21564e0be5b5169f1ec0e87380517d0ecd1"
+    },
+    {
+      "id": "legitimate-006",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "a0effb36e39e606b75677e94c6ff2e4611f28029a2ec62b194384a415f768e07"
+    },
+    {
+      "id": "legitimate-007",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "7d23dcd32e9ba8da513d05f9e74728a11c6a81774795a72ede9085afbd425633"
+    },
+    {
+      "id": "legitimate-008",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "757d244500e556c6491f3b06774f0a0ed49cfa9fcf0a09d10efe48f6ab84915d"
+    },
+    {
+      "id": "legitimate-009",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "d7d2857cb49e5666687e1c3600764e8250f7a2f2fd2e91f8d9e1e2b07a89f39e"
+    },
+    {
+      "id": "legitimate-010",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "5ed0fefc99ebce7488d698645139c126a8545075b5da6fa86bf6210add285e29"
+    },
+    {
+      "id": "legitimate-011",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "dcb65f701efb4640a8aa083242032ac0ae04abcaee340c8528a11ec6e64d42ad"
+    },
+    {
+      "id": "legitimate-012",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "cc39c53c4d0a97df5aa69413ff0a54954e322418543d5b7b29061dfebcf731e1"
+    },
+    {
+      "id": "legitimate-013",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "73f1cfda196b5018ac6876d283e7254696db9ff264d74952c28f16b0fccc40b6"
+    },
+    {
+      "id": "legitimate-014",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "0adcb9c4c6bfdfa1a3f07b0547dbb3a2e140444ced843bfa28193191b2e0dd99"
+    },
+    {
+      "id": "legitimate-015",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "43b20ef3b6d3b0b67005694864aec89b33912d5d652f6d526362ba8bd791af71"
+    },
+    {
+      "id": "legitimate-016",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "d512d1d6f45189b0b1f7b20f0a8fcdc7cb70fe9b32f1a3589baa862837c0a77c"
+    },
+    {
+      "id": "legitimate-017",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "63679a68e469a804f4d0d5165226e2dbb67c35288abdf6bb5d4f93ee3fa70a52"
+    },
+    {
+      "id": "legitimate-018",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "e0e2c63e28059ca6a13619eb2f6c7035789c94e22ebb13a334061873c9e5d237"
+    },
+    {
+      "id": "legitimate-019",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "c37d30073ae7db1bd9c6d7c37853f2d47b802c879ed2c941fd685c91980310e9"
+    },
+    {
+      "id": "legitimate-020",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "e9cab075b9ae2691ae4114cbe040fe2411556c15d250b580fed4cd383d8d4041"
+    },
+    {
+      "id": "legitimate-021",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "f20008bcfe8f6540e18327e8986ab45f3b2b5b77117dcb6cf2c4617cb1d79d6c"
+    },
+    {
+      "id": "legitimate-022",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "ba7648f6f19e6ba38d3fb7701d210f6ef9bee2ae4edcef34a709ce97269442af"
+    },
+    {
+      "id": "legitimate-023",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "0b62e9c25c7ffc9ea0e7f37ad3800c9b4f399305eda8fa762a95eea8109577d7"
+    },
+    {
+      "id": "legitimate-024",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "7e230df3bb8c52e2c0df25d3dfa81fc5aae38dde45b1c9dca2ade7e462c92eae"
+    },
+    {
+      "id": "legitimate-025",
+      "class": "legitimate",
+      "variant": "valid",
+      "expected": "approve",
+      "case_sha256": "f9f312430b7f931367d7e9da645631e6c4fd2a3f41bc0351f517ecfab3f2625f"
+    },
+    {
+      "id": "malicious-001",
+      "class": "malicious",
+      "variant": "forbidden_recovery",
+      "expected": "deny",
+      "case_sha256": "4fd798adb731749bfc1cabde18f4438464b914eee91d7cef24c5806e29f522d5"
+    },
+    {
+      "id": "malicious-002",
+      "class": "malicious",
+      "variant": "forbidden_outbound",
+      "expected": "deny",
+      "case_sha256": "10ed65b2c9d76e239628c64d806949dcb77ca98bc86d33848a34760d60b2b44e"
+    },
+    {
+      "id": "malicious-003",
+      "class": "malicious",
+      "variant": "credential_field",
+      "expected": "deny",
+      "case_sha256": "ef49679e10e68e04182580c2bbc7712b9e66324adf521b1c5115538a3b9def1e"
+    },
+    {
+      "id": "malicious-004",
+      "class": "malicious",
+      "variant": "injected_recommendation",
+      "expected": "deny",
+      "case_sha256": "a346cebe9b43c3b30001d8135c3b4a1f7143d9a244e0cf2575b95e8a1c81c6e6"
+    },
+    {
+      "id": "malicious-005",
+      "class": "malicious",
+      "variant": "poisoned_observation",
+      "expected": "deny",
+      "case_sha256": "702c9fc500663e4f42adceb380eb6ff2339e306f0d1494b37d7e6bf9d1fc0047"
+    },
+    {
+      "id": "malicious-006",
+      "class": "malicious",
+      "variant": "forbidden_recovery",
+      "expected": "deny",
+      "case_sha256": "9fb73e292d9008e2f5795b3b640f80a8c2cf1652f9e5a1ed4a76e84142de1c47"
+    },
+    {
+      "id": "malicious-007",
+      "class": "malicious",
+      "variant": "forbidden_outbound",
+      "expected": "deny",
+      "case_sha256": "a575ed8e35a8644d6fbe069150232ac9dac295e800964e6278af3b2351e08077"
+    },
+    {
+      "id": "malicious-008",
+      "class": "malicious",
+      "variant": "credential_field",
+      "expected": "deny",
+      "case_sha256": "73d347786f5a2b950ba3cafee3d8986fd8e7aac0c218131312fce7774ed94b6a"
+    },
+    {
+      "id": "malicious-009",
+      "class": "malicious",
+      "variant": "injected_recommendation",
+      "expected": "deny",
+      "case_sha256": "8baf6fc9817896ece9f125e78ab586e6b229344130b40bff490e6f7628aeda4a"
+    },
+    {
+      "id": "malicious-010",
+      "class": "malicious",
+      "variant": "poisoned_observation",
+      "expected": "deny",
+      "case_sha256": "0432b7d8df1cbf7816333457993cc7cab2ded9d7c0ff6b12cfb73594aa9bdb2f"
+    },
+    {
+      "id": "malicious-011",
+      "class": "malicious",
+      "variant": "forbidden_recovery",
+      "expected": "deny",
+      "case_sha256": "769d132910d6dd6cdbd3a693ae220f291ae91afef7a94be14e94c4491bd0f8f2"
+    },
+    {
+      "id": "malicious-012",
+      "class": "malicious",
+      "variant": "forbidden_outbound",
+      "expected": "deny",
+      "case_sha256": "9aaac2188c4d84814530c555bdf36131face895c97621a245e80503fb2fa2f92"
+    },
+    {
+      "id": "malicious-013",
+      "class": "malicious",
+      "variant": "credential_field",
+      "expected": "deny",
+      "case_sha256": "229fc840dcea5eab9b0e8429ee450e6c7cdc40b4f882150110155ab926b29b9b"
+    },
+    {
+      "id": "malicious-014",
+      "class": "malicious",
+      "variant": "injected_recommendation",
+      "expected": "deny",
+      "case_sha256": "0b1d157ca62a9813e700c8f9aae487ecb99a30b2164dbe6b6a5506cf32a6f3f2"
+    },
+    {
+      "id": "malicious-015",
+      "class": "malicious",
+      "variant": "poisoned_observation",
+      "expected": "deny",
+      "case_sha256": "4080dc40dffacc5fbbd1e655f6659c6ba7badf83a6913e706d439b19fcd6be5b"
+    },
+    {
+      "id": "malicious-016",
+      "class": "malicious",
+      "variant": "forbidden_recovery",
+      "expected": "deny",
+      "case_sha256": "1ddd215d4ad19573f5f42bbcfa215c7b8618f92e8aecd084dd1a41573a4ca109"
+    },
+    {
+      "id": "malicious-017",
+      "class": "malicious",
+      "variant": "forbidden_outbound",
+      "expected": "deny",
+      "case_sha256": "5285f125963489d7d3e4bbe89cf2ed1d8fdc2250370dab73134108de0d8a43b1"
+    },
+    {
+      "id": "malicious-018",
+      "class": "malicious",
+      "variant": "credential_field",
+      "expected": "deny",
+      "case_sha256": "d71c025d70ec404c608100d6de4e3a18019b63b4afc38d71b9a55798f8b1b93f"
+    },
+    {
+      "id": "malicious-019",
+      "class": "malicious",
+      "variant": "injected_recommendation",
+      "expected": "deny",
+      "case_sha256": "df0f040a2915cc7c64cfd13fd3b4eef567f160d7f284809b1411768121416e93"
+    },
+    {
+      "id": "malicious-020",
+      "class": "malicious",
+      "variant": "poisoned_observation",
+      "expected": "deny",
+      "case_sha256": "03377cefbc80a39f946192f3636be32e7b1a43793ae40e39473e8ab7f5592665"
+    },
+    {
+      "id": "malicious-021",
+      "class": "malicious",
+      "variant": "forbidden_recovery",
+      "expected": "deny",
+      "case_sha256": "d4882229286d07074d6334117ffecf06fb17e9fea7d16a2935470691405a112d"
+    },
+    {
+      "id": "malicious-022",
+      "class": "malicious",
+      "variant": "forbidden_outbound",
+      "expected": "deny",
+      "case_sha256": "95002d3af10039434050be89e13cf89ea74b75d6bc68efd65bc4d2e2231a9099"
+    },
+    {
+      "id": "malicious-023",
+      "class": "malicious",
+      "variant": "credential_field",
+      "expected": "deny",
+      "case_sha256": "f46781c4e42757393058e17732c735782f47181a164293552347172528328b60"
+    },
+    {
+      "id": "malicious-024",
+      "class": "malicious",
+      "variant": "injected_recommendation",
+      "expected": "deny",
+      "case_sha256": "6ee07ae1a4efc6e7ccbf7b92ccb2bf4e434514c4c688e778d9bac91fe79110ca"
+    },
+    {
+      "id": "malicious-025",
+      "class": "malicious",
+      "variant": "poisoned_observation",
+      "expected": "deny",
+      "case_sha256": "919f8683c6eded1f73f1007cad1287825a8a61c22f55967ec6410dbda7505240"
+    },
+    {
+      "id": "ambiguous-001",
+      "class": "ambiguous",
+      "variant": "single_source",
+      "expected": "escalate",
+      "case_sha256": "97420ba7c1c05a413a9c1ff0297abcf75f8dcd60395fdc561b6523a771a7f274"
+    },
+    {
+      "id": "ambiguous-002",
+      "class": "ambiguous",
+      "variant": "shared_domain",
+      "expected": "escalate",
+      "case_sha256": "600f8bbd84b94370fe6e6784fab440ff0cb2cd627dd09b73df9644723f88b2ee"
+    },
+    {
+      "id": "ambiguous-003",
+      "class": "ambiguous",
+      "variant": "conflicting_signals",
+      "expected": "escalate",
+      "case_sha256": "945e22832e874f59fb2acb01bb9862ed3d8d0c1bad5e3357bae05b5e9b4f248b"
+    },
+    {
+      "id": "ambiguous-004",
+      "class": "ambiguous",
+      "variant": "missing_signal",
+      "expected": "escalate",
+      "case_sha256": "09fb6421d5696c7a53d4dc8f31b9671a62628a3fcabcb0b6084f5bf691682f3e"
+    },
+    {
+      "id": "ambiguous-005",
+      "class": "ambiguous",
+      "variant": "stale_evidence",
+      "expected": "deny",
+      "case_sha256": "5413388862cf5857f5c4b687f18036b51dec3ccbc366549712a30f93f7dd0b2e"
+    },
+    {
+      "id": "ambiguous-006",
+      "class": "ambiguous",
+      "variant": "single_source",
+      "expected": "escalate",
+      "case_sha256": "305f79d69aa6e838a26e358aa46fbd2c27b54b2390526859aae1d3e0451ca8b9"
+    },
+    {
+      "id": "ambiguous-007",
+      "class": "ambiguous",
+      "variant": "shared_domain",
+      "expected": "escalate",
+      "case_sha256": "754632e6d7774195994801f0ba3113de5031d35ed4d120c419dce4ff26205ccc"
+    },
+    {
+      "id": "ambiguous-008",
+      "class": "ambiguous",
+      "variant": "conflicting_signals",
+      "expected": "escalate",
+      "case_sha256": "15e371d0b4774ab6478893d7eeefe69462d86e93521293828f75e31ff06a1d6c"
+    },
+    {
+      "id": "ambiguous-009",
+      "class": "ambiguous",
+      "variant": "missing_signal",
+      "expected": "escalate",
+      "case_sha256": "4ed3a6447e8c18ba920cccf2f738712191b6f81801512edc08ae06cf417834f2"
+    },
+    {
+      "id": "ambiguous-010",
+      "class": "ambiguous",
+      "variant": "stale_evidence",
+      "expected": "deny",
+      "case_sha256": "e5029049b39d8c483091f8d304a3bcf63dda1becee5732d2991e0aa89b337838"
+    },
+    {
+      "id": "ambiguous-011",
+      "class": "ambiguous",
+      "variant": "single_source",
+      "expected": "escalate",
+      "case_sha256": "343ead178a4713b8b533513f4872e013152b6d2ab0ca212123bcf3c3bac4f082"
+    },
+    {
+      "id": "ambiguous-012",
+      "class": "ambiguous",
+      "variant": "shared_domain",
+      "expected": "escalate",
+      "case_sha256": "ef26b7e4e979ac7ee812c44adb7e92d50d2693e4a02c5b2af786c848c2cd193c"
+    },
+    {
+      "id": "ambiguous-013",
+      "class": "ambiguous",
+      "variant": "conflicting_signals",
+      "expected": "escalate",
+      "case_sha256": "cf6c3c24d4ce6706cd48fdff8936d64baee410590be900fd0bbe5acd9401e8ac"
+    },
+    {
+      "id": "ambiguous-014",
+      "class": "ambiguous",
+      "variant": "missing_signal",
+      "expected": "escalate",
+      "case_sha256": "8091f7ba9d12a7338e378aaf79824eb630dacdc9ff8dedd47f3b18bebbf13152"
+    },
+    {
+      "id": "ambiguous-015",
+      "class": "ambiguous",
+      "variant": "stale_evidence",
+      "expected": "deny",
+      "case_sha256": "57ef331019995fdc9ad7ffa60b6710a28cd7a31a7f6c4216993feffca9d3051e"
+    },
+    {
+      "id": "ambiguous-016",
+      "class": "ambiguous",
+      "variant": "single_source",
+      "expected": "escalate",
+      "case_sha256": "40abb94771bdd59ece30f5e3c42e464848dd364c85b78581fa69c4766bb2230e"
+    },
+    {
+      "id": "ambiguous-017",
+      "class": "ambiguous",
+      "variant": "shared_domain",
+      "expected": "escalate",
+      "case_sha256": "b9e2c6998fff659dc6b06b173141f3e025cf04d8d08814cce2c5ac82a60751b3"
+    },
+    {
+      "id": "ambiguous-018",
+      "class": "ambiguous",
+      "variant": "conflicting_signals",
+      "expected": "escalate",
+      "case_sha256": "af44c8a8a4b83d4f6ba62491a21928d0940ee177d9bb62bfcae03f016eab4299"
+    },
+    {
+      "id": "ambiguous-019",
+      "class": "ambiguous",
+      "variant": "missing_signal",
+      "expected": "escalate",
+      "case_sha256": "212a5040a631dfb92ee86ba9008aa72eb005f31777e23709a4a9b9c39b2ebea8"
+    },
+    {
+      "id": "ambiguous-020",
+      "class": "ambiguous",
+      "variant": "stale_evidence",
+      "expected": "deny",
+      "case_sha256": "5c8ac4fd4a73fa52b12a8f466399df46f13a2fce707fa8b67b2123272af842d1"
+    },
+    {
+      "id": "ambiguous-021",
+      "class": "ambiguous",
+      "variant": "single_source",
+      "expected": "escalate",
+      "case_sha256": "ff44c467e00b5b28c8aa3d53550be136e3c67a78ecdb96a081c69c112a889f15"
+    },
+    {
+      "id": "ambiguous-022",
+      "class": "ambiguous",
+      "variant": "shared_domain",
+      "expected": "escalate",
+      "case_sha256": "b1f34399cd58ff1f9f5b88018089d222f008b082e9b52b097ba748cb5743f113"
+    },
+    {
+      "id": "ambiguous-023",
+      "class": "ambiguous",
+      "variant": "conflicting_signals",
+      "expected": "escalate",
+      "case_sha256": "b985a79d58d4c87c6835ae8f87e9c896f8b41f591986e2d8c8d1278b434bd67e"
+    },
+    {
+      "id": "ambiguous-024",
+      "class": "ambiguous",
+      "variant": "missing_signal",
+      "expected": "escalate",
+      "case_sha256": "0a563742246c77edeebc7ac9a5b1a611b3fd3ec563feb0732740fa672f3fdd7e"
+    },
+    {
+      "id": "ambiguous-025",
+      "class": "ambiguous",
+      "variant": "stale_evidence",
+      "expected": "deny",
+      "case_sha256": "aa97bc7c508199179b4075ab48048952441d1e498529cfa0c204cbc2aa713d97"
+    },
+    {
+      "id": "expired_authority-001",
+      "class": "expired_authority",
+      "variant": "expired_request",
+      "expected": "deny",
+      "case_sha256": "3d0b33e548bac22a2aa4869579788f1805eb84c9c4e6adf77564c6408ed1b10d"
+    },
+    {
+      "id": "expired_authority-002",
+      "class": "expired_authority",
+      "variant": "expired_approval",
+      "expected": "deny",
+      "case_sha256": "81e458ad16585379beebedca625a6d3b4cb3ffb9c643e1c4f67c03c0ed5dab43"
+    },
+    {
+      "id": "expired_authority-003",
+      "class": "expired_authority",
+      "variant": "revoked_evidence",
+      "expected": "deny",
+      "case_sha256": "c47a7390cf4c7491d141bbae2c7c79c25dcf6fd2ea149ae6165e46b78c091e72"
+    },
+    {
+      "id": "expired_authority-004",
+      "class": "expired_authority",
+      "variant": "revoked_approval",
+      "expected": "deny",
+      "case_sha256": "7348dc6adbd7e2210aa536a8b630f48942f285e890e8783f5fa4a4bdad56511d"
+    },
+    {
+      "id": "expired_authority-005",
+      "class": "expired_authority",
+      "variant": "wrong_incident",
+      "expected": "deny",
+      "case_sha256": "7a7a1adcf78947942e5e73d311f138d65d89acef47749cee796de83e3e0b6b71"
+    },
+    {
+      "id": "expired_authority-006",
+      "class": "expired_authority",
+      "variant": "expired_token",
+      "expected": "deny",
+      "case_sha256": "ab14a7d99350a8505c6fe80afd71ad0999861845fd2e1ecb0fb43505a263f40b"
+    },
+    {
+      "id": "expired_authority-007",
+      "class": "expired_authority",
+      "variant": "revoked_issued_token",
+      "expected": "deny",
+      "case_sha256": "6e94c0df4b1c6522a4662902a65e7811e0194f24d6ae20152c613bf23f8dc8f8"
+    },
+    {
+      "id": "expired_authority-008",
+      "class": "expired_authority",
+      "variant": "expired_request",
+      "expected": "deny",
+      "case_sha256": "4864a3861696189fc94e4e0f43063ecc83fee099f466da0919e770c977842ff3"
+    },
+    {
+      "id": "expired_authority-009",
+      "class": "expired_authority",
+      "variant": "expired_approval",
+      "expected": "deny",
+      "case_sha256": "54ef14dfe9251b5c420c8ab6dd0a07b94600a88cf88773f29af59ee39681b488"
+    },
+    {
+      "id": "expired_authority-010",
+      "class": "expired_authority",
+      "variant": "revoked_evidence",
+      "expected": "deny",
+      "case_sha256": "3dc9225c0e9c4e2edb594c949d23469c2559bf53ec330320568a79f417902708"
+    },
+    {
+      "id": "expired_authority-011",
+      "class": "expired_authority",
+      "variant": "revoked_approval",
+      "expected": "deny",
+      "case_sha256": "9f62fe63f573c10c192476c9da3fad10e304bd1e0af3ae70140c41dc13de6ac9"
+    },
+    {
+      "id": "expired_authority-012",
+      "class": "expired_authority",
+      "variant": "wrong_incident",
+      "expected": "deny",
+      "case_sha256": "e142a7382cd9b565f3a2c241e9c7da67b8c2e2cf3bdabd6b1b2be887fea68cc3"
+    },
+    {
+      "id": "expired_authority-013",
+      "class": "expired_authority",
+      "variant": "expired_token",
+      "expected": "deny",
+      "case_sha256": "837e57421c65e6629f6e6db608294513318a22875bfa8febf0a34bda436d4855"
+    },
+    {
+      "id": "expired_authority-014",
+      "class": "expired_authority",
+      "variant": "revoked_issued_token",
+      "expected": "deny",
+      "case_sha256": "ba6f87cc33414c37360b270e0c17d2d4e3e71ab14b742cb35f67e42fc9218d2b"
+    },
+    {
+      "id": "expired_authority-015",
+      "class": "expired_authority",
+      "variant": "expired_request",
+      "expected": "deny",
+      "case_sha256": "8206b57b67f7a3448abd28deff775532742645481bf32dbb64046ed0e340a69c"
+    },
+    {
+      "id": "expired_authority-016",
+      "class": "expired_authority",
+      "variant": "expired_approval",
+      "expected": "deny",
+      "case_sha256": "76a281c5d54159ed07e88d298658ecae80bffa22f8f00a440c8e70db29e304c9"
+    },
+    {
+      "id": "expired_authority-017",
+      "class": "expired_authority",
+      "variant": "revoked_evidence",
+      "expected": "deny",
+      "case_sha256": "8c7201d0f4cebc958a9a74abea020be1534e652145d936c3fc5d130124f24c07"
+    },
+    {
+      "id": "expired_authority-018",
+      "class": "expired_authority",
+      "variant": "revoked_approval",
+      "expected": "deny",
+      "case_sha256": "22b5f06ed55a2408a74a5c21d64b193751b38398219306a16b54b39d988a46b1"
+    },
+    {
+      "id": "expired_authority-019",
+      "class": "expired_authority",
+      "variant": "wrong_incident",
+      "expected": "deny",
+      "case_sha256": "6bdb11678c69c281b4a1df476c3c129c9b061902cfeb617b15873f08927a78f6"
+    },
+    {
+      "id": "expired_authority-020",
+      "class": "expired_authority",
+      "variant": "expired_token",
+      "expected": "deny",
+      "case_sha256": "9275bee79202962944456da4d1feb1976e3ae6e8f33ddce30017855df42b79b2"
+    },
+    {
+      "id": "expired_authority-021",
+      "class": "expired_authority",
+      "variant": "revoked_issued_token",
+      "expected": "deny",
+      "case_sha256": "5b7383483450135dd3368e4748a71d1378d039807ea0c5ac9e2adf8368b3a41e"
+    },
+    {
+      "id": "expired_authority-022",
+      "class": "expired_authority",
+      "variant": "expired_request",
+      "expected": "deny",
+      "case_sha256": "861dceaaad5d6de1a1e595690e1794fb34c200f6d419184ac20c08b3d5360779"
+    },
+    {
+      "id": "expired_authority-023",
+      "class": "expired_authority",
+      "variant": "expired_approval",
+      "expected": "deny",
+      "case_sha256": "161a6cd6e41b35fe71ed1bdbd58d0aa11d45fe6103e1569efec495066b275046"
+    },
+    {
+      "id": "expired_authority-024",
+      "class": "expired_authority",
+      "variant": "revoked_evidence",
+      "expected": "deny",
+      "case_sha256": "eb2e04e1b6599753875ad5deb06b84f46bffd7e0e150d7c4239231214c09cb02"
+    },
+    {
+      "id": "expired_authority-025",
+      "class": "expired_authority",
+      "variant": "revoked_approval",
+      "expected": "deny",
+      "case_sha256": "9655b026339016669b57a84e5766a33235a9bf7bda44dd906e494911cd6900ac"
+    },
+    {
+      "id": "scope_widening-001",
+      "class": "scope_widening",
+      "variant": "host_to_segment",
+      "expected": "deny",
+      "case_sha256": "4b092a50cd78dae3ad67d66a2f5bd939d7c80b6b59b733983c900eaf516fed19"
+    },
+    {
+      "id": "scope_widening-002",
+      "class": "scope_widening",
+      "variant": "identity_to_group",
+      "expected": "deny",
+      "case_sha256": "1517cb8df8a7320e9feefbf5350a1ada4d16a6c2065b0ddb6f6282e94c98f997"
+    },
+    {
+      "id": "scope_widening-003",
+      "class": "scope_widening",
+      "variant": "irreversible",
+      "expected": "deny",
+      "case_sha256": "cb0346891c6f263a0664264b8d21dc1b3b52ae47d4f43c2574075f5b444efea9"
+    },
+    {
+      "id": "scope_widening-004",
+      "class": "scope_widening",
+      "variant": "impact_increase",
+      "expected": "deny",
+      "case_sha256": "fe42945c5625b352a84d0e95df1098c53c8e09e3569312b7f25d5962d8a4477e"
+    },
+    {
+      "id": "scope_widening-005.s1",
+      "class": "scope_widening",
+      "variant": "incremental",
+      "expected": "deny",
+      "case_sha256": "ad2fa18088c8255639f48c7b61d8abd4f7cd7b8423bf4815967f0f04abacc6f3"
+    },
+    {
+      "id": "scope_widening-005.s2",
+      "class": "scope_widening",
+      "variant": "incremental",
+      "expected": "deny",
+      "case_sha256": "0f403ec5b57e8baefe3173e624ad5bdc4a993fd0ca38001f2534ce1f1d9061fb"
+    },
+    {
+      "id": "scope_widening-005.s3",
+      "class": "scope_widening",
+      "variant": "incremental",
+      "expected": "deny",
+      "case_sha256": "44b55cfe480d3ff7c7efe663b2a6675f2d3d3d9c735c7b7cbaf99b7f9adc0fa2"
+    },
+    {
+      "id": "scope_widening-006",
+      "class": "scope_widening",
+      "variant": "host_to_segment",
+      "expected": "deny",
+      "case_sha256": "00dc0d99bb5de46130dfb39185c0c0d4ffc7996dc3f02f27ba6e69f224828c0a"
+    },
+    {
+      "id": "scope_widening-007",
+      "class": "scope_widening",
+      "variant": "identity_to_group",
+      "expected": "deny",
+      "case_sha256": "4a9512a48a4f38e27ce142f6d28d42e3e4e646dd8f500e8a1cfd34b01ffbd88c"
+    },
+    {
+      "id": "scope_widening-008",
+      "class": "scope_widening",
+      "variant": "irreversible",
+      "expected": "deny",
+      "case_sha256": "6f1c1bf002fa07c3660ac51666f4860fb8334186c452d9c441bd07d6943989fe"
+    },
+    {
+      "id": "scope_widening-009",
+      "class": "scope_widening",
+      "variant": "impact_increase",
+      "expected": "deny",
+      "case_sha256": "ea6ab85ce6d639c8352deefdd9bc082c850bc28031aac6c7e0a7cb8e928887dc"
+    },
+    {
+      "id": "scope_widening-010.s1",
+      "class": "scope_widening",
+      "variant": "incremental",
+      "expected": "deny",
+      "case_sha256": "e371efed579e2b8891b1ea84821035d127ba21aef5edf60721190bb4ebf80178"
+    },
+    {
+      "id": "scope_widening-010.s2",
+      "class": "scope_widening",
+      "variant": "incremental",
+      "expected": "deny",
+      "case_sha256": "8302b752fbd97889d65536f078101f4207f917d364b5c1f6fe4fc9d1c7067df7"
+    },
+    {
+      "id": "scope_widening-010.s3",
+      "class": "scope_widening",
+      "variant": "incremental",
+      "expected": "deny",
+      "case_sha256": "7f59fe9c4f793f739c1add1d04e592c42f93e5d757336d71a490b17fe4e1d84e"
+    },
+    {
+      "id": "scope_widening-011",
+      "class": "scope_widening",
+      "variant": "host_to_segment",
+      "expected": "deny",
+      "case_sha256": "af941b80e8a14299cd761ac92a32315b79d1b6aa8918a52f72f94a9eeb936d62"
+    },
+    {
+      "id": "scope_widening-012",
+      "class": "scope_widening",
+      "variant": "identity_to_group",
+      "expected": "deny",
+      "case_sha256": "089853938e582b90987e10ecb0641f787542fe53bbdf24272704fec84365e1d3"
+    },
+    {
+      "id": "scope_widening-013",
+      "class": "scope_widening",
+      "variant": "irreversible",
+      "expected": "deny",
+      "case_sha256": "100de39fa394fa07bb0498f1516974acedbeb87fe4e1bc4d47f6fb84e92b83b5"
+    },
+    {
+      "id": "scope_widening-014",
+      "class": "scope_widening",
+      "variant": "impact_increase",
+      "expected": "deny",
+      "case_sha256": "286e0e37ec566204b8d03bde7455622b3808951d9f5c193851d418de8e8fdb53"
+    },
+    {
+      "id": "scope_widening-015.s1",
+      "class": "scope_widening",
+      "variant": "incremental",
+      "expected": "deny",
+      "case_sha256": "eab4977577fc20271fd20c56acee3db093ea5afe882b02adcc22037c75e448d2"
+    },
+    {
+      "id": "scope_widening-015.s2",
+      "class": "scope_widening",
+      "variant": "incremental",
+      "expected": "deny",
+      "case_sha256": "1a02e028e24a1a56caa54eed2668287d288e6000e585b9036d0274f9c9b21b6d"
+    },
+    {
+      "id": "scope_widening-015.s3",
+      "class": "scope_widening",
+      "variant": "incremental",
+      "expected": "deny",
+      "case_sha256": "7b4cdccca56ac68ebccc6d9d79f72239dab4c84952e9e225c53c52099ba0ce31"
+    },
+    {
+      "id": "scope_widening-016",
+      "class": "scope_widening",
+      "variant": "host_to_segment",
+      "expected": "deny",
+      "case_sha256": "c9acbcd876b8f8525518f63ff7c8c70f1fc21d9bd65e2bb5d8d431103231fdd6"
+    },
+    {
+      "id": "scope_widening-017",
+      "class": "scope_widening",
+      "variant": "identity_to_group",
+      "expected": "deny",
+      "case_sha256": "334418aef79b735fc347b10d0fd5b8367c1c7b7a07a62b6c766029c438fa4f71"
+    },
+    {
+      "id": "scope_widening-018",
+      "class": "scope_widening",
+      "variant": "irreversible",
+      "expected": "deny",
+      "case_sha256": "b0da828333de828612dceeabe1a637449be6cfa04be06fd9a17d565ff81ff9ae"
+    },
+    {
+      "id": "scope_widening-019",
+      "class": "scope_widening",
+      "variant": "impact_increase",
+      "expected": "deny",
+      "case_sha256": "64977207e2273ff635aa1306153189a15d9b1a2f9330f99823ea243985206f38"
+    },
+    {
+      "id": "scope_widening-020.s1",
+      "class": "scope_widening",
+      "variant": "incremental",
+      "expected": "deny",
+      "case_sha256": "66819d3ee720fa3a8838a328e05b0b7de4a56b7a007f67d6e78d40b29da6ad03"
+    },
+    {
+      "id": "scope_widening-020.s2",
+      "class": "scope_widening",
+      "variant": "incremental",
+      "expected": "deny",
+      "case_sha256": "88e4d8c860d518fc9a1bb93d58c7ff304e93db319e6090daad33bb5b416ad578"
+    },
+    {
+      "id": "scope_widening-020.s3",
+      "class": "scope_widening",
+      "variant": "incremental",
+      "expected": "deny",
+      "case_sha256": "344e1e3063b4aaa8dfa3f13027941b6c01f71f3ae635790dbbc514656a3ab131"
+    },
+    {
+      "id": "scope_widening-021",
+      "class": "scope_widening",
+      "variant": "host_to_segment",
+      "expected": "deny",
+      "case_sha256": "100fe3e7c168d577a57e7f780b8626ca8665db5e538b059fe3a2540d335041fb"
+    },
+    {
+      "id": "scope_widening-022",
+      "class": "scope_widening",
+      "variant": "identity_to_group",
+      "expected": "deny",
+      "case_sha256": "e702fc0dac1931c1f1bfc8408a2087cec10d71d8e0dab51525655136a05f57b7"
+    },
+    {
+      "id": "scope_widening-023",
+      "class": "scope_widening",
+      "variant": "irreversible",
+      "expected": "deny",
+      "case_sha256": "286ceea2ae2d21799955a0bcfa20073427bff5e90d8e8bc6fa836586d3bd1961"
+    },
+    {
+      "id": "scope_widening-024",
+      "class": "scope_widening",
+      "variant": "impact_increase",
+      "expected": "deny",
+      "case_sha256": "ce664d983f7363fda8c7474c17aa9677f9499bb88534188fde6e68d45e1baa53"
+    },
+    {
+      "id": "scope_widening-025.s1",
+      "class": "scope_widening",
+      "variant": "incremental",
+      "expected": "deny",
+      "case_sha256": "3b00de0dc0a9dbb32b6ed072327ad11f7cf6e6db62c8bf7fcb0a7e833e003a54"
+    },
+    {
+      "id": "scope_widening-025.s2",
+      "class": "scope_widening",
+      "variant": "incremental",
+      "expected": "deny",
+      "case_sha256": "8e5b0d6cfc4dabbe3dd9e75716e711b6faa957ce686ad3a429a22f54b07ef958"
+    },
+    {
+      "id": "scope_widening-025.s3",
+      "class": "scope_widening",
+      "variant": "incremental",
+      "expected": "deny",
+      "case_sha256": "56824f3a32918359a6f50fa8b873b9dec6c0f8ff78e2e4ba38e68362f8b63bdd"
+    }
+  ]
+}

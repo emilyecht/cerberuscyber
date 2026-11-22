@@ -1,0 +1,23 @@
+{
+  "functional_runs": 2,
+  "identical_fields": {
+    "observations": true,
+    "per_class": true,
+    "overall": true,
+    "novel_A_G": true,
+    "failures": true,
+    "baseline_failures": true,
+    "doc_ambiguous": true,
+    "oracle_defects": true,
+    "corpus_sha256": true
+  },
+  "primary_observations_sha256": "92f24da7be4aed7972c8bbc6fa54805dfcbaab6b5a21aaad348c628c5c4b5efc",
+  "repeated_observations_sha256": "92f24da7be4aed7972c8bbc6fa54805dfcbaab6b5a21aaad348c628c5c4b5efc",
+  "latency_outcomes_match_functional": true,
+  "protected_sources_sha256_match": true,
+  "protected_diff_stat": "",
+  "oracle_sha256": "20c4b1967054e0dbab12ea72a674da807c75be830b835e1799320958a14bbfb2",
+  "frozen_labels_and_scores_changed": false,
+  "supplemental_storage_probes_excluded_from_primary_counts": true,
+  "test_note": "Instrument/regression tests are separate from these runner self-checks."
+}

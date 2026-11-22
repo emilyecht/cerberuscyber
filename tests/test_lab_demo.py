@@ -41,7 +41,10 @@ def authorized_lab(tmp_path):
     assert decision.guardian_decision == "approve"
     (tmp_path / "egress.marker").write_bytes(lab.OPEN)
     (tmp_path / "backup.canary").write_bytes(lab.CANARY)
-    broker = lab._LabBroker(tmp_path, signer, policy, ledger)
+    authority = lab.TokenAuthorityRegistry()
+    authority.register(decision.decision_token, signer, now=now)
+    broker = lab._LabBroker(tmp_path, signer, policy, ledger,
+        expected_envelope=envelope, authority_registry=authority)
     command = {"token": decision.decision_token, "action": lab.ACTION, "target": lab.TARGET, "scope": lab.SCOPE}
     return broker, command, envelope, guardian
 
@@ -79,7 +82,8 @@ def test_real_local_write_and_replay_survive_new_broker(authorized_lab):
     assert (broker.directory / "backup.canary").read_bytes() == lab.CANARY
     after = lab._snapshot(broker.directory)
     assert after != before
-    restarted = lab._LabBroker(broker.directory, broker.signer, broker.policy, broker.ledger)
+    restarted = lab._LabBroker(broker.directory, broker.signer, broker.policy, broker.ledger,
+        expected_envelope=broker.expected_envelope, authority_registry=broker.authority_registry)
     denied = restarted.execute(command)
     assert denied["status"] == "blocked" and "consumed" in denied["reason"]
     assert lab._snapshot(broker.directory) == after

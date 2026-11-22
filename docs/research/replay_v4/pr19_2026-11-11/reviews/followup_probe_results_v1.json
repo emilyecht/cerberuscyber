@@ -1,0 +1,51 @@
+{
+  "stage": "separate post-v4-exposure AI examination; no blindness claim",
+  "source_sha256": {
+    "cerberus/state.py": "c67633f539f7fc7f0de75c2ceeb8fcb88e7f5b6b00c2a0ea8e188d9c8cfd8fdd",
+    "cerberus/enforcement.py": "8a0052f5230d5335ed75cb3cfc56b1d9bf4509799510306ef5fe93608731408d"
+  },
+  "performance_regression": "Open; full integrity_check retained",
+  "observations": [
+    {
+      "probe": "corrupt_wal_rejected",
+      "operation": "ordinary-open",
+      "outer_error": "cannot initialize durable authority state",
+      "cause": "durable authority state requires DELETE journal mode"
+    },
+    {
+      "probe": "corrupt_wal_rejected",
+      "operation": "existing-claim",
+      "outer_error": "durable authority state unavailable",
+      "cause": "durable authority state requires DELETE journal mode"
+    },
+    {
+      "probe": "corrupt_wal_rejected",
+      "operation": "explicit-provision",
+      "outer_error": "cannot initialize durable authority state",
+      "cause": "durable authority state requires DELETE journal mode"
+    },
+    {
+      "probe": "wal_never_converted",
+      "journal_mode": "wal",
+      "recovered_rows": 0
+    },
+    {
+      "probe": "real_clock_deadline",
+      "call_started": "2026-11-11T23:41:35.332699+00:00",
+      "expires_at": "2026-11-11T23:41:36.328455Z",
+      "finished": "2026-11-11T23:41:36.668640+00:00",
+      "receipt": false,
+      "error": "decision token expired during durable consumption",
+      "claim_retained": true
+    },
+    {
+      "probe": "real_clock_healthy_control",
+      "call_started": "2026-11-11T23:41:36.679298+00:00",
+      "expires_at": "2026-11-11T23:42:06.675684Z",
+      "finished": "2026-11-11T23:41:36.867475+00:00",
+      "receipt": true,
+      "error": null,
+      "claim_retained": true
+    }
+  ]
+}

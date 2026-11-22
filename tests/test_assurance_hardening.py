@@ -28,6 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 POLICIES = json.loads((ROOT / "policies/policies.json").read_text())
 NOW = datetime(2026, 9, 7, 12, tzinfo=timezone.utc)
 KEY = b"public-assurance-regression-test-material-32-bytes"
+_EVALUATED_ENVELOPES = {}
 
 
 def request(approvals=0):
@@ -46,6 +47,7 @@ def request(approvals=0):
 
 
 def evaluate(envelope, verifier, bundle, *, now=NOW, state=None):
+    _EVALUATED_ENVELOPES[envelope.digest()] = envelope
     return Guardian(
         POLICIES, signer=DecisionTokenSigner(KEY), assurance_verifier=verifier,
         idempotency_registry=state,
@@ -53,9 +55,16 @@ def evaluate(envelope, verifier, bundle, *, now=NOW, state=None):
 
 
 def gateway_call(gateway, decision, *, now=NOW):
+    # Trusted-controller plumbing for the original regression tests. The strict
+    # gateway still receives the full original request and a live registration.
+    from cerberus import TokenAuthorityRegistry
+    if gateway.authority_registry is None:
+        gateway.authority_registry = TokenAuthorityRegistry()
+    gateway.authority_registry.register(decision.decision_token, gateway.signer, now=NOW)
     return gateway.authorize_and_simulate(
         decision.decision_token, action=decision.authorized_action,
         target=decision.target, scope=decision.scope, now=now,
+        expected_envelope=_EVALUATED_ENVELOPES[decision.envelope_digest],
     )
 
 
@@ -268,20 +277,24 @@ def test_actual_fresh_process_cannot_replay_a_consumed_token(tmp_path):
     path = tmp_path / "process.db"
     gateway_call(EnforcementGateway(DecisionTokenSigner(KEY), replay_cache=SQLiteStateStore(path, create=True)), decision)
     code = '''import json,sys
-from cerberus import DecisionTokenSigner,EnforcementGateway,EnforcementDenied,SQLiteStateStore
+from cerberus import DecisionTokenSigner,EnforcementGateway,EnforcementDenied,SQLiteStateStore,TokenAuthorityRegistry
 from cerberus.models import parse_time
 d=json.load(sys.stdin)
-g=EnforcementGateway(DecisionTokenSigner(bytes.fromhex(d["key"])),replay_cache=SQLiteStateStore(d["path"]))
+s=DecisionTokenSigner(bytes.fromhex(d["key"]))
+r=TokenAuthorityRegistry();r.register(d["token"],s,now=parse_time(d["now"]))
+g=EnforcementGateway(s,replay_cache=SQLiteStateStore(d["path"]),authority_registry=r)
 try:
- g.authorize_and_simulate(d["token"],action=d["action"],target=d["target"],scope=d["scope"],now=parse_time(d["now"]))
+ g.authorize_and_simulate(d["token"],action=d["action"],target=d["target"],scope=d["scope"],expected_envelope=d["request"],now=parse_time(d["now"]))
  print("accepted")
-except EnforcementDenied:
+except EnforcementDenied as exc:
+ assert "consumed" in str(exc)
  print("blocked")
 '''
     output = subprocess.run([sys.executable, "-c", code], input=json.dumps({
         "key": KEY.hex(), "path": str(path), "token": decision.decision_token,
         "action": decision.authorized_action, "target": decision.target,
         "scope": decision.scope, "now": format_time(NOW),
+        "request": envelope.to_dict(),
     }), text=True, capture_output=True, cwd=ROOT, check=True)
     assert output.stdout.strip() == "blocked"
 

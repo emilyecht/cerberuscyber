@@ -1,0 +1,3 @@
+# The complete identical JSON is published in results.json.gz.
+# The offline runner also writes this uncompressed local convenience copy.
+results.json

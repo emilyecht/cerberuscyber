@@ -1,0 +1,183 @@
+F..EEEEEE............................................................... [ 21%]
+........................................................................ [ 43%]
+........................................................................ [ 65%]
+.........................................s.............................. [ 87%]
+..........................................                               [100%]
+==================================== ERRORS ====================================
+_______ ERROR at setup of test_partial_claim_is_not_erased_before_retry ________
+
+    @pytest.fixture(scope='module')
+    def episodes():
+>       oracle, cases, _ = v3.frozen_inputs()
+
+benchmarks/replay_v3/test_instrument.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def frozen_inputs():
+        raw = (HERE / "oracle.json").read_bytes()
+        if sha(raw) != ORACLE_HASH or (HERE / "oracle.sha256").read_text().split()[0] != ORACLE_HASH:
+            raise ValueError("v3 oracle/hash changed")
+        oracle = json.loads(raw)
+        if sha(canonical(oracle["cases"])) != oracle["recipes_sha256"]:
+            raise ValueError("recipe digest mismatch")
+        h = history()
+        protected = json.loads((HERE / "protected_sources.json").read_text())["sha256"]
+        mismatch = [p for p, digest in protected.items() if not (ROOT/p).is_file() or sha((ROOT/p).read_bytes()) != digest]
+        if mismatch:
+>           raise ValueError("protected source changed: " + ", ".join(mismatch))
+E           ValueError: protected source changed: cerberus/state.py
+
+benchmarks/replay_v3/run.py:93: ValueError
+_______ ERROR at setup of test_named_ordering_and_overlapping_duplicates _______
+
+    @pytest.fixture(scope='module')
+    def episodes():
+>       oracle, cases, _ = v3.frozen_inputs()
+
+benchmarks/replay_v3/test_instrument.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def frozen_inputs():
+        raw = (HERE / "oracle.json").read_bytes()
+        if sha(raw) != ORACLE_HASH or (HERE / "oracle.sha256").read_text().split()[0] != ORACLE_HASH:
+            raise ValueError("v3 oracle/hash changed")
+        oracle = json.loads(raw)
+        if sha(canonical(oracle["cases"])) != oracle["recipes_sha256"]:
+            raise ValueError("recipe digest mismatch")
+        h = history()
+        protected = json.loads((HERE / "protected_sources.json").read_text())["sha256"]
+        mismatch = [p for p, digest in protected.items() if not (ROOT/p).is_file() or sha((ROOT/p).read_bytes()) != digest]
+        if mismatch:
+>           raise ValueError("protected source changed: " + ", ".join(mismatch))
+E           ValueError: protected source changed: cerberus/state.py
+
+benchmarks/replay_v3/run.py:93: ValueError
+_ ERROR at setup of test_scoring_excludes_ambiguity_and_does_not_hide_unsafe_allow _
+
+    @pytest.fixture(scope='module')
+    def episodes():
+>       oracle, cases, _ = v3.frozen_inputs()
+
+benchmarks/replay_v3/test_instrument.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def frozen_inputs():
+        raw = (HERE / "oracle.json").read_bytes()
+        if sha(raw) != ORACLE_HASH or (HERE / "oracle.sha256").read_text().split()[0] != ORACLE_HASH:
+            raise ValueError("v3 oracle/hash changed")
+        oracle = json.loads(raw)
+        if sha(canonical(oracle["cases"])) != oracle["recipes_sha256"]:
+            raise ValueError("recipe digest mismatch")
+        h = history()
+        protected = json.loads((HERE / "protected_sources.json").read_text())["sha256"]
+        mismatch = [p for p, digest in protected.items() if not (ROOT/p).is_file() or sha((ROOT/p).read_bytes()) != digest]
+        if mismatch:
+>           raise ValueError("protected source changed: " + ", ".join(mismatch))
+E           ValueError: protected source changed: cerberus/state.py
+
+benchmarks/replay_v3/run.py:93: ValueError
+___ ERROR at setup of test_constructor_refusal_is_separate_from_kernel_call ____
+
+    @pytest.fixture(scope='module')
+    def episodes():
+>       oracle, cases, _ = v3.frozen_inputs()
+
+benchmarks/replay_v3/test_instrument.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def frozen_inputs():
+        raw = (HERE / "oracle.json").read_bytes()
+        if sha(raw) != ORACLE_HASH or (HERE / "oracle.sha256").read_text().split()[0] != ORACLE_HASH:
+            raise ValueError("v3 oracle/hash changed")
+        oracle = json.loads(raw)
+        if sha(canonical(oracle["cases"])) != oracle["recipes_sha256"]:
+            raise ValueError("recipe digest mismatch")
+        h = history()
+        protected = json.loads((HERE / "protected_sources.json").read_text())["sha256"]
+        mismatch = [p for p, digest in protected.items() if not (ROOT/p).is_file() or sha((ROOT/p).read_bytes()) != digest]
+        if mismatch:
+>           raise ValueError("protected source changed: " + ", ".join(mismatch))
+E           ValueError: protected source changed: cerberus/state.py
+
+benchmarks/replay_v3/run.py:93: ValueError
+_ ERROR at setup of test_baselines_are_original_functions_and_no_shadow_policy _
+
+    @pytest.fixture(scope='module')
+    def episodes():
+>       oracle, cases, _ = v3.frozen_inputs()
+
+benchmarks/replay_v3/test_instrument.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def frozen_inputs():
+        raw = (HERE / "oracle.json").read_bytes()
+        if sha(raw) != ORACLE_HASH or (HERE / "oracle.sha256").read_text().split()[0] != ORACLE_HASH:
+            raise ValueError("v3 oracle/hash changed")
+        oracle = json.loads(raw)
+        if sha(canonical(oracle["cases"])) != oracle["recipes_sha256"]:
+            raise ValueError("recipe digest mismatch")
+        h = history()
+        protected = json.loads((HERE / "protected_sources.json").read_text())["sha256"]
+        mismatch = [p for p, digest in protected.items() if not (ROOT/p).is_file() or sha((ROOT/p).read_bytes()) != digest]
+        if mismatch:
+>           raise ValueError("protected source changed: " + ", ".join(mismatch))
+E           ValueError: protected source changed: cerberus/state.py
+
+benchmarks/replay_v3/run.py:93: ValueError
+__ ERROR at setup of test_h_uses_trusted_original_grant_before_mutated_trust ___
+
+    @pytest.fixture(scope='module')
+    def episodes():
+>       oracle, cases, _ = v3.frozen_inputs()
+
+benchmarks/replay_v3/test_instrument.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def frozen_inputs():
+        raw = (HERE / "oracle.json").read_bytes()
+        if sha(raw) != ORACLE_HASH or (HERE / "oracle.sha256").read_text().split()[0] != ORACLE_HASH:
+            raise ValueError("v3 oracle/hash changed")
+        oracle = json.loads(raw)
+        if sha(canonical(oracle["cases"])) != oracle["recipes_sha256"]:
+            raise ValueError("recipe digest mismatch")
+        h = history()
+        protected = json.loads((HERE / "protected_sources.json").read_text())["sha256"]
+        mismatch = [p for p, digest in protected.items() if not (ROOT/p).is_file() or sha((ROOT/p).read_bytes()) != digest]
+        if mismatch:
+>           raise ValueError("protected source changed: " + ", ".join(mismatch))
+E           ValueError: protected source changed: cerberus/state.py
+
+benchmarks/replay_v3/run.py:93: ValueError
+=================================== FAILURES ===================================
+___________________ test_frozen_coverage_labels_and_history ____________________
+
+    def test_frozen_coverage_labels_and_history():
+>       oracle, cases, preservation = v3.frozen_inputs()
+
+benchmarks/replay_v3/test_instrument.py:14: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def frozen_inputs():
+        raw = (HERE / "oracle.json").read_bytes()
+        if sha(raw) != ORACLE_HASH or (HERE / "oracle.sha256").read_text().split()[0] != ORACLE_HASH:
+            raise ValueError("v3 oracle/hash changed")
+        oracle = json.loads(raw)
+        if sha(canonical(oracle["cases"])) != oracle["recipes_sha256"]:
+            raise ValueError("recipe digest mismatch")
+        h = history()
+        protected = json.loads((HERE / "protected_sources.json").read_text())["sha256"]
+        mismatch = [p for p, digest in protected.items() if not (ROOT/p).is_file() or sha((ROOT/p).read_bytes()) != digest]
+        if mismatch:
+>           raise ValueError("protected source changed: " + ", ".join(mismatch))
+E           ValueError: protected source changed: cerberus/state.py
+
+benchmarks/replay_v3/run.py:93: ValueError
+=========================== short test summary info ============================
+FAILED benchmarks/replay_v3/test_instrument.py::test_frozen_coverage_labels_and_history
+ERROR benchmarks/replay_v3/test_instrument.py::test_partial_claim_is_not_erased_before_retry
+ERROR benchmarks/replay_v3/test_instrument.py::test_named_ordering_and_overlapping_duplicates
+ERROR benchmarks/replay_v3/test_instrument.py::test_scoring_excludes_ambiguity_and_does_not_hide_unsafe_allow
+ERROR benchmarks/replay_v3/test_instrument.py::test_constructor_refusal_is_separate_from_kernel_call
+ERROR benchmarks/replay_v3/test_instrument.py::test_baselines_are_original_functions_and_no_shadow_policy
+ERROR benchmarks/replay_v3/test_instrument.py::test_h_uses_trusted_original_grant_before_mutated_trust
+1 failed, 322 passed, 1 skipped, 6 errors in 49.39s

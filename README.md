@@ -18,9 +18,56 @@ CERBERUS applies a three-layer runtime-assurance pattern:
 
 1. **Sentinel Intelligence** currently correlates fabricated telemetry into advisory findings; live telemetry and model-backed integrations remain proposed.
 2. **Guardian Policy Engine** deterministically approves, escalates, or denies a typed action proposal using explicit policy, evidence provenance, scope ceilings, reversibility requirements, freshness, and approval gates.
-3. **Enforcement & Recovery Kernel** currently validates a signed decision token for the exact action, target and scope and returns a simulated receipt. A separate Linux marker lab tests actual bounded local-file effects; real containment and recovery connectors remain proposed.
+3. **Enforcement & Recovery Kernel** validates the signed token against the complete expected ActionEnvelope, checks live registered token authority, and returns a simulated receipt. A separate Linux marker lab tests actual bounded local-file effects; real containment and recovery connectors remain proposed.
 
 The intelligent layer does not hold enforcement authority. Model confidence is informational and cannot replace required evidence or policy approval.
+
+### Synthetic replay: v1 FAIL, v2 PASS, held-out v3 FAIL
+
+| Instrument | Recorded evidence | Source |
+|---|---|---|
+| v1 | **FAIL** — 16 old-authority/context acceptances | [Unmodified report](results/replay_v1/report.md) · [JSON](results/replay_v1/results.json) |
+| v2 | **PASS — same development corpus**, 135/135 exact decisions; does not establish generalization | [v1/v2 comparison and every failure](results/replay_v2/report.md) · [JSON](results/replay_v2/results.json) |
+| v3 | **FAIL — frozen held-out challenge:** 2 empty replay-state failures; 7 input-proven oracle defects retained in frozen scores; 8 doc-ambiguous attempts excluded | [Every failure, intervals and latency](results/replay_v3/report.md) · [Full JSON (gzip)](results/replay_v3/results.json.gz) · [Frozen plan and oracle](benchmarks/replay_v3/README.md) |
+
+V3 uses seed **87160329**: 300 new A–G episodes plus 3,240 deterministic H
+mutations derived from v2 inputs. The full run has 3,625 primary attempts;
+3,617 are scored against the precommitted oracle. Nine frozen-oracle false
+allows include seven transforms that restore the original approved envelope;
+their documentary-basis defects are proven separately without changing labels
+or scores. Two attempts accept empty, unprovisioned SQLite replay files and
+produce out-of-scope symbolic state changes. There are **0/133 false denies**
+on legitimate attempts. No evaluated layer or historical v1/v2 artifact is
+changed. H and overlapping primitive controls are disclosed separately from
+the new challenge families; this is not a field generalization estimate.
+
+Reproduce v3 offline with runtime dependencies already installed:
+
+```bash
+python benchmarks/replay_v3/run.py
+```
+
+Exit **1** is the recorded failing safety gate, not a harness error. The report
+includes every failure and its layer/documentary basis, per-family counts and
+95% Wilson intervals, 0/N rule-of-three bounds, state changes, and fixed-protocol
+latency. The plan and oracle/hash predate implementation and results in Git.
+
+Run v2 from a Git checkout with its history and runtime dependencies installed:
+
+```bash
+python benchmarks/replay_v2/run.py
+```
+
+The [precommitted v2 plan](benchmarks/replay_v2/PLAN.md) fixes the inherited input
+hashes, pass criteria, B2 gate and timing protocol. The report includes per-class
+metrics, observed in-memory resource changes, and p50/p95/max timing overhead.
+Guardian, policy, v1 inputs, labels, scoring and recorded v1 results are unchanged.
+The [v2 guide](benchmarks/replay_v2/README.md) explains the strict gateway API and
+how unchanged v1 tests reproduce their historical FAIL against their pinned code.
+This is synthetic replay in a simulator, with labels derived from the repo's own
+documents and simplified baseline stand-ins, not field validation or a claim
+that the system is secure. Live token status is process-local, not a production
+revocation service.
 
 ## Current Maturity
 
@@ -41,6 +88,7 @@ CERBERUS Cyber is a **TRL 2–3 research prototype**, not a production defensive
 - final approval checks that preserve the requested action and scope, including after human approval gates
 - one-time token consumption and replay rejection
 - side-effect-free Enforcement Gateway receipts
+- full expected-envelope digest verification and live shared-process token registration, purpose and revocation checks at enforcement
 - hash-chained prototype audit ledger
 - four baseline simulated cyber scenarios
 - one end-to-end adversarial AI persistence demonstration using fabricated telemetry
@@ -59,7 +107,7 @@ CERBERUS Cyber is a **TRL 2–3 research prototype**, not a production defensive
 - externalized OPA/Rego policy evaluation
 - formal verification
 - independent red-team validation
-- scale, latency, or field false-positive evidence
+- representative scale, operational latency, or field false-positive evidence
 - accreditation for classified or mission deployment
 
 The repository performs no real containment by default.
@@ -178,6 +226,9 @@ See [ADR 0004](docs/adr/0004-evidence-conflict-escalation.md).
 The current Enforcement Gateway:
 
 - verifies the decision-token signature
+- recomputes the complete expected ActionEnvelope digest and rejects changed context
+- requires a known, correctly purposed token in the shared live authority registry
+- refuses revoked tokens and tokens depending on a registered revoked authority
 - checks the exact action, target, and scope
 - verifies expiry and nonce freshness
 - rejects replayed tokens
