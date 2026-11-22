@@ -29,15 +29,4 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install -r requirements-dev.txt
       - run: python scripts/verify_readiness_evidence.py
-      - run: python benchmarks/replay_v4/restore_local_commits.py
-      - name: Preserve invalid predecessor and verify both complete passing runs
-        run: |
-          python benchmarks/replay_v4/verify_results.py results/replay_v4/pr19_2026-11-11
-          python benchmarks/replay_v4/verify_results.py results/replay_v4/pr19_2026-11-11_v2 --require-pass
-          python benchmarks/replay_v4/verify_results.py results/readiness_2026-11-21/v4_fresh --require-pass
-          python - <<'PY'
-          import gzip, json
-          from pathlib import Path
-          first = Path('results/replay_v4/pr19_2026-11-11/results.json.gz')
-          assert json.loads(gzip.decompress(first.read_bytes()))['gate'] == 'INVALID_MEASUREMENT'
-          PY
+      - run: bash scripts/verify_v4_history.sh

@@ -33,7 +33,7 @@ jobs:
       - run: python -m pip install -r requirements-dev.txt -r requirements-build.txt
       - run: python -m compileall -q cerberus sdk simulator tests benchmarks
       - name: Validate repaired source without rewriting historical pins
-        run: python -m pytest -q --ignore=benchmarks/replay_v3/test_instrument.py
+        run: python -m pytest -q --ignore=benchmarks/replay_v3/test_instrument.py --ignore=tests/test_replay_v4_instrument.py
       - name: Validate historical instrument on its historical source
         run: |
           git worktree add --detach "$RUNNER_TEMP/v3-history" f0ebd38c58e9d40af35d35c5cc32b5614eb60439
