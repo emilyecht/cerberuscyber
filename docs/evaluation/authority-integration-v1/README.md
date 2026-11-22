@@ -21,7 +21,7 @@ The broker now retains its verified SQLite store object. Each consumption still 
 | Historical v3 | #18 instrument 10 tests passed; functional safety gate failed with 9/3,484 false allows including previously documented oracle defects. No new v3 timing. |
 | Historical v4 | 16 instrument tests passed on #28's historical tree. Verified the invalid predecessor and both completed PASS artifacts against their original #19 target. No fresh full v4 timing. |
 
-Runtime used Python 3.12.14, SQLite 3.53.1, Linux 6.18.57 x86_64, glibc 2.41, unprivileged UID 1000. Dependencies are recorded alongside the observations. The broad initial selection retained v4 on the combined source and produced **336 passed, 1 skipped, 16 pin errors**. The direct v4 artifact check likewise refused the changed source. The corrected jobs move the instruments to their original trees and preserve both historical safety failures. A candidate workflow edit also briefly duplicated a YAML checkout key; the final workflow has one checkout configuration.
+Runtime used Python 3.12.14, SQLite 3.53.1, Linux 6.18.57 x86_64, glibc 2.41, unprivileged UID 1000. Dependencies are recorded alongside the observations. The broad initial selection retained v4 on the combined source and produced **336 passed, 1 skipped, 16 pin errors**. The direct v4 artifact check likewise refused the changed source. The corrected jobs move the instruments to their original trees and preserve both historical safety failures. A candidate workflow edit also briefly duplicated a YAML checkout key; the final workflow has one checkout configuration. Hosted CI also caught a manifest mismatch when the historical readiness verifier inspected an updated workflow file. The pinned worktree now verifies the original 41-entry package, including its original workflow, while a separate diff checks that candidate evidence and grader files remain identical.
 
 ## Provenance and outstanding issues
 
@@ -46,7 +46,6 @@ python -m pip check
 python -m pytest -q -rs --ignore=benchmarks/replay_v3/test_instrument.py --ignore=tests/test_replay_v4_instrument.py
 bash scripts/verify_historical_authority.sh
 bash scripts/verify_v4_history.sh
-python scripts/verify_readiness_evidence.py
 python -m benchmarks.authority_integration.run > /tmp/broker-observations.json
 python benchmarks/release_candidate/run.py --target . --output /tmp/authority-contract.json --fail-on-violation
 python -m cerberus.evaluation enforcement-demo --json
