@@ -36,6 +36,7 @@ class SQLiteStateStore:
             raise ValueError("durable state requires an explicit filesystem path")
         self.path = str(Path(path).absolute())
         self.namespace = namespace
+        self._identity: tuple[int, int] | None = None
         connection = None
         try:
             connection = self._connect(create=create)
@@ -49,14 +50,25 @@ class SQLiteStateStore:
             if connection is not None:
                 connection.close()
 
+    def _check_path(self):
+        info = Path(self.path).lstat()
+        identity = (info.st_dev, info.st_ino)
+        if self._identity is not None and identity != self._identity:
+            raise StateUnavailable("durable authority state file identity changed")
+        if not stat.S_ISREG(info.st_mode):
+            raise StateUnavailable("durable authority state requires a regular file")
+        self._identity = identity
+        return info
+
     def _connect(self, *, create: bool = False) -> sqlite3.Connection:
         try:
-            mode = Path(self.path).lstat().st_mode
+            info = self._check_path()
+            mode = info.st_mode
         except FileNotFoundError:
             if not create:
                 raise
         else:
-            if not stat.S_ISREG(mode) or not mode & 0o222:
+            if not mode & 0o222:
                 raise StateUnavailable("durable authority state must be a writable regular file")
         uri = Path(self.path).as_uri() + ("?mode=rwc" if create else "?mode=rw")
         connection = sqlite3.connect(uri, timeout=2.0, uri=True)
@@ -87,7 +99,7 @@ class SQLiteStateStore:
         ]:
             raise StateUnavailable("durable authority state is not explicitly provisioned")
         page_size = connection.execute("PRAGMA page_size").fetchone()[0]
-        if Path(self.path).stat().st_size % page_size:
+        if self._check_path().st_size % page_size:
             raise StateUnavailable("durable authority state has a truncated page")
         # A damaged UNIQUE index can hide consumed claims from lookups while
         # quick_check reports ok; verify table/index consistency as well.
@@ -106,6 +118,7 @@ class SQLiteStateStore:
                     "INSERT INTO claims(namespace, kind, claim_key, digest) VALUES (?, ?, ?, ?)",
                     (self.namespace, kind, key, digest),
                 )
+            self._check_path()
             connection.commit()
             return True
         except sqlite3.IntegrityError:

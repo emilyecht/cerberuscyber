@@ -1,0 +1,35 @@
+{
+  "method": "GitHub app publication creates new commit metadata, identical Git trees verified before commit creation",
+  "records": [
+    {
+      "local": "b87a272011c37f8d8dc5232efaa13f57018ab70e",
+      "published": "1b1a1be4ee0757973ed06fc2237bef2d8778cd67",
+      "tree": "778dba7ea3bcbb87273807ae5fc6e1c65ae6f9d9"
+    },
+    {
+      "local": "4f156406d92ba8357055330fea53528bee502739",
+      "published": "209d4ad3d5d1a3a328312ae295b4183622fe98d6",
+      "tree": "d2de5e7824ad204d3d1a2b2b70085c7443dbfad8"
+    },
+    {
+      "local": "9fe0bf02ee6144aa8f5f2d6838646f1ac2ac385a",
+      "published": "098adcbc6445a1dafa67886aa00933ba847eb5dd",
+      "tree": "04fa4dfaffb779a88afdca4c93aff534b0d9ad66"
+    },
+    {
+      "local": "525086a3e875d2883e69111c361bf9927551d50f",
+      "published": "6e9cb1382e2d8d1026d3f775e11a17c446d8661c",
+      "tree": "8d161cad0c4ce21b0ae54d0cf34dfa6f76babaf3"
+    },
+    {
+      "local": "00ba8f610e862b5ea30e55da1bb0cd52f34d980e",
+      "published": "ecec033e07fe1a377f80cf030c571978339dfc66",
+      "tree": "1382f024df0c8129fd17661d386c1315791b28f5"
+    },
+    {
+      "local": "3d403c5edee9458cd086c176e0489defb7e702c5",
+      "published": "c5fad3b3dc3fe5e214b143f9d43142d5466ac358",
+      "tree": "44e8f8c5ee8cf5fa355cf4ddfc2093d42d7c0e48"
+    }
+  ]
+}

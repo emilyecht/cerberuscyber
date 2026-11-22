@@ -1,0 +1,30 @@
+[
+  {
+    "implementation": "parent",
+    "wal_bytes_before_corruption": 8272,
+    "changed_bits": 1,
+    "journal_mode": "wal",
+    "integrity_after_recovery": [
+      [
+        "ok"
+      ]
+    ],
+    "rows_before_replay": 0,
+    "replay_accepted": true,
+    "child_output": "two committed claims observed before simulated process crash"
+  },
+  {
+    "implementation": "pr",
+    "wal_bytes_before_corruption": 8272,
+    "changed_bits": 1,
+    "journal_mode": "wal",
+    "integrity_after_recovery": [
+      [
+        "ok"
+      ]
+    ],
+    "rows_before_replay": 0,
+    "replay_accepted": true,
+    "child_output": "two committed claims observed before simulated process crash"
+  }
+]

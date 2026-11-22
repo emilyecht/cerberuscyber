@@ -115,3 +115,16 @@ def test_revoked_authority_never_reaches_effect(authorized_lab):
     assert broker.execute(command)["status"] == "blocked"
     assert (broker.directory / "egress.marker").read_bytes() == lab.OPEN
     assert broker.writes == 0
+
+
+def test_broker_refuses_replaced_provisioned_database(authorized_lab):
+    broker, command, _, _ = authorized_lab
+    path = broker.directory / "claims.db"
+    replacement = broker.directory / "replacement.db"
+    SQLiteStateStore(replacement, create=True)
+    replacement.replace(path)
+    result = broker.execute(command)
+    assert result["status"] == "blocked"
+    assert (broker.directory / "egress.marker").read_bytes() == lab.OPEN
+    assert broker.writes == 0
+    assert broker.ledger.verify()

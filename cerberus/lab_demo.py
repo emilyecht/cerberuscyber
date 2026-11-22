@@ -56,6 +56,7 @@ class _LabBroker:
                  policy: PolicyBundle, ledger: AuditLedger, *,
                  expected_envelope: ActionEnvelope, authority_registry: TokenAuthorityRegistry) -> None:
         self.directory, self.signer, self.policy, self.ledger = directory, signer, policy, ledger
+        self.state = SQLiteStateStore(directory / "claims.db")
         self.writes = 0
         self.expected_envelope, self.authority_registry = expected_envelope, authority_registry
 
@@ -76,7 +77,7 @@ class _LabBroker:
             # nested status check shares this same authority boundary.
             with self.authority_registry.authorize(command["token"], payload, purpose=ENFORCEMENT_PURPOSE):
                 receipt = EnforcementGateway(
-                    self.signer, replay_cache=SQLiteStateStore(self.directory / "claims.db"),
+                    self.signer, replay_cache=self.state,
                     ledger=self.ledger, authority_registry=self.authority_registry,
                 ).authorize_and_simulate(command["token"], action=command["action"],
                                          target=command["target"], scope=command["scope"],

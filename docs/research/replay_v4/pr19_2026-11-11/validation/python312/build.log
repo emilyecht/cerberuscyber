@@ -1,0 +1,543 @@
+* Getting build dependencies for sdist...
+running egg_info
+creating cerberus_cyber_eval.egg-info
+writing cerberus_cyber_eval.egg-info/PKG-INFO
+writing dependency_links to cerberus_cyber_eval.egg-info/dependency_links.txt
+writing entry points to cerberus_cyber_eval.egg-info/entry_points.txt
+writing requirements to cerberus_cyber_eval.egg-info/requires.txt
+writing top-level names to cerberus_cyber_eval.egg-info/top_level.txt
+writing manifest file 'cerberus_cyber_eval.egg-info/SOURCES.txt'
+reading manifest file 'cerberus_cyber_eval.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+warning: no previously-included files matching '*.db' found anywhere in distribution
+warning: no previously-included files matching '*.db-wal' found anywhere in distribution
+warning: no previously-included files matching '*.db-shm' found anywhere in distribution
+adding license file 'LICENSE'
+adding license file 'NOTICE'
+writing manifest file 'cerberus_cyber_eval.egg-info/SOURCES.txt'
+* Building sdist...
+running sdist
+running egg_info
+writing cerberus_cyber_eval.egg-info/PKG-INFO
+writing dependency_links to cerberus_cyber_eval.egg-info/dependency_links.txt
+writing entry points to cerberus_cyber_eval.egg-info/entry_points.txt
+writing requirements to cerberus_cyber_eval.egg-info/requires.txt
+writing top-level names to cerberus_cyber_eval.egg-info/top_level.txt
+reading manifest file 'cerberus_cyber_eval.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+warning: no previously-included files matching '*.db' found anywhere in distribution
+warning: no previously-included files matching '*.db-wal' found anywhere in distribution
+warning: no previously-included files matching '*.db-shm' found anywhere in distribution
+adding license file 'LICENSE'
+adding license file 'NOTICE'
+writing manifest file 'cerberus_cyber_eval.egg-info/SOURCES.txt'
+running check
+creating cerberus_cyber_eval-0.1.0rc1
+creating cerberus_cyber_eval-0.1.0rc1/benchmarks/assurance_boundaries_v2
+creating cerberus_cyber_eval-0.1.0rc1/benchmarks/assurance_boundaries_v3
+creating cerberus_cyber_eval-0.1.0rc1/benchmarks/guardian_authorization_v1
+creating cerberus_cyber_eval-0.1.0rc1/benchmarks/release_candidate
+creating cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v1
+creating cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v2
+creating cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v3
+creating cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v4
+creating cerberus_cyber_eval-0.1.0rc1/cerberus
+creating cerberus_cyber_eval-0.1.0rc1/cerberus/data
+creating cerberus_cyber_eval-0.1.0rc1/cerberus/data/schemas
+creating cerberus_cyber_eval-0.1.0rc1/cerberus_cyber_eval.egg-info
+creating cerberus_cyber_eval-0.1.0rc1/docs
+creating cerberus_cyber_eval-0.1.0rc1/docs/adr
+creating cerberus_cyber_eval-0.1.0rc1/policies
+creating cerberus_cyber_eval-0.1.0rc1/results/assurance_boundaries_v2
+creating cerberus_cyber_eval-0.1.0rc1/results/assurance_boundaries_v3
+creating cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1
+creating cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet
+creating cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+creating cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+creating cerberus_cyber_eval-0.1.0rc1/results/release_candidate
+creating cerberus_cyber_eval-0.1.0rc1/results/replay_v1
+creating cerberus_cyber_eval-0.1.0rc1/results/replay_v2
+creating cerberus_cyber_eval-0.1.0rc1/results/replay_v3
+creating cerberus_cyber_eval-0.1.0rc1/schemas
+creating cerberus_cyber_eval-0.1.0rc1/scripts
+creating cerberus_cyber_eval-0.1.0rc1/sdk
+creating cerberus_cyber_eval-0.1.0rc1/sdk/shared_types
+creating cerberus_cyber_eval-0.1.0rc1/simulator
+creating cerberus_cyber_eval-0.1.0rc1/simulator/scenarios
+creating cerberus_cyber_eval-0.1.0rc1/tests
+copying files to cerberus_cyber_eval-0.1.0rc1...
+copying CONTRIBUTING.md -> cerberus_cyber_eval-0.1.0rc1
+copying LICENSE -> cerberus_cyber_eval-0.1.0rc1
+copying MANIFEST.in -> cerberus_cyber_eval-0.1.0rc1
+copying NOTICE -> cerberus_cyber_eval-0.1.0rc1
+copying README.md -> cerberus_cyber_eval-0.1.0rc1
+copying SECURITY.md -> cerberus_cyber_eval-0.1.0rc1
+copying pyproject.toml -> cerberus_cyber_eval-0.1.0rc1
+copying requirements-build.txt -> cerberus_cyber_eval-0.1.0rc1
+copying requirements-dev.txt -> cerberus_cyber_eval-0.1.0rc1
+copying requirements.txt -> cerberus_cyber_eval-0.1.0rc1
+copying benchmarks/assurance_boundaries_v2/README.md -> cerberus_cyber_eval-0.1.0rc1/benchmarks/assurance_boundaries_v2
+copying benchmarks/assurance_boundaries_v2/cases.json -> cerberus_cyber_eval-0.1.0rc1/benchmarks/assurance_boundaries_v2
+copying benchmarks/assurance_boundaries_v2/prepare.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/assurance_boundaries_v2
+copying benchmarks/assurance_boundaries_v2/run.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/assurance_boundaries_v2
+copying benchmarks/assurance_boundaries_v2/source-requests.json -> cerberus_cyber_eval-0.1.0rc1/benchmarks/assurance_boundaries_v2
+copying benchmarks/assurance_boundaries_v3/README.md -> cerberus_cyber_eval-0.1.0rc1/benchmarks/assurance_boundaries_v3
+copying benchmarks/assurance_boundaries_v3/cases.json -> cerberus_cyber_eval-0.1.0rc1/benchmarks/assurance_boundaries_v3
+copying benchmarks/assurance_boundaries_v3/prepare.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/assurance_boundaries_v3
+copying benchmarks/assurance_boundaries_v3/run.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/assurance_boundaries_v3
+copying benchmarks/assurance_boundaries_v3/source-requests.json -> cerberus_cyber_eval-0.1.0rc1/benchmarks/assurance_boundaries_v3
+copying benchmarks/guardian_authorization_v1/EVALUATION_PLAN.md -> cerberus_cyber_eval-0.1.0rc1/benchmarks/guardian_authorization_v1
+copying benchmarks/guardian_authorization_v1/README.md -> cerberus_cyber_eval-0.1.0rc1/benchmarks/guardian_authorization_v1
+copying benchmarks/guardian_authorization_v1/cases.json -> cerberus_cyber_eval-0.1.0rc1/benchmarks/guardian_authorization_v1
+copying benchmarks/guardian_authorization_v1/render_results.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/guardian_authorization_v1
+copying benchmarks/guardian_authorization_v1/requirements-plots.txt -> cerberus_cyber_eval-0.1.0rc1/benchmarks/guardian_authorization_v1
+copying benchmarks/guardian_authorization_v1/reviewer_packet.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/guardian_authorization_v1
+copying benchmarks/guardian_authorization_v1/run.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/guardian_authorization_v1
+copying benchmarks/release_candidate/README.md -> cerberus_cyber_eval-0.1.0rc1/benchmarks/release_candidate
+copying benchmarks/release_candidate/run.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/release_candidate
+copying benchmarks/replay_v1/PLAN.md -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v1
+copying benchmarks/replay_v1/README.md -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v1
+copying benchmarks/replay_v1/generate.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v1
+copying benchmarks/replay_v1/oracle.json -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v1
+copying benchmarks/replay_v1/run.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v1
+copying benchmarks/replay_v2/PLAN.md -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v2
+copying benchmarks/replay_v2/README.md -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v2
+copying benchmarks/replay_v2/protected_sources.json -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v2
+copying benchmarks/replay_v2/reference_enforcement.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v2
+copying benchmarks/replay_v2/run.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v2
+copying benchmarks/replay_v2/verify_history.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v2
+copying benchmarks/replay_v3/PLAN.md -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v3
+copying benchmarks/replay_v3/README.md -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v3
+copying benchmarks/replay_v3/audit_findings.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v3
+copying benchmarks/replay_v3/evidence.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v3
+copying benchmarks/replay_v3/freeze_oracle.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v3
+copying benchmarks/replay_v3/oracle.json -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v3
+copying benchmarks/replay_v3/protected_sources.json -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v3
+copying benchmarks/replay_v3/render.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v3
+copying benchmarks/replay_v3/run.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v3
+copying benchmarks/replay_v3/test_instrument.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v3
+copying benchmarks/replay_v3/verify_history.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v3
+copying benchmarks/replay_v4/ORACLE.md -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v4
+copying benchmarks/replay_v4/PLAN.md -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v4
+copying benchmarks/replay_v4/README.md -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v4
+copying benchmarks/replay_v4/oracle.json -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v4
+copying benchmarks/replay_v4/run.py -> cerberus_cyber_eval-0.1.0rc1/benchmarks/replay_v4
+copying cerberus/__init__.py -> cerberus_cyber_eval-0.1.0rc1/cerberus
+copying cerberus/_lab_worker.py -> cerberus_cyber_eval-0.1.0rc1/cerberus
+copying cerberus/assurance.py -> cerberus_cyber_eval-0.1.0rc1/cerberus
+copying cerberus/audit.py -> cerberus_cyber_eval-0.1.0rc1/cerberus
+copying cerberus/authority.py -> cerberus_cyber_eval-0.1.0rc1/cerberus
+copying cerberus/enforcement.py -> cerberus_cyber_eval-0.1.0rc1/cerberus
+copying cerberus/evaluation.py -> cerberus_cyber_eval-0.1.0rc1/cerberus
+copying cerberus/freshness.py -> cerberus_cyber_eval-0.1.0rc1/cerberus
+copying cerberus/guardian.py -> cerberus_cyber_eval-0.1.0rc1/cerberus
+copying cerberus/hunt.py -> cerberus_cyber_eval-0.1.0rc1/cerberus
+copying cerberus/lab_demo.py -> cerberus_cyber_eval-0.1.0rc1/cerberus
+copying cerberus/models.py -> cerberus_cyber_eval-0.1.0rc1/cerberus
+copying cerberus/policy.py -> cerberus_cyber_eval-0.1.0rc1/cerberus
+copying cerberus/state.py -> cerberus_cyber_eval-0.1.0rc1/cerberus
+copying cerberus/token.py -> cerberus_cyber_eval-0.1.0rc1/cerberus
+copying cerberus/data/policies.json -> cerberus_cyber_eval-0.1.0rc1/cerberus/data
+copying cerberus/data/schemas/action-envelope.schema.json -> cerberus_cyber_eval-0.1.0rc1/cerberus/data/schemas
+copying cerberus/data/schemas/decision-token.schema.json -> cerberus_cyber_eval-0.1.0rc1/cerberus/data/schemas
+copying cerberus/data/schemas/policy-bundle.schema.json -> cerberus_cyber_eval-0.1.0rc1/cerberus/data/schemas
+copying cerberus_cyber_eval.egg-info/PKG-INFO -> cerberus_cyber_eval-0.1.0rc1/cerberus_cyber_eval.egg-info
+copying cerberus_cyber_eval.egg-info/SOURCES.txt -> cerberus_cyber_eval-0.1.0rc1/cerberus_cyber_eval.egg-info
+copying cerberus_cyber_eval.egg-info/dependency_links.txt -> cerberus_cyber_eval-0.1.0rc1/cerberus_cyber_eval.egg-info
+copying cerberus_cyber_eval.egg-info/entry_points.txt -> cerberus_cyber_eval-0.1.0rc1/cerberus_cyber_eval.egg-info
+copying cerberus_cyber_eval.egg-info/requires.txt -> cerberus_cyber_eval-0.1.0rc1/cerberus_cyber_eval.egg-info
+copying cerberus_cyber_eval.egg-info/top_level.txt -> cerberus_cyber_eval-0.1.0rc1/cerberus_cyber_eval.egg-info
+copying docs/ACTION_ENVELOPE_V1.md -> cerberus_cyber_eval-0.1.0rc1/docs
+copying docs/ASSURANCE_BOUNDARY.md -> cerberus_cyber_eval-0.1.0rc1/docs
+copying docs/CAPABILITY_INVENTORY.md -> cerberus_cyber_eval-0.1.0rc1/docs
+copying docs/CORRELATED_FAILURE_METHOD.md -> cerberus_cyber_eval-0.1.0rc1/docs
+copying docs/EMBEDDED_AGENT_SCENARIO.md -> cerberus_cyber_eval-0.1.0rc1/docs
+copying docs/EVALUATION_FRAMEWORK.md -> cerberus_cyber_eval-0.1.0rc1/docs
+copying docs/EVALUATION_KIT.md -> cerberus_cyber_eval-0.1.0rc1/docs
+copying docs/FORMAL_ASSURANCE_PATH.md -> cerberus_cyber_eval-0.1.0rc1/docs
+copying docs/GAP_CLOSURE_PLAN.md -> cerberus_cyber_eval-0.1.0rc1/docs
+copying docs/HARDENING_IMPLEMENTATION.md -> cerberus_cyber_eval-0.1.0rc1/docs
+copying docs/INTEGRATION_STRATEGY.md -> cerberus_cyber_eval-0.1.0rc1/docs
+copying docs/LOCAL_ENFORCEMENT_DEMO.md -> cerberus_cyber_eval-0.1.0rc1/docs
+copying docs/NINETY_DAY_EVALUATION.md -> cerberus_cyber_eval-0.1.0rc1/docs
+copying docs/ONE_PAGE_PITCH.md -> cerberus_cyber_eval-0.1.0rc1/docs
+copying docs/OPENAI_CYBERSECURITY_GRANT_PROPOSAL.md -> cerberus_cyber_eval-0.1.0rc1/docs
+copying docs/RED_TEAM_REVIEW.md -> cerberus_cyber_eval-0.1.0rc1/docs
+copying docs/RELEASE_CANDIDATE.md -> cerberus_cyber_eval-0.1.0rc1/docs
+copying docs/SAFETY_INVARIANTS.md -> cerberus_cyber_eval-0.1.0rc1/docs
+copying docs/THREAT_MODEL.md -> cerberus_cyber_eval-0.1.0rc1/docs
+copying docs/adr/0003-action-envelope-and-decision-token.md -> cerberus_cyber_eval-0.1.0rc1/docs/adr
+copying docs/adr/0004-evidence-conflict-escalation.md -> cerberus_cyber_eval-0.1.0rc1/docs/adr
+copying docs/adr/0005-action-envelope-v1-contract.md -> cerberus_cyber_eval-0.1.0rc1/docs/adr
+copying docs/adr/0006-policy-bundle-v1-and-policy-digest-binding.md -> cerberus_cyber_eval-0.1.0rc1/docs/adr
+copying docs/adr/0007-exact-action-contract-validation.md -> cerberus_cyber_eval-0.1.0rc1/docs/adr
+copying policies/policies.json -> cerberus_cyber_eval-0.1.0rc1/policies
+copying results/assurance_boundaries_v2/README.md -> cerberus_cyber_eval-0.1.0rc1/results/assurance_boundaries_v2
+copying results/assurance_boundaries_v2/after.json -> cerberus_cyber_eval-0.1.0rc1/results/assurance_boundaries_v2
+copying results/assurance_boundaries_v2/before.json -> cerberus_cyber_eval-0.1.0rc1/results/assurance_boundaries_v2
+copying results/assurance_boundaries_v3/README.md -> cerberus_cyber_eval-0.1.0rc1/results/assurance_boundaries_v3
+copying results/assurance_boundaries_v3/after.json -> cerberus_cyber_eval-0.1.0rc1/results/assurance_boundaries_v3
+copying results/guardian_authorization_v1/README.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1
+copying results/guardian_authorization_v1/baseline.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1
+copying results/guardian_authorization_v1/case-results.csv -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1
+copying results/guardian_authorization_v1/main-after-pr8.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1
+copying results/guardian_authorization_v1/repaired.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1
+copying results/guardian_authorization_v1/reviewer-verification.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1
+copying results/guardian_authorization_v1/unauthorized-approvals.svg -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1
+copying results/guardian_authorization_v1/utility-vs-unsafe-authorization.svg -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1
+copying results/guardian_authorization_v1/reviewer_packet/README.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet
+copying results/guardian_authorization_v1/reviewer_packet/manifest.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet
+copying results/guardian_authorization_v1/reviewer_packet/packet.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet
+copying results/guardian_authorization_v1/reviewer_packet/cases/A01.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/A02.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/A03.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/A04.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/E01.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/E02.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/E03.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/F01.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/F02.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/F03.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/F04.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/H01.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/H02.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/H03.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/H04.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/I01.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/I02.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/I03.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/I04.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/I05.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/I06.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/I07.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/P01.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/P02.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/P03.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/P04.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/P05.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/S01.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/S02.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/S03.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/S04.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/S05.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/S06.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/V01.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/V02.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/V03.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/V04.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/V05.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/V06.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/V07.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/cases/V08.md -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/cases
+copying results/guardian_authorization_v1/reviewer_packet/requests/A01.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/A02.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/A03.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/A04.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/E01.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/E02.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/E03.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/F01.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/F02.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/F03.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/F04.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/H01.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/H02.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/H03.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/H04.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/I01.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/I02.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/I03.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/I04.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/I05.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/I06.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/I07.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/P01.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/P02.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/P03.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/P04.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/P05.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/S01.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/S02.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/S03.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/S04.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/S05.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/S06.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/V01.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/V02.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/V03.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/V04.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/V05.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/V06.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/V07.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/guardian_authorization_v1/reviewer_packet/requests/V08.json -> cerberus_cyber_eval-0.1.0rc1/results/guardian_authorization_v1/reviewer_packet/requests
+copying results/release_candidate/README.md -> cerberus_cyber_eval-0.1.0rc1/results/release_candidate
+copying results/release_candidate/after.json -> cerberus_cyber_eval-0.1.0rc1/results/release_candidate
+copying results/release_candidate/main-after-pr11.json -> cerberus_cyber_eval-0.1.0rc1/results/release_candidate
+copying results/release_candidate/main-after-pr11.md -> cerberus_cyber_eval-0.1.0rc1/results/release_candidate
+copying results/release_candidate/verification.json -> cerberus_cyber_eval-0.1.0rc1/results/release_candidate
+copying results/replay_v1/report.md -> cerberus_cyber_eval-0.1.0rc1/results/replay_v1
+copying results/replay_v1/results.json -> cerberus_cyber_eval-0.1.0rc1/results/replay_v1
+copying results/replay_v2/report.md -> cerberus_cyber_eval-0.1.0rc1/results/replay_v2
+copying results/replay_v2/results.json -> cerberus_cyber_eval-0.1.0rc1/results/replay_v2
+copying results/replay_v3/report.md -> cerberus_cyber_eval-0.1.0rc1/results/replay_v3
+copying results/replay_v3/sqlite_empty_evidence.json -> cerberus_cyber_eval-0.1.0rc1/results/replay_v3
+copying results/replay_v3/validation.json -> cerberus_cyber_eval-0.1.0rc1/results/replay_v3
+copying schemas/action-envelope.schema.json -> cerberus_cyber_eval-0.1.0rc1/schemas
+copying schemas/decision-token.schema.json -> cerberus_cyber_eval-0.1.0rc1/schemas
+copying schemas/policy-bundle.schema.json -> cerberus_cyber_eval-0.1.0rc1/schemas
+copying scripts/release_checksums.py -> cerberus_cyber_eval-0.1.0rc1/scripts
+copying scripts/verify_installed.py -> cerberus_cyber_eval-0.1.0rc1/scripts
+copying sdk/__init__.py -> cerberus_cyber_eval-0.1.0rc1/sdk
+copying sdk/shared_types/__init__.py -> cerberus_cyber_eval-0.1.0rc1/sdk/shared_types
+copying sdk/shared_types/action_envelope.py -> cerberus_cyber_eval-0.1.0rc1/sdk/shared_types
+copying simulator/assurance_fixtures.py -> cerberus_cyber_eval-0.1.0rc1/simulator
+copying simulator/cerberus_sim.py -> cerberus_cyber_eval-0.1.0rc1/simulator
+copying simulator/embedded_agent_hunt.py -> cerberus_cyber_eval-0.1.0rc1/simulator
+copying simulator/scenarios/data_exfiltration.json -> cerberus_cyber_eval-0.1.0rc1/simulator/scenarios
+copying simulator/scenarios/embedded_agent_adversarial_corpus.py -> cerberus_cyber_eval-0.1.0rc1/simulator/scenarios
+copying simulator/scenarios/embedded_ai_agent_telemetry.json -> cerberus_cyber_eval-0.1.0rc1/simulator/scenarios
+copying simulator/scenarios/prompt_injection.json -> cerberus_cyber_eval-0.1.0rc1/simulator/scenarios
+copying simulator/scenarios/ransomware.json -> cerberus_cyber_eval-0.1.0rc1/simulator/scenarios
+copying simulator/scenarios/stolen_admin_session.json -> cerberus_cyber_eval-0.1.0rc1/simulator/scenarios
+copying tests/__init__.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/assurance_support.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/test_action_envelope_v1.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/test_adversarial_corpus.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/test_assurance_corpus.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/test_assurance_hardening.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/test_assurance_path.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/test_claim_discipline.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/test_embedded_agent_hunt.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/test_exact_action_contract.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/test_guardian_benchmark.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/test_kernel_binding.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/test_lab_demo.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/test_policy_bundle_v1.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/test_release_contract.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/test_replay_v1.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/test_replay_v1_history.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/test_replay_v2.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/test_replay_v4_instrument.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/test_reviewer_packet.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/test_simulator.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying tests/test_state_initialization.py -> cerberus_cyber_eval-0.1.0rc1/tests
+copying cerberus_cyber_eval.egg-info/SOURCES.txt -> cerberus_cyber_eval-0.1.0rc1/cerberus_cyber_eval.egg-info
+Writing cerberus_cyber_eval-0.1.0rc1/setup.cfg
+Creating tar archive
+removing 'cerberus_cyber_eval-0.1.0rc1' (and everything under it)
+* Building wheel from sdist
+* Getting build dependencies for wheel...
+running egg_info
+writing cerberus_cyber_eval.egg-info/PKG-INFO
+writing dependency_links to cerberus_cyber_eval.egg-info/dependency_links.txt
+writing entry points to cerberus_cyber_eval.egg-info/entry_points.txt
+writing requirements to cerberus_cyber_eval.egg-info/requires.txt
+writing top-level names to cerberus_cyber_eval.egg-info/top_level.txt
+reading manifest file 'cerberus_cyber_eval.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+warning: no previously-included files matching '*.db' found anywhere in distribution
+warning: no previously-included files matching '*.db-wal' found anywhere in distribution
+warning: no previously-included files matching '*.db-shm' found anywhere in distribution
+adding license file 'LICENSE'
+adding license file 'NOTICE'
+writing manifest file 'cerberus_cyber_eval.egg-info/SOURCES.txt'
+* Building wheel...
+running bdist_wheel
+running build
+running build_py
+creating build/lib/sdk
+copying sdk/__init__.py -> build/lib/sdk
+creating build/lib/cerberus
+copying cerberus/token.py -> build/lib/cerberus
+copying cerberus/state.py -> build/lib/cerberus
+copying cerberus/policy.py -> build/lib/cerberus
+copying cerberus/models.py -> build/lib/cerberus
+copying cerberus/lab_demo.py -> build/lib/cerberus
+copying cerberus/hunt.py -> build/lib/cerberus
+copying cerberus/guardian.py -> build/lib/cerberus
+copying cerberus/freshness.py -> build/lib/cerberus
+copying cerberus/evaluation.py -> build/lib/cerberus
+copying cerberus/enforcement.py -> build/lib/cerberus
+copying cerberus/authority.py -> build/lib/cerberus
+copying cerberus/audit.py -> build/lib/cerberus
+copying cerberus/assurance.py -> build/lib/cerberus
+copying cerberus/_lab_worker.py -> build/lib/cerberus
+copying cerberus/__init__.py -> build/lib/cerberus
+creating build/lib/sdk/shared_types
+copying sdk/shared_types/action_envelope.py -> build/lib/sdk/shared_types
+copying sdk/shared_types/__init__.py -> build/lib/sdk/shared_types
+running egg_info
+writing cerberus_cyber_eval.egg-info/PKG-INFO
+writing dependency_links to cerberus_cyber_eval.egg-info/dependency_links.txt
+writing entry points to cerberus_cyber_eval.egg-info/entry_points.txt
+writing requirements to cerberus_cyber_eval.egg-info/requires.txt
+writing top-level names to cerberus_cyber_eval.egg-info/top_level.txt
+reading manifest file 'cerberus_cyber_eval.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+warning: no previously-included files matching '*.db' found anywhere in distribution
+warning: no previously-included files matching '*.db-wal' found anywhere in distribution
+warning: no previously-included files matching '*.db-shm' found anywhere in distribution
+adding license file 'LICENSE'
+adding license file 'NOTICE'
+writing manifest file 'cerberus_cyber_eval.egg-info/SOURCES.txt'
+creating build/lib/cerberus/data
+copying cerberus/data/policies.json -> build/lib/cerberus/data
+creating build/lib/cerberus/data/schemas
+copying cerberus/data/schemas/action-envelope.schema.json -> build/lib/cerberus/data/schemas
+copying cerberus/data/schemas/decision-token.schema.json -> build/lib/cerberus/data/schemas
+copying cerberus/data/schemas/policy-bundle.schema.json -> build/lib/cerberus/data/schemas
+installing to build/bdist.linux-x86_64/wheel
+running install
+running install_lib
+creating build/bdist.linux-x86_64/wheel
+creating build/bdist.linux-x86_64/wheel/cerberus
+creating build/bdist.linux-x86_64/wheel/cerberus/data
+creating build/bdist.linux-x86_64/wheel/cerberus/data/schemas
+copying build/lib/cerberus/data/schemas/policy-bundle.schema.json -> build/bdist.linux-x86_64/wheel/./cerberus/data/schemas
+copying build/lib/cerberus/data/schemas/decision-token.schema.json -> build/bdist.linux-x86_64/wheel/./cerberus/data/schemas
+copying build/lib/cerberus/data/schemas/action-envelope.schema.json -> build/bdist.linux-x86_64/wheel/./cerberus/data/schemas
+copying build/lib/cerberus/data/policies.json -> build/bdist.linux-x86_64/wheel/./cerberus/data
+copying build/lib/cerberus/__init__.py -> build/bdist.linux-x86_64/wheel/./cerberus
+copying build/lib/cerberus/_lab_worker.py -> build/bdist.linux-x86_64/wheel/./cerberus
+copying build/lib/cerberus/assurance.py -> build/bdist.linux-x86_64/wheel/./cerberus
+copying build/lib/cerberus/audit.py -> build/bdist.linux-x86_64/wheel/./cerberus
+copying build/lib/cerberus/authority.py -> build/bdist.linux-x86_64/wheel/./cerberus
+copying build/lib/cerberus/enforcement.py -> build/bdist.linux-x86_64/wheel/./cerberus
+copying build/lib/cerberus/evaluation.py -> build/bdist.linux-x86_64/wheel/./cerberus
+copying build/lib/cerberus/freshness.py -> build/bdist.linux-x86_64/wheel/./cerberus
+copying build/lib/cerberus/guardian.py -> build/bdist.linux-x86_64/wheel/./cerberus
+copying build/lib/cerberus/hunt.py -> build/bdist.linux-x86_64/wheel/./cerberus
+copying build/lib/cerberus/lab_demo.py -> build/bdist.linux-x86_64/wheel/./cerberus
+copying build/lib/cerberus/models.py -> build/bdist.linux-x86_64/wheel/./cerberus
+copying build/lib/cerberus/policy.py -> build/bdist.linux-x86_64/wheel/./cerberus
+copying build/lib/cerberus/state.py -> build/bdist.linux-x86_64/wheel/./cerberus
+copying build/lib/cerberus/token.py -> build/bdist.linux-x86_64/wheel/./cerberus
+creating build/bdist.linux-x86_64/wheel/sdk
+creating build/bdist.linux-x86_64/wheel/sdk/shared_types
+copying build/lib/sdk/shared_types/__init__.py -> build/bdist.linux-x86_64/wheel/./sdk/shared_types
+copying build/lib/sdk/shared_types/action_envelope.py -> build/bdist.linux-x86_64/wheel/./sdk/shared_types
+copying build/lib/sdk/__init__.py -> build/bdist.linux-x86_64/wheel/./sdk
+running install_egg_info
+Copying cerberus_cyber_eval.egg-info to build/bdist.linux-x86_64/wheel/./cerberus_cyber_eval-0.1.0rc1-py3.12.egg-info
+running install_scripts
+creating build/bdist.linux-x86_64/wheel/cerberus_cyber_eval-0.1.0rc1.dist-info/WHEEL
+creating '/workspace/scratch/379e5a226cc0/cerberuscyber/dist/.tmp-cox1p2sx/cerberus_cyber_eval-0.1.0rc1-py3-none-any.whl' and adding 'build/bdist.linux-x86_64/wheel' to it
+adding 'cerberus/__init__.py'
+adding 'cerberus/_lab_worker.py'
+adding 'cerberus/assurance.py'
+adding 'cerberus/audit.py'
+adding 'cerberus/authority.py'
+adding 'cerberus/enforcement.py'
+adding 'cerberus/evaluation.py'
+adding 'cerberus/freshness.py'
+adding 'cerberus/guardian.py'
+adding 'cerberus/hunt.py'
+adding 'cerberus/lab_demo.py'
+adding 'cerberus/models.py'
+adding 'cerberus/policy.py'
+adding 'cerberus/state.py'
+adding 'cerberus/token.py'
+adding 'cerberus/data/policies.json'
+adding 'cerberus/data/schemas/action-envelope.schema.json'
+adding 'cerberus/data/schemas/decision-token.schema.json'
+adding 'cerberus/data/schemas/policy-bundle.schema.json'
+adding 'cerberus_cyber_eval-0.1.0rc1.dist-info/licenses/LICENSE'
+adding 'cerberus_cyber_eval-0.1.0rc1.dist-info/licenses/NOTICE'
+adding 'sdk/__init__.py'
+adding 'sdk/shared_types/__init__.py'
+adding 'sdk/shared_types/action_envelope.py'
+adding 'cerberus_cyber_eval-0.1.0rc1.dist-info/METADATA'
+adding 'cerberus_cyber_eval-0.1.0rc1.dist-info/WHEEL'
+adding 'cerberus_cyber_eval-0.1.0rc1.dist-info/entry_points.txt'
+adding 'cerberus_cyber_eval-0.1.0rc1.dist-info/top_level.txt'
+adding 'cerberus_cyber_eval-0.1.0rc1.dist-info/RECORD'
+removing build/bdist.linux-x86_64/wheel
+WARNING Package 'cerberus.data' is absent from the `packages` configuration.
+!!
+
+        ********************************************************************************
+        ############################
+        # Package would be ignored #
+        ############################
+        Python recognizes 'cerberus.data' as an importable package[^1],
+        but it is absent from setuptools' `packages` configuration.
+
+        This leads to an ambiguous overall configuration. If you want to distribute this
+        package, please make sure that 'cerberus.data' is explicitly added
+        to the `packages` configuration field.
+
+        Alternatively, you can also rely on setuptools' discovery methods
+        (for example by using `find_namespace_packages(...)`/`find_namespace:`
+        instead of `find_packages(...)`/`find:`).
+
+        You can read more about "package discovery" on setuptools documentation page:
+
+        - https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
+
+        If you don't want 'cerberus.data' to be distributed and are
+        already explicitly excluding 'cerberus.data' via
+        `find_namespace_packages(...)/find_namespace` or `find_packages(...)/find`,
+        you can try to use `exclude_package_data`, or `include-package-data=False` in
+        combination with a more fine grained `package-data` configuration.
+
+        You can read more about "package data files" on setuptools documentation page:
+
+        - https://setuptools.pypa.io/en/latest/userguide/datafiles.html
+
+
+        [^1]: For Python, any directory (with suitable naming) can be imported,
+              even if it does not contain any `.py` files.
+              On the other hand, currently there is no concept of package data
+              directory, all directories are treated like packages.
+        ********************************************************************************
+
+!!
+WARNING Package 'cerberus.data.schemas' is absent from the `packages` configuration.
+!!
+
+        ********************************************************************************
+        ############################
+        # Package would be ignored #
+        ############################
+        Python recognizes 'cerberus.data.schemas' as an importable package[^1],
+        but it is absent from setuptools' `packages` configuration.
+
+        This leads to an ambiguous overall configuration. If you want to distribute this
+        package, please make sure that 'cerberus.data.schemas' is explicitly added
+        to the `packages` configuration field.
+
+        Alternatively, you can also rely on setuptools' discovery methods
+        (for example by using `find_namespace_packages(...)`/`find_namespace:`
+        instead of `find_packages(...)`/`find:`).
+
+        You can read more about "package discovery" on setuptools documentation page:
+
+        - https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
+
+        If you don't want 'cerberus.data.schemas' to be distributed and are
+        already explicitly excluding 'cerberus.data.schemas' via
+        `find_namespace_packages(...)/find_namespace` or `find_packages(...)/find`,
+        you can try to use `exclude_package_data`, or `include-package-data=False` in
+        combination with a more fine grained `package-data` configuration.
+
+        You can read more about "package data files" on setuptools documentation page:
+
+        - https://setuptools.pypa.io/en/latest/userguide/datafiles.html
+
+
+        [^1]: For Python, any directory (with suitable naming) can be imported,
+              even if it does not contain any `.py` files.
+              On the other hand, currently there is no concept of package data
+              directory, all directories are treated like packages.
+        ********************************************************************************
+
+!!
+Successfully built cerberus_cyber_eval-0.1.0rc1.tar.gz and cerberus_cyber_eval-0.1.0rc1-py3-none-any.whl

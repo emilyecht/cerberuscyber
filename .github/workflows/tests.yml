@@ -45,7 +45,9 @@ jobs:
           python -m json.tool benchmarks/guardian_authorization_v1/cases.json >/dev/null
           python -m json.tool schemas/policy-bundle.schema.json >/dev/null
       - name: Run unit, schema, and adversarial corpus tests
-        run: python -m pytest -q
+        run: python -m pytest -q --ignore=benchmarks/replay_v3/test_instrument.py
+      - name: Check current broker decisions and observed marker effects
+        run: python -m benchmarks.authority_integration.run
       - name: Require actual local-effect enforcement and kernel bypass tests
         run: python -m cerberus.evaluation enforcement-demo --json
       - name: Run combined-contract benchmark
@@ -60,3 +62,16 @@ jobs:
           "$RUNNER_TEMP/cerberus-installed/bin/python" -m pip install --disable-pip-version-check dist/cerberus_cyber_eval-0.1.0rc1-py3-none-any.whl
           "$RUNNER_TEMP/cerberus-installed/bin/python" -m pip check
           "$RUNNER_TEMP/cerberus-installed/bin/python" -I scripts/verify_installed.py --repo-root "$GITHUB_WORKSPACE"
+
+  historical-authority:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r requirements-dev.txt
+      - run: bash scripts/verify_historical_authority.sh

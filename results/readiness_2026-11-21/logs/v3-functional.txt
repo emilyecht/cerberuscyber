@@ -1,0 +1,8 @@
+functional: 500/3540 episodes
+functional: 1000/3540 episodes
+functional: 1500/3540 episodes
+functional: 2000/3540 episodes
+functional: 2500/3540 episodes
+functional: 3000/3540 episodes
+functional: 3500/3540 episodes
+{"type": "functional reproduction only no new timing", "exit_code": 1, "episodes": 3540, "requests": 3625, "false_allow": {"numerator": 9, "denominator": 3484, "rate": 0.0025832376578645237, "wilson_95": [0.0013596654569008385, 0.0049025053093355205]}, "false_deny": {"numerator": 0, "denominator": 133, "rate": 0.0, "wilson_95": [0, 0.02807233168807166], "rule_of_three_upper_95": 0.022556390977443608}, "failures": 9}

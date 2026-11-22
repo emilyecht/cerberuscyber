@@ -1,0 +1,4 @@
+.........................s.                                              [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_lab_demo.py:221: Landlock ABI >= 3 is required, including truncation control (errno 38)
+26 passed, 1 skipped in 0.59s
